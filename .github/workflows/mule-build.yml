@@ -112,8 +112,6 @@ jobs:
       - name: Summary - Test
         uses: CoveredCA/common-devops/packages/summary-junit@main
         with:
-          gist-id: ${{ env.github_gist_id }}
-          gist-token: ${{ env.github_admintasks_accesstoken }}
           badge-label: Unit test
           badge-suffix: ut
           path-report: 'target/surefire-reports/*.xml'
@@ -121,9 +119,6 @@ jobs:
 
       - name: Summary - Code Coverage
         uses: CoveredCA/common-devops/packages/summary-codecoverage@main
-        with:
-          gist-id: ${{ env.github_gist_id }}
-          gist-token: ${{ env.github_admintasks_accesstoken }}
 
       #########################################################
       # Next actions only if application is not a snapshot
