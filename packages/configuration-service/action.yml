@@ -188,28 +188,28 @@ runs:
     - name: Get maven settings configuration
       id: configuration-settings
       if: ${{ inputs.environment == 'unit-test' }}
-      uses: jpontdia/common-devops/packages/configuration-file@main
+      uses: CoveredCA/common-devops/packages/configuration-file@main
       with:
         yaml-path: ".settings"
 
     - name: Get the skiptest property for the service
       id: configuration-skiptest
       if: ${{ inputs.environment == 'unit-test' }}
-      uses: jpontdia/common-devops/packages/configuration-file@main
+      uses: CoveredCA/common-devops/packages/configuration-file@main
       with:
         yaml-path: ".skiptests"
 
     - name: Get the deployable property for the service
       id: configuration-deployable
       if: ${{ inputs.environment == 'unit-test' }}
-      uses: jpontdia/common-devops/packages/configuration-file@main
+      uses: CoveredCA/common-devops/packages/configuration-file@main
       with:
         yaml-path: ".deployable"
 
     - name: Get the properties for unit test
       id: configuration-unittest
       if: ${{ inputs.environment == 'unit-test' }}
-      uses: jpontdia/common-devops/packages/configuration-file@main
+      uses: CoveredCA/common-devops/packages/configuration-file@main
       with:
         yaml-path: ".test-properties"
 
@@ -220,7 +220,7 @@ runs:
     - name: Get configuration for CloudHub 1 deployment
       id: configuration-cloudhub
       if: ${{ inputs.environment != 'unit-test' }}
-      uses: jpontdia/common-devops/packages/configuration-file@main
+      uses: CoveredCA/common-devops/packages/configuration-file@main
       with:
         yaml-path: ".cloudhub"
         suffix: "-${{ inputs.environment }}"
@@ -228,7 +228,7 @@ runs:
     - name: Get configuration for deployment properties
       id: configuration-properties
       if: ${{ inputs.environment != 'unit-test' }}
-      uses: jpontdia/common-devops/packages/configuration-file@main
+      uses: CoveredCA/common-devops/packages/configuration-file@main
       with:
         yaml-path: ".properties"
         suffix: "-${{ inputs.environment }}"
@@ -236,7 +236,7 @@ runs:
     - name: Get configuration for deployment name
       id: configuration-deployment-name
       if: ${{ inputs.environment != 'unit-test' }}
-      uses: jpontdia/common-devops/packages/configuration-file@main
+      uses: CoveredCA/common-devops/packages/configuration-file@main
       with:
         yaml-path: ".deployment-name"
         suffix: "-${{ inputs.environment }}"
@@ -244,7 +244,7 @@ runs:
     - name: Get configuration for deployment organization
       id: configuration-deployment-organization
       if: ${{ inputs.environment != 'unit-test' }}
-      uses: jpontdia/common-devops/packages/configuration-file@main
+      uses: CoveredCA/common-devops/packages/configuration-file@main
       with:
         yaml-path: ".deployment-organization"
         suffix: "-${{ inputs.environment }}"
@@ -252,7 +252,7 @@ runs:
     - name: Get configuration for service environment variables
       id: configuration-env
       if: ${{ inputs.environment != 'unit-test' }}
-      uses: jpontdia/common-devops/packages/configuration-file@main
+      uses: CoveredCA/common-devops/packages/configuration-file@main
       with:
         yaml-path: ".env"
         suffix: "-${{ inputs.environment }}"

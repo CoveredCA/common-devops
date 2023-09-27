@@ -3,7 +3,7 @@
 ##########################################################################
 
 # Configuration for this template:
-# 1.- Replace the predefined repository jpontdia/common-devops with your own.
+# 1.- Replace the predefined repository CoveredCA/common-devops with your own.
 # 2.- Update the global environment variables for the script 
 
 name: Build
@@ -39,7 +39,7 @@ jobs:
           fetch-depth: 0
 
       - name: Get global configuration for the pipeline
-        uses: jpontdia/common-devops/packages/configuration-service@main
+        uses: CoveredCA/common-devops/packages/configuration-service@main
         with:
           keyvault-key: ${{ inputs.keyvault-key }}
           azure-credentials: ${{ secrets.azure-credentials }}
@@ -66,7 +66,7 @@ jobs:
           fi
 
       - name: Install Java JDK for Mulesoft Applications
-        uses: jpontdia/common-devops/packages/install-java@main
+        uses: CoveredCA/common-devops/packages/install-java@main
         with:
           github-configurations-accesstoken: $github_admintasks_accesstoken
           default-settings-xml: $DEFAULT_SETTINGS_XML
@@ -110,7 +110,7 @@ jobs:
           mvn --batch-mode $skiptest package $configuration_unittest
 
       - name: Summary - Test
-        uses: jpontdia/common-devops/packages/summary-junit@main
+        uses: CoveredCA/common-devops/packages/summary-junit@main
         with:
           gist-id: ${{ env.github_gist_id }}
           gist-token: ${{ env.github_admintasks_accesstoken }}
@@ -120,7 +120,7 @@ jobs:
           path-directoryreports: 'target/surefire-reports/*'
 
       - name: Summary - Code Coverage
-        uses: jpontdia/common-devops/packages/summary-codecoverage@main
+        uses: CoveredCA/common-devops/packages/summary-codecoverage@main
         with:
           gist-id: ${{ env.github_gist_id }}
           gist-token: ${{ env.github_admintasks_accesstoken }}
@@ -155,7 +155,7 @@ jobs:
           name: ${{ env.service_version }}
 
       - name: Create badge for workflow number
-        uses: jpontdia/common-devops/packages/badge@main
+        uses: CoveredCA/common-devops/packages/badge@main
         if: "!contains(env.service_version, 'snapshot')"
         with:
           label: Build job
@@ -167,7 +167,7 @@ jobs:
       # Create a relelase only for jar files
       ##################################################
       - name: Create badge for release
-        uses: jpontdia/common-devops/packages/badge@main
+        uses: CoveredCA/common-devops/packages/badge@main
         if: "hashFiles('target/*.jar') != '' && !contains(env.service_version, 'snapshot')"
         with:
           label: Release

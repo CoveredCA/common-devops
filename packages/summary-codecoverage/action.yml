@@ -160,7 +160,7 @@ runs:
         echo "BADGE_STATUS=Skipped" >> $GITHUB_ENV
 
     - name: Create badge for code coverage
-      uses: jpontdia/common-devops/packages/badge@main
+      uses: CoveredCA/common-devops/packages/badge@main
       if: always()
       with:
         label: Code coverage

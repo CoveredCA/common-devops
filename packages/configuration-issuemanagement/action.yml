@@ -46,7 +46,7 @@ runs:
         ref: '${{env.deployment_version}}'
 
     - name: Get global configuration for the pipeline
-      uses: jpontdia/common-devops/packages/configuration-service@main
+      uses: CoveredCA/common-devops/packages/configuration-service@main
       with:
         keyvault-key: ${{ inputs.keyvault-key }}
         azure-credentials: ${{ inputs.azure-credentials }}

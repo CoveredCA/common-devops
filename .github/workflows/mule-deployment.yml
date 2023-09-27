@@ -3,7 +3,7 @@
 ##########################################################################
 
 # Configuration for this template:
-# 1.- Replace the predefined repository jpontdia/common-devops with your own.
+# 1.- Replace the predefined repository CoveredCA/common-devops with your own.
 # 2.- Update the global environment variables for the script 
 
 name: Deployment
@@ -39,7 +39,7 @@ jobs:
   ##################################################################
   verify:
     if: |
-      github.actor == 'jpontdia' ||
+      github.actor == 'CoveredCA' ||
       github.actor == 'GitHubActions' ||
       github.actor == 'github-actions'
     name: verify
@@ -52,7 +52,7 @@ jobs:
     steps:
 
       - name: Get workflow metadata
-        uses: jpontdia/common-devops/packages/configuration-issuemanagement@main
+        uses: CoveredCA/common-devops/packages/configuration-issuemanagement@main
         with:
           keyvault-key: '${{ inputs.keyvault-key }}'
           azure-credentials: '${{ secrets.azure-credentials }}'
@@ -145,7 +145,7 @@ jobs:
 
     steps:
       - name: Get workflow metadata
-        uses: jpontdia/common-devops/packages/configuration-issuemanagement@main
+        uses: CoveredCA/common-devops/packages/configuration-issuemanagement@main
         with:
           keyvault-key: '${{ inputs.keyvault-key }}'
           azure-credentials: '${{ secrets.azure-credentials }}'
@@ -176,7 +176,7 @@ jobs:
 
       - id: deployment-ch1
         name: Deploy the service in the cloud
-        uses: jpontdia/common-devops/packages/process-cloudhub1@main
+        uses: CoveredCA/common-devops/packages/process-cloudhub1@main
         with:
           keyvault-key: ${{ inputs.keyvault-key }}
           azure-credentials: ${{ secrets.azure-credentials }}
@@ -215,7 +215,7 @@ jobs:
           fi
 
       - name: Create badge for deployment
-        uses: jpontdia/common-devops/packages/badge@main
+        uses: CoveredCA/common-devops/packages/badge@main
         with:
           label: '${{ env.deployment_environment }} version'
           status: '${{ env.deployment_version }}'
@@ -233,7 +233,7 @@ jobs:
 
     steps:
       - name: Get workflow metadata
-        uses: jpontdia/common-devops/packages/configuration-issuemanagement@main
+        uses: CoveredCA/common-devops/packages/configuration-issuemanagement@main
         with:
           keyvault-key: '${{ inputs.keyvault-key }}'
           azure-credentials: '${{ secrets.azure-credentials }}'
@@ -255,7 +255,7 @@ jobs:
 
       - name: Execute Mulesoft BAT
         id: bat-testing
-        uses: jpontdia/common-devops/packages/process-bat@main
+        uses: CoveredCA/common-devops/packages/process-bat@main
         with:
           keyvault-key: ${{ inputs.keyvault-key }}
           azure-credentials: ${{ secrets.azure-credentials }}
@@ -303,7 +303,7 @@ jobs:
 
     steps:
       - name: Get workflow metadata
-        uses: jpontdia/common-devops/packages/configuration-issuemanagement@main
+        uses: CoveredCA/common-devops/packages/configuration-issuemanagement@main
         with:
           keyvault-key: '${{ inputs.keyvault-key }}'
           azure-credentials: '${{ secrets.azure-credentials }}'

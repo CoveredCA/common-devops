@@ -44,7 +44,7 @@ runs:
         echo "outcome=success" >> $GITHUB_OUTPUT      
 
     - name: Summary - Test
-      uses: jpontdia/common-devops/packages/summary-junit@main
+      uses: CoveredCA/common-devops/packages/summary-junit@main
       if: always()
       with:
         gist-id: ${{ env.github_gist_id }}
