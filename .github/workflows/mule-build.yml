@@ -109,7 +109,8 @@ jobs:
           echo " "
           echo "Preparing mvn command"
           # command=$(echo "mvn --batch-mode $skiptest package $configuration_unittest")
-          command="$(echo "mvn --batch-mode $skiptest package $configuration_unittest")"
+          # command="$(echo "mvn --batch-mode $skiptest package $configuration_unittest")"
+          command=`echo "mvn --batch-mode $skiptest package $configuration_unittest"`
           eval $command
 
       - name: Summary - Test
