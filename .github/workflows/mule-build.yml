@@ -107,7 +107,9 @@ jobs:
           fi
 
           echo " "
-          eval echo "mvn --batch-mode $skiptest package $configuration_unittest"
+          echo "Preparing mvn command"
+          command=$(echo "mvn --batch-mode $skiptest package $configuration_unittest")
+          eval $command
 
       - name: Summary - Test
         uses: CoveredCA/common-devops/packages/summary-junit@main
