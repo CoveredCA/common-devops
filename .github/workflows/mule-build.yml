@@ -106,18 +106,20 @@ jobs:
             echo "The asset will be tested"
           fi
 
-          echo " "
-          echo "Preparing mvn command"
+          mvn --batch-mode $skiptest package "$configuration_unittest"
+
+          #echo " "
+          #echo "Preparing mvn command"
           # command=$(echo "mvn --batch-mode $skiptest package $configuration_unittest")
           # command="$(echo "mvn --batch-mode $skiptest package $configuration_unittest")"
           # command=`echo "mvn --batch-mode $skiptest package $configuration_unittest"`
-          command=`echo 'mvn --batch-mode $skiptest package $configuration_unittest'`
+          # command=`echo 'mvn --batch-mode $skiptest package $configuration_unittest'`
           
           #echo "  The command is: $command"
 
-          echo " "
-          echo "Executing..."
-          eval $command
+          #echo " "
+          #echo "Executing..."
+          #eval $command
 
       - name: Summary - Test
         uses: CoveredCA/common-devops/packages/summary-junit@main
