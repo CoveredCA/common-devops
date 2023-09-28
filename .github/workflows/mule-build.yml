@@ -106,9 +106,11 @@ jobs:
             echo "The asset will be tested"
           fi
 
+          mvn --batch-mode -DskipTests package
+
           echo " "
-          echo "Preparing d"
-          mvn --batch-mode $skiptest package $configuration_unittest
+          echo "Preparing testing command"
+          echo "mvn --batch-mode $skiptest package $configuration_unittest"
 
       - name: Summary - Test
         uses: CoveredCA/common-devops/packages/summary-junit@main
