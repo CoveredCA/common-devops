@@ -106,8 +106,12 @@ jobs:
             echo "The asset will be tested"
           fi
 
-          mvn --batch-mode $skiptest package "$configuration_unittest"
+          # Possible solution for parameters with spaces, but not working
+          # mvn --batch-mode $skiptest package "$configuration_unittest"
 
+          # Next approach doesn't work with parameters with spaces
+          mvn --batch-mode $skiptest package $configuration_unittest
+          
           #echo " "
           #echo "Preparing mvn command"
           # command=$(echo "mvn --batch-mode $skiptest package $configuration_unittest")
