@@ -1,19 +1,9 @@
 name: 'Deploys a service to Cloudhub/GovCloud'
 description: 'Deploys a service to Cloudhub/GovCloud'
 inputs:
-  keyvault-key:
-    required: true
-    description: The name of the KeyVault
-  azure-credentials:
-    required: true
-    description: Azure Credentials for login
   deployment-env:
     required: true
     description: Deployment environment for the service
-  host:
-    required: false
-    description: The host of your Anypoint Platform Installation. This value defaults to anypoint.mulesoft.com.
-    default: anypoint.mulesoft.com
 outputs:
   outcome:
     description: "The result of the deployment: sucess, failure"
@@ -65,7 +55,7 @@ runs:
       deploymentname="${{ env.configuration_deployment_name }}"
       deploymentenvironment="${{ inputs.deployment-env }}"
       deploymentorganization="${{ env.configuration_deployment_organization }}"
-      deploymenthost="${{ inputs.host }}"
+      deploymenthost="${{ env.configuration_deployment_host }}"
       propscloud="${{ env.configuration_cloudhub }}"
       propsservice="${{ env.configuration_properties }}"
 

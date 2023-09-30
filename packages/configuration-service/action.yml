@@ -238,7 +238,7 @@ runs:
       if: ${{ inputs.environment != 'unit-test' }}
       uses: CoveredCA/common-devops/packages/configuration-file@main
       with:
-        yaml-path: ".deployment-name"
+        yaml-path: ".deployment.name"
         suffix: "-${{ inputs.environment }}"
 
     - name: Get configuration for deployment organization
@@ -246,7 +246,15 @@ runs:
       if: ${{ inputs.environment != 'unit-test' }}
       uses: CoveredCA/common-devops/packages/configuration-file@main
       with:
-        yaml-path: ".deployment-organization"
+        yaml-path: ".deployment.organization"
+        suffix: "-${{ inputs.environment }}"
+
+    - name: Get configuration for deployment host
+      id: configuration-deployment-host
+      if: ${{ inputs.environment != 'unit-test' }}
+      uses: CoveredCA/common-devops/packages/configuration-file@main
+      with:
+        yaml-path: ".deployment.host"
         suffix: "-${{ inputs.environment }}"
 
     - name: Get configuration for service environment variables
@@ -318,6 +326,7 @@ runs:
           echo "configuration_properties=${{steps.configuration-properties.outputs.configuration-data}}" >> $GITHUB_ENV
           echo "configuration_deployment_name=${{steps.configuration-deployment-name.outputs.configuration-data}}" >> $GITHUB_ENV
           echo "configuration_deployment_organization=${{steps.configuration-deployment-organization.outputs.configuration-data}}" >> $GITHUB_ENV
+          echo "configuration_deployment_host=${{steps.configuration-deployment-host.outputs.configuration-data}}" >> $GITHUB_ENV
           echo "configuration_env=${{steps.configuration-env.outputs.configuration-data}}" >> $GITHUB_ENV
         else
           echo "  creating variables for unit-test"

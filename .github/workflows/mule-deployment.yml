@@ -179,8 +179,6 @@ jobs:
         name: Deploy the service in the cloud
         uses: CoveredCA/common-devops/packages/process-cloudhub1@main
         with:
-          keyvault-key: ${{ inputs.keyvault-key }}
-          azure-credentials: ${{ secrets.azure-credentials }}
           deployment-env: ${{ env.deployment_environment }}
 
       - id: verify-issue-close-deployment
