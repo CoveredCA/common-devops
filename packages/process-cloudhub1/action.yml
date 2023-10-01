@@ -13,6 +13,17 @@ runs:
   using: "composite"
   steps:
 
+  - id: debug-workplace
+    name: Debug workplace
+    shell: bash
+    run: |
+      echo " "
+      echo "***************************************"
+      echo "Debug root workplace"
+      echo "***************************************"
+      echo " "
+      ls -l
+
   - name: Install NodeJs
     uses: actions/setup-node@v3
     with:
@@ -65,7 +76,8 @@ runs:
 
       start=$(date +%s)
       echo " "
-      echo "Deployment process start. anypoint-cli-v4: $(anypoint-cli-v4 --version)"
+      echo "Deployment process start. "
+      echo "   anypoint-cli-v4: $(anypoint-cli-v4 --version)"
 
       QUERY_STATUS="anypoint-cli-v4 runtime-mgr cloudhub-application describe \
                   --client_id $cicd_connectedapp_clientid \
@@ -77,7 +89,8 @@ runs:
 
       # Get the current status of the service
       echo " "
-      echo "Getting the current status for the service, query command: $QUERY_STATUS"
+      echo "Getting the current status for the service"
+      echo "  Query command: $QUERY_STATUS"
 
       # Get the current status of the service 
       DEPLOYMENT_INFO=$($QUERY_STATUS || true)
@@ -128,7 +141,7 @@ runs:
       --host $deploymenthost \
       --environment $deploymentenvironment \
       $propscloud $propsservice --output json $deploymentname $jar"
-      echo "Deployment command: $CREATEUPDATE_APP"
+      echo "  Deployment command: $CREATEUPDATE_APP"
       echo " "
       echo "Executing deployment...."
 
