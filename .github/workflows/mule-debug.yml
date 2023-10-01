@@ -68,7 +68,7 @@ jobs:
           repo: '${{ github.repository }}'
           version: 'tags/${{ env.deployment_version }}'
           regex: false
-          file: "${{ env.service_artifact }}-${{ env.deployment_service }}-${{ env.MULE_APPLICATION_TYPE }}"
+          file: "${{ env.service_artifact }}-${{ env.deployment_version }}-${{ env.MULE_APPLICATION_TYPE }}"
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - id: debug-workplace-3
