@@ -67,7 +67,8 @@ jobs:
           repo: '${{ github.repository }}'
           version: 'tags/${{ env.deployment_version }}'
           regex: true
-          file: "${{ env.deployment_service }}-.*\\.jar"
+          #file: "${{ env.deployment_service }}-.*\\.jar"
+          file: ".*\.jar$"
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - id: debug-workplace-3
