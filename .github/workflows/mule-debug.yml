@@ -76,7 +76,7 @@ jobs:
         run: |
           echo " "
           echo "***************************************"
-          echo "Debug root workplace 3
+          echo "Debug root workplace 3"
           echo "***************************************"
           echo " "
           ls -l
