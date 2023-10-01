@@ -6,7 +6,7 @@
 # 1.- Replace the predefined repository CoveredCA/common-devops with your own.
 # 2.- Update the global environment variables for the script 
 
-name: Deployment
+name: Debug
 on:
   workflow_call:
     inputs:
@@ -27,14 +27,9 @@ jobs:
   # Deployment
   ##################################################################
   deployment:
-    needs: [verify]
-    if: needs.verify.outputs.deployment == 'true'
-    name: CloudHub1
+    name: Deployment
     runs-on: ubuntu-latest
-    environment: ${{ needs.verify.outputs.deployment-env }}
-    outputs:
-      # Indicates if the service was deployed
-      outcome: ${{ steps.verify-issue-close-deployment.outputs.outcome }}
+    environment: dev
 
     steps:
 
@@ -66,7 +61,6 @@ jobs:
           echo " "
           ls -l
 
-
       - name: Get jar file
         uses: dsaltares/fetch-gh-release-asset@master
         with:
@@ -86,7 +80,7 @@ jobs:
           echo "***************************************"
           echo " "
           ls -l
-          
+
 #      - id: deployment-ch1
 #        name: Deploy the service in the cloud
 #        uses: CoveredCA/common-devops/packages/process-cloudhub1@main
