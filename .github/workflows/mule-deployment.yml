@@ -175,6 +175,17 @@ jobs:
           file: "${{ env.service_artifact }}-${{ env.deployment_version }}-${{ env.MULE_APPLICATION_TYPE }}"
           token: ${{ secrets.GITHUB_TOKEN }}
 
+      - id: debug-workplace
+        name: Debug workplace
+        shell: bash
+        run: |
+          echo " "
+          echo "***************************************"
+          echo "Debug workplace - Show root files"
+          echo "***************************************"
+          echo " "
+          ls -l
+          
       - id: deployment-ch1
         name: Deploy the service in the cloud
         uses: CoveredCA/common-devops/packages/process-cloudhub1@main
