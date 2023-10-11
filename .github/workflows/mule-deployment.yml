@@ -304,6 +304,28 @@ jobs:
           fi
 
   ##################################################################
+  # Custom Logger
+  ##################################################################
+  testing:
+    needs: [deployment]
+    if: needs.deployment.outputs.outcome == 'success'
+    name: custom-logger
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Get workflow metadata
+        uses: CoveredCA/common-devops/packages/configuration-issuemanagement@main
+        with:
+          keyvault-key: '${{ inputs.keyvault-key }}'
+          azure-credentials: '${{ secrets.azure-credentials }}'
+
+      - name: Set custom logger
+        uses: CoveredCA/common-devops/packages/process-customlogger@main
+        with:
+          deployment-env: ${{ env.deployment_environment }}
+
+
+  ##################################################################
   # Forward to next environnment
   ##################################################################
   forward:
