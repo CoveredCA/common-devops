@@ -160,7 +160,7 @@ runs:
       echo " "
       echo "The process of querying deployment starts"      
       iteration=1
-      limit=60
+      limit=70
       while true
       do 
         sleep 5
@@ -190,6 +190,7 @@ runs:
             fi
         fi
 
+        echo "  Waiting for next query status iteration"
         iteration=$(( $iteration + 1 ))
       done
 

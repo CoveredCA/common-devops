@@ -73,7 +73,7 @@ runs:
       echo "The process of querying deployment starts"
       sleep 5
       iteration=1
-      limit=60
+      limit=70
       while true
       do 
         # Wait 5 seconds to query the status
@@ -92,8 +92,10 @@ runs:
         end=$(date +%s)
         DEPLOYMENT_STATUS=$(echo $STATUS_APP | jq -r ".status")
         UPDATE_STATUS=$(echo $STATUS_APP | jq -r ".deploymentUpdateStatus")  
+        echo " "
         echo "status: $DEPLOYMENT_STATUS, updateStatus: $UPDATE_STATUS"
         echo "  Elapsed time: $(($end-$start)) seconds, iteration: $iteration limit: $limit"
+        echo " "
 
         if [ "$DEPLOYMENT_STATUS" != "STARTED" ] ; then
           echo "  Error: The service was in an inconsistent state: $DEPLOYMENT_STATUS, expected: STARTED "
@@ -119,6 +121,7 @@ runs:
           exit 1 # terminate and indicate error 
         fi
 
+        echo "  waiting for next query status iteration"
         iteration=$(( $iteration + 1 ))
       done
 
