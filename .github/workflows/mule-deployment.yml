@@ -319,8 +319,8 @@ jobs:
           keyvault-key: '${{ inputs.keyvault-key }}'
           azure-credentials: '${{ secrets.azure-credentials }}'
 
-      - id: issue-comment
-        name: Add issue comment
+      - id: issue-comment-start
+        name: Add issue comment for start process
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           ISSUE: ${{ github.event.issue.html_url }}
@@ -340,8 +340,8 @@ jobs:
         with:
           deployment-env: ${{ env.deployment_environment }}
 
-      - id: issue-comment
-        name: Add issue comment
+      - id: issue-comment-end
+        name: Add issue comment for end process
         if: always()
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
