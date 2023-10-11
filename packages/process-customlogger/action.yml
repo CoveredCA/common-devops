@@ -7,14 +7,14 @@ inputs:
 outputs:
   outcome:
     description: "The result of the deployment: sucess, failure"
-    value: ${{ steps.deployment.outputs.outcome }}
+    value: ${{ steps.custom-logger.outputs.outcome }}
 
 runs:
   using: "composite"
   steps:
 
-  - id: create-json
-    name: Create JSON with update instruction
+  - id: custom-logger
+    name: Set custom logger
     shell: bash
     run: |
       start=$(date +%s)
@@ -79,6 +79,7 @@ runs:
         # Wait 5 seconds to query the status
         sleep 5
 
+        echo " "
         STATUS_APP=$( \
             curl -X GET \
             https://$configuration_deployment_host/cloudhub/api/v2/applications/$configuration_deployment_name \
@@ -86,16 +87,14 @@ runs:
             -H "Authorization: Bearer $ACCESS_TOKEN" \
             -H "x-anypnt-env-id: $ENVIRONMENT_ID" \
             -H "x-anypnt-org-id: $configuration_deployment_organization")
-        echo "STATUS_APP: $STATUS_APP"
+        # echo "STATUS_APP: $STATUS_APP"
 
         # Getting the 2 status from the document related with the deployment of the application
         end=$(date +%s)
         DEPLOYMENT_STATUS=$(echo $STATUS_APP | jq -r ".status")
         UPDATE_STATUS=$(echo $STATUS_APP | jq -r ".deploymentUpdateStatus")  
-        echo " "
         echo "status: $DEPLOYMENT_STATUS, updateStatus: $UPDATE_STATUS"
         echo "  Elapsed time: $(($end-$start)) seconds, iteration: $iteration limit: $limit"
-        echo " "
 
         if [ "$DEPLOYMENT_STATUS" != "STARTED" ] ; then
           echo "  Error: The service was in an inconsistent state: $DEPLOYMENT_STATUS, expected: STARTED "
