@@ -50,6 +50,6 @@ jobs:
           echo " "
 
       - name: Set custom logger
-        uses: CoveredCA/common-devops/packages/customlog@main
+        uses: CoveredCA/common-devops/packages/process-customlogger@main
         with:
           deployment-env: ${{ env.deployment_environment }}
