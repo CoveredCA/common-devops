@@ -33,13 +33,11 @@ jobs:
     environment: dev
 
     steps:
-
-      steps:
-        - name: Get workflow metadata
-          uses: CoveredCA/common-devops/packages/configuration-issuemanagement@main
-          with:
-            keyvault-key: '${{ inputs.keyvault-key }}'
-            azure-credentials: '${{ secrets.azure-credentials }}'
+      - name: Get workflow metadata
+        uses: CoveredCA/common-devops/packages/configuration-issuemanagement@main
+        with:
+          keyvault-key: '${{ inputs.keyvault-key }}'
+          azure-credentials: '${{ secrets.azure-credentials }}'
 
       - id: debug-workplace
         name: Debug workplace
