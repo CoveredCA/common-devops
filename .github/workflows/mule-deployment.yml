@@ -257,9 +257,9 @@ jobs:
         shell: bash
         run: |
           echo " "
-          echo "***********************************************"
+          echo "****************************************************"
           echo "Add issue comment: ${{ github.event.issue.number }} "
-          echo "***********************************************"
+          echo "****************************************************"
           echo " "
           gh issue comment ${{ github.event.issue.number }} \
             -b "The testing process is starting" 
@@ -306,7 +306,7 @@ jobs:
   ##################################################################
   # Custom Logger
   ##################################################################
-  testing:
+  custom-logger:
     needs: [deployment]
     if: needs.deployment.outputs.outcome == 'success'
     name: custom-logger
@@ -319,10 +319,44 @@ jobs:
           keyvault-key: '${{ inputs.keyvault-key }}'
           azure-credentials: '${{ secrets.azure-credentials }}'
 
+      - id: issue-comment
+        name: Add issue comment
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE: ${{ github.event.issue.html_url }}
+        shell: bash
+        run: |
+          echo " "
+          echo "****************************************************"
+          echo "Add issue comment: ${{ github.event.issue.number }} "
+          echo "****************************************************"
+          echo " "
+          gh issue comment ${{ github.event.issue.number }} \
+            -b "The process for setting the custom logging is starting" 
+            
       - name: Set custom logger
+        id: custom-logger
         uses: CoveredCA/common-devops/packages/process-customlogger@main
         with:
           deployment-env: ${{ env.deployment_environment }}
+
+      - id: issue-comment
+        name: Add issue comment
+        if: always()
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE: ${{ github.event.issue.html_url }}
+        shell: bash
+        run: |
+          echo " "
+          echo "****************************************************"
+          echo "Add issue comment: ${{ github.event.issue.number }} "
+          echo "****************************************************"
+          echo " "
+          echo "Output steps.custom-logger.outputs.outcome=${{ steps.custom-logger.outputs.outcome }}"
+
+          gh issue comment ${{ github.event.issue.number }} \
+            -b "The process for setting the custom logging ended with status=${{ steps.custom-logger.outputs.outcome }}" 
 
 
   ##################################################################
