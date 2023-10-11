@@ -39,16 +39,6 @@ jobs:
           keyvault-key: '${{ inputs.keyvault-key }}'
           azure-credentials: '${{ secrets.azure-credentials }}'
 
-      - id: debug-workplace
-        name: Debug workplace
-        shell: bash
-        run: |
-          echo " "
-          echo "***************************************"
-          echo "Start setting custom logger process"
-          echo "***************************************"
-          echo " "
-
       - name: Set custom logger
         uses: CoveredCA/common-devops/packages/process-customlogger@main
         with:

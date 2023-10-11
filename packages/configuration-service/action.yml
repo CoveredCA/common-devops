@@ -257,12 +257,36 @@ runs:
         yaml-path: ".deployment.host"
         suffix: "-${{ inputs.environment }}"
 
-    - name: Get configuration for logging
-      id: configuration-logging
+    - name: Get configuration for deployment custom logger
+      id: configuration-deployment-customlogger
       if: ${{ inputs.environment != 'unit-test' }}
       uses: CoveredCA/common-devops/packages/configuration-file@main
       with:
-        yaml-path: ".logging"
+        yaml-path: ".deployment.customlogger"
+        suffix: "-${{ inputs.environment }}"
+
+    - name: Get configuration for logging app level
+      id: configuration-logging-app
+      if: ${{ inputs.environment != 'unit-test' }}
+      uses: CoveredCA/common-devops/packages/configuration-file@main
+      with:
+        yaml-path: ".logging.app"
+        suffix: "-${{ inputs.environment }}"
+
+    - name: Get configuration for logging components level
+      id: configuration-logging-components
+      if: ${{ inputs.environment != 'unit-test' }}
+      uses: CoveredCA/common-devops/packages/configuration-file@main
+      with:
+        yaml-path: ".logging.components"
+        suffix: "-${{ inputs.environment }}"
+
+    - name: Get configuration for logging root level
+      id: configuration-logging-root
+      if: ${{ inputs.environment != 'unit-test' }}
+      uses: CoveredCA/common-devops/packages/configuration-file@main
+      with:
+        yaml-path: ".logging.root"
         suffix: "-${{ inputs.environment }}"
 
     - name: Get configuration for service environment variables
@@ -331,11 +355,14 @@ runs:
         if [[ ${{inputs.environment}} != "unit-test" ]]; then
           echo "  creating variables for dev,tst,prd"
           echo "configuration_cloudhub=${{steps.configuration-cloudhub.outputs.configuration-data}}" >> $GITHUB_ENV
-          echo "configuration_logging=${{steps.configuration-logging.outputs.configuration-data}}" >> $GITHUB_ENV          
           echo "configuration_properties=${{steps.configuration-properties.outputs.configuration-data}}" >> $GITHUB_ENV
           echo "configuration_deployment_name=${{steps.configuration-deployment-name.outputs.configuration-data}}" >> $GITHUB_ENV
           echo "configuration_deployment_organization=${{steps.configuration-deployment-organization.outputs.configuration-data}}" >> $GITHUB_ENV
           echo "configuration_deployment_host=${{steps.configuration-deployment-host.outputs.configuration-data}}" >> $GITHUB_ENV
+          echo "configuration_deployment_customlogger=${{steps.configuration-deployment-customlogger.outputs.configuration-data}}" >> $GITHUB_ENV
+          echo "configuration_logging_app=${{steps.configuration-logging-app.outputs.configuration-data}}" >> $GITHUB_ENV
+          echo "configuration_logging_components=${{steps.configuration-logging-components.outputs.configuration-data}}" >> $GITHUB_ENV
+          echo "configuration_logging_root=${{steps.configuration-logging-root.outputs.configuration-data}}" >> $GITHUB_ENV
           echo "configuration_env=${{steps.configuration-env.outputs.configuration-data}}" >> $GITHUB_ENV
         else
           echo "  creating variables for unit-test"
@@ -359,8 +386,12 @@ runs:
         echo "  configuration_unittest= " $configuration_unittest
         echo "  configuration_deployable= " $configuration_deployable
         echo "  configuration_cloudhub= " $configuration_cloudhub
-        echo "  configuration_logging= " $configuration_logging
         echo "  configuration_properties= " $configuration_properties
         echo "  configuration_deployment_name= " $configuration_deployment_name
         echo "  configuration_deployment_organization= " $configuration_deployment_organization
+        echo "  configuration_deployment_host= " $configuration_deployment_host
+        echo "  configuration_deployment_customlogger= " $configuration_deployment_customlogger
+        echo "  configuration_logging_app= " $configuration_logging_app
+        echo "  configuration_logging_components= " $configuration_logging_components
+        echo "  configuration_logging_root= " $configuration_logging_root
         echo "  configuration_env= " $configuration_env
