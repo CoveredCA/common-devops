@@ -19,7 +19,7 @@ on:
         required: true
         description: Azure Credentials for login
 env:
-  DEFAULT_SETTINGS_XML: settings.xml
+  DEFAULT_SETTINGS_XML: _settings-cca.xml
   CONFIGURATIONS_REPOSITORY: common-configurations
   
 jobs:
