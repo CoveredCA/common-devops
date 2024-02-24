@@ -28,6 +28,14 @@ runs:
         #check-latest: true
         cache: 'maven'
 
+    - name: Set up Maven
+      uses: stCarolas/setup-maven@v5
+      with:
+        maven-version: 3.9.6
+
+    - name: Display Java and Maven version    
+      run: mvn --version
+
     - id: configuration
       name: Get configuration for the service 
       shell: bash
