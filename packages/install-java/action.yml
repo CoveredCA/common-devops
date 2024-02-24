@@ -33,7 +33,8 @@ runs:
       with:
         maven-version: 3.9.6
 
-    - name: Display Java and Maven version    
+    - name: Display Java and Maven version
+      shell: bash
       run: mvn --version
 
     - id: configuration
