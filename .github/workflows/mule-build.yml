@@ -2,10 +2,6 @@
 # CICD Pipeline
 ##########################################################################
 
-# Configuration for this template:
-# 1.- Replace the predefined repository CoveredCA/common-devops with your own.
-# 2.- Update the global environment variables for the script 
-
 name: Build
 on:
   workflow_call:
@@ -105,25 +101,8 @@ jobs:
           else
             echo "The asset will be tested"
           fi
-
-          # Possible solution for parameters with spaces, but not working
-          # mvn --batch-mode $skiptest package "$configuration_unittest"
-
-          # Next approach doesn't work with parameters with spaces
+          echo " "
           mvn --batch-mode $skiptest package $configuration_unittest
-          
-          #echo " "
-          #echo "Preparing mvn command"
-          # command=$(echo "mvn --batch-mode $skiptest package $configuration_unittest")
-          # command="$(echo "mvn --batch-mode $skiptest package $configuration_unittest")"
-          # command=`echo "mvn --batch-mode $skiptest package $configuration_unittest"`
-          # command=`echo 'mvn --batch-mode $skiptest package $configuration_unittest'`
-          
-          #echo "  The command is: $command"
-
-          #echo " "
-          #echo "Executing..."
-          #eval $command
 
       - name: Summary - Test
         uses: CoveredCA/common-devops/packages/summary-junit@main
@@ -140,17 +119,15 @@ jobs:
       # Next actions only if application is not a snapshot
       #########################################################
 
-      #- name: Set up Maven 3.8 for Anypoint Exchange deployment
-      #  uses: stCarolas/setup-maven@v5
-      #  with:
-      #    maven-version: 3.8.8
-
       - name: Deploy to anypoint exchange
         if: "!contains(env.service_version, 'snapshot')"
         run: |
-          ## Deploy to anypoint exchange
+          echo " "
+          echo "***********************************************"
+          echo "Deploy to Anypoint Exchange"
+          echo "***********************************************"        
           mvn --version
-          # mvn --batch-mode deploy -DskipTests -Denforcer.skip
+          echo " "
           mvn --batch-mode deploy -DskipTests
 
       - name: Tag repository with service version
