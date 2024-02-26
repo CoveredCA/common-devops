@@ -37,11 +37,13 @@ jobs:
         shell: bash
         run: |
           echo " "
+          mvn -- version
+          echo " "
           echo "***********************************************"
           echo "Scan plugins"
           echo "***********************************************"
           echo " "
-          SCAN_RESULT=$(mvn versions:display-plugin-updates)
+          SCAN_RESULT=$(mvn versions:display-plugin-updates -Denforcer.skip)
           ERROR="false"
 
           if [[ $SCAN_RESULT == *"The following plugin updates are available"* ]]; then
@@ -49,7 +51,7 @@ jobs:
             echo "  Update plugins!!"
             echo "  ***********************************************"
             echo " "
-            mvn versions:display-plugin-updates
+            mvn versions:display-plugin-updates -Denforcer.skip
             ERROR="true"
             echo " "
             echo " "
@@ -59,7 +61,7 @@ jobs:
             echo "Plugins up to date"
           fi
 
-          SCAN_RESULT=$(mvn versions:display-dependency-updates)
+          SCAN_RESULT=$(mvn versions:display-dependency-updates -Denforcer.skip)
           echo " "
           echo "***********************************************"
           echo "Scan dependencies"
@@ -70,7 +72,7 @@ jobs:
             echo "  Update dependencies!!"
             echo "  ***********************************************"
             echo " "
-            mvn versions:display-dependency-updates
+            mvn versions:display-dependency-updates -Denforcer.skip
             ERROR="true"
           else
             echo "Dependencies up to date"
