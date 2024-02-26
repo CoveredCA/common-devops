@@ -20,7 +20,7 @@ runs:
         restore-keys: |
           ${{ runner.os }}-maven-
               
-    - name: Setup JDK 8
+    - name: Setup JDK
       uses: actions/setup-java@v3
       with:
         java-version: '8'
@@ -31,7 +31,7 @@ runs:
     - name: Set up Maven
       uses: stCarolas/setup-maven@v5
       with:
-        maven-version: 3.9.6
+        maven-version: $maven_version
 
     - name: Display Java and Maven version
       shell: bash
