@@ -23,8 +23,8 @@ runs:
     - name: Setup JDK
       uses: actions/setup-java@v3
       with:
-        java-version: '8'
-        distribution: 'temurin'
+        java-version:  ${{env.jdk_version}}
+        distribution:  ${{env.jdk_distribution}}
         #check-latest: true
         cache: 'maven'
 
@@ -32,8 +32,6 @@ runs:
       uses: stCarolas/setup-maven@v5
       with:
         maven-version: ${{env.maven_version}}
-        #maven-version: env.maven_version
-        #maven-version: $maven_version
 
     - name: Display Java and Maven version
       shell: bash
