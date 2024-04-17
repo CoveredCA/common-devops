@@ -15,7 +15,6 @@ on:
         required: true
         description: Azure Credentials for login
 env:
-  DEFAULT_SETTINGS_XML: _settings-cca.xml
   CONFIGURATIONS_REPOSITORY: common-configurations
   
 jobs:
@@ -29,163 +28,22 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Get the source code
-        uses: actions/checkout@v4
+      - name: Create a GitHub App installation access token
+        id: app-token
+        uses: peter-murray/workflow-application-token-action@v3
         with:
-          fetch-depth: 0
+          application_id: ${{ secrets.MULESOFT_GITHUBAPP_CLIENTID }}
+          application_private_key: ${{ secrets.MULESOFT_GITHUBAPP_PRIVATEKEY }}
 
-      - name: Get global configuration
-        uses: CoveredCA/common-devops/packages/configuration-service@main
-        with:
-          keyvault-key: ${{ inputs.keyvault-key }}
-          azure-credentials: ${{ secrets.azure-credentials }}
-          environment: unit-test
-
-      - name: Verify if the github tag exists
-        if: "!contains(env.service_version, 'snapshot')"
+      - name: Verify app token
         shell: bash
         run: |
           echo " "
           echo "***********************************************"
-          echo "Verify if github tag exists "
+          echo "Verify App token"
           echo "***********************************************"
+          echo "  "
+          echo "  App token: ${{ steps.app-token.outputs.token }}"
+          echo "github_automationbot_token=${{ steps.app-token.outputs.token }}" >> $GITHUB_ENV
           echo " "
-          git config --global user.name "GitHubActions"
-          git config --global user.email "github-actions@users.noreply.github.com"
 
-          tag_exist=$(git tag $service_version)
-          if [ "$tag_exist" != "" ] ; then
-            echo "The tag already exists in Github; update the POM version for the service."
-            exit 1
-          else
-            echo "Create tag $service_version for the respository"
-          fi
-
-      - name: Install Java JDK for Mulesoft Applications
-        uses: CoveredCA/common-devops/packages/install-java@main
-        with:
-          github-configurations-accesstoken: $github_admintasks_accesstoken
-          default-settings-xml: $DEFAULT_SETTINGS_XML
-
-      - name: Documentation - Anypoint Exchange
-        run: |
-          echo " "
-          echo "Configuring the directory for Anypoint Exchange documentation"
-          if [ -d "exchange-docs" ]; then
-            echo "  Directory exchange-docs exists and will not be overriden with README.md" 
-          else
-            echo "  Creating directory 'exchange-doc' with home.md from README.md"
-            mkdir -p exchange-docs
-            mkdir -p exchange-docs/docs
-            cp -Rfpv README.md exchange-docs/home.md
-            cp -Rfpv docs/*.* exchange-docs/docs 
-          fi
-          echo " "
-        
-      - name: Compile code    
-        run: mvn --batch-mode compile
-  
-      - name: Run test cases and package
-        id: run-test-cases
-        shell: bash
-        run: |
-          echo " "
-          echo "***********************************************"
-          echo "Run test cases and package"
-          echo "***********************************************"
-          echo " "
-          skiptest=" "
-          if [[ "${{env.configuration_skiptest}}" == "true" ]]; then
-            skiptest="-DskipTests"
-            echo "Test will be skipped"
-          else
-            echo "The asset will be tested"
-          fi
-          echo " "
-          mvn --batch-mode $skiptest package $configuration_unittest
-
-      - name: Summary - Test
-        uses: CoveredCA/common-devops/packages/summary-junit@main
-        with:
-          badge-label: Unit test
-          badge-suffix: ut
-          path-report: 'target/surefire-reports/*.xml'
-          path-directoryreports: 'target/surefire-reports/*'
-
-      - name: Summary - Code Coverage
-        uses: CoveredCA/common-devops/packages/summary-codecoverage@main
-
-      #########################################################
-      # Next actions only if application is not a snapshot
-      #########################################################
-
-      - name: Deploy to anypoint exchange
-        if: "!contains(env.service_version, 'snapshot')"
-        run: |
-          echo " "
-          echo "***********************************************"
-          echo "Deploy to Anypoint Exchange"
-          echo "***********************************************"        
-          mvn --version
-          echo " "
-          mvn --batch-mode deploy -DskipTests
-
-      - name: Tag repository with service version
-        if: "!contains(env.service_version, 'snapshot')"
-        shell: bash
-        run: |
-          echo " "
-          echo "***********************************************"
-          echo "Tag repository with service version "
-          echo "***********************************************"
-          echo " "
-          git push origin $service_version
-          
-      - name: Create a release
-        uses: ncipollo/release-action@v1
-        if: "hashFiles('target/*.jar') != '' && !contains(env.service_version, 'snapshot')"
-        with: 
-          artifacts: "target/*.jar"
-          artifactErrorsFailBuild: true
-          tag: ${{ env.service_version }}
-          name: ${{ env.service_version }}
-
-      - name: Create badge for workflow number
-        uses: CoveredCA/common-devops/packages/badge@main
-        if: "!contains(env.service_version, 'snapshot')"
-        with:
-          label: Build job
-          status: '${{ github.run_number }}'
-          color: '535597'
-          file: ${{ env.service_name }}-wf.svg
-      
-      ##################################################
-      # Create a relelase only for jar files
-      ##################################################
-      - name: Create badge for release
-        uses: CoveredCA/common-devops/packages/badge@main
-        if: "hashFiles('target/*.jar') != '' && !contains(env.service_version, 'snapshot')"
-        with:
-          label: Release
-          status: '${{ env.service_version }}'
-          color: '535597'
-          file: ${{ env.service_name }}-re.svg
-
-      - id: issue-create
-        name: Create a deployment issue
-        if: "env.configuration_deployable == 'true' && !contains(env.service_version, 'snapshot')"
-        env:
-          GITHUB_TOKEN: ${{ env.github_admintasks_accesstoken }}
-        shell: bash
-        run: |
-          echo " "
-          echo "***********************************************"
-          echo "Create Deployment Issue "
-          echo "***********************************************"
-          echo " "
-          echo "  Create issue for deployment in dev"
-          gh -R "${{ github.repository }}" issue create \
-              -t "Deployment dev ${{ env.service_name }} ${{ env.service_version }}" \
-              -a "${{ env.github_deployeruser }}" \
-              -b "The build job triggered this action. An analysis task will be responsible for checking if the service is deployable." \
-              -l "forward,dev"
