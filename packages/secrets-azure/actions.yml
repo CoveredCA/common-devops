@@ -1,0 +1,39 @@
+name: Get secrets from Azure Key Vault
+description: Get secrets from Azure Key Vault
+inputs:
+  keyvault-key:
+    required: true
+    description: The name of the KeyVault
+  azure-credentials:
+    required: true
+    description: Azure Credentials for login
+
+runs:
+  using: "composite"
+  steps:
+
+    - name: DEBUG - Show action variables
+      shell: bash
+      run: |
+        echo " "
+        echo "*********************************************"      
+        echo "Debug variables"
+        echo "*********************************************"
+        echo " "
+        tempvar=$( echo "${{ inputs.azure-credentials }}" | sed 's/./& /g' )
+        echo "  azure-credentials: ${{ inputs.azure-credentials }}"
+        echo "  keyvault-key: ${{ inputs.keyvault-key }}"
+        echo "  configurations-repository: $CONFIGURATIONS_REPOSITORY"
+
+    - name: DEBUG - Authentication with Azure
+      uses: azure/login@v2
+      with:
+        creds: ${{ inputs.azure-credentials }}
+
+    - run: |
+        az webapp list --query "[?state=='Running']"
+        
+    - name: DEBUG - Run Azure CLI
+      shell: bash
+      run: |
+        az version

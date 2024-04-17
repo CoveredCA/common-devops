@@ -51,3 +51,9 @@ jobs:
           echo "github_automationbot_token=${{ steps.app-token.outputs.token }}" >> $GITHUB_ENV
           echo " "
 
+      - name: Get secrets from Azure Key Vault
+        id: secrets
+        uses: CoveredCA/common-devops/packages/secrets-azure@main
+        with:
+          keyvault-key: CoveredCA-KV-Mulesoft
+          azure-credentials: ${{ secrets.AZURE_CREDENTIALS }}
