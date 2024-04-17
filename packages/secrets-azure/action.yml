@@ -24,6 +24,7 @@ runs:
         echo "  azure-credentials: ${{ inputs.azure-credentials }}"
         echo "  keyvault-key: ${{ inputs.keyvault-key }}"
         echo "  configurations-repository: $CONFIGURATIONS_REPOSITORY"
+        echo " "
 
     - name: DEBUG - Authentication with Azure
       uses: azure/login@v2
@@ -33,5 +34,9 @@ runs:
     - name: DEBUG - Run Azure CLI
       shell: bash
       run: |
+        echo "  "
+        echo "  az version"
         az version
+        echo "  "
+        echo "  az webapp"
         az webapp list --query "[?state=='Running']"
