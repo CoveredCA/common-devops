@@ -28,6 +28,18 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Debug github app values
+        shell: bash
+        run: |
+          echo " "
+          echo "***********************************************"
+          echo "Debug github app values"
+          echo "***********************************************"
+          echo "  "
+          echo "  MULESOFT_GITHUBAPP_CLIENTID: ${{ secrets.MULESOFT_GITHUBAPP_CLIENTID }}"
+          echo "  MULESOFT_GITHUBAPP_PRIVATEKEY: ${{ secrets.MULESOFT_GITHUBAPP_PRIVATEKEY }}"
+          echo " "
+
       - name: Create a GitHub App installation access token
         id: app-token
         uses: peter-murray/workflow-application-token-action@v3
