@@ -2,7 +2,7 @@
 # CICD Pipeline
 ##########################################################################
 
-name: Build
+name: Debug
 on:
   workflow_call:
 
@@ -14,7 +14,7 @@ env:
 
 jobs:
 
-  build:
+  Debug:
     name: Build
     runs-on: ubuntu-latest
 
