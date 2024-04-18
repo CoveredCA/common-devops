@@ -59,11 +59,10 @@ runs:
         echo "Parse the secrets from the global configuration file"
         echo "*****************************************************"
         echo " "
-        echo "  secret mapping: $configuration_data"
 
         pathdata=""
         function parse_yaml {
-          pathdata=$(cat "$service_name.yml" | yq -r "$1")
+          pathdata=$(cat "${{ inputs.secret-mapping }}" | yq -r "$1")
           if [ "$pathdata" = "null" ] ; then
             echo " The yaml section was not found in the configuration file, section=$1"
             exit 1
