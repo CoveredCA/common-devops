@@ -61,7 +61,7 @@ runs:
         echo " "
         #echo "  secret mapping: $configuration_data"
 
-        secret_name="jks-dev-keypassword"
+        secret_name="jks-alias"
         value=$(az keyvault secret show --name $secret_name --vault-name ${{ inputs.keyvault-key }} --query value --output tsv)
         echo "  Value found: $value"
         echo "::add-mask::$value"
