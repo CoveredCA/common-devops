@@ -83,11 +83,13 @@ runs:
         echo "$service_configuration_lines" | while read p; do
 
         echo "$pathdata" | while read p; do
-          temporal=$(echo "$temporal $p")
-          echo "   Variable found: $p"
-          echo "$temporal" > configurationmap.txt
+            # Get variable and value
+            line=$(echo "$p")
+            name="$(cut -d'=' -f1 <<<$line)"
+            value="$(cut -d'=' -f2 <<< $line)"
+            echo "    - name: "$name
+            echo "      value: "$value
         done 
-
 
         #secret_name="jks-alias"
         #value=$(az keyvault secret show --name $secret_name --vault-name ${{ inputs.keyvault-key }} --query value --output tsv)
