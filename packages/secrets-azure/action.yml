@@ -63,9 +63,10 @@ runs:
 
         secret_name="jks-dev-keypassword"
         value=$(az keyvault secret show --name $secret_name --vault-name ${{ inputs.keyvault-key }} --query value --output tsv)
+        echo "  Value found: $value"
         echo "::add-mask::$value"
         echo "$jks_dev_keypassword=$value" >> $GITHUB_ENV
-        echo "  Value found: $value"
+        echo "  Value found masked: $value"
         exit 0
 
 
