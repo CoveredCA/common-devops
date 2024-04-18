@@ -69,25 +69,7 @@ runs:
         #echo "  Value found masked: $value"
         #exit 0
 
-        if [ "$configuration_data" = "null" ] || [ "$configuration_data" = "" ] ; then
-          echo "  There are no secrets"
-        else
-          service_configuration_lines=$( echo $configuration_data | tr ' ' '\n' )
-          #echo -e "  Configuration formated:\n$service_configuration_lines "
-          #echo " "
-
-          echo "  Variables found: "
-          echo "$configuration_data" | while read p; do
-
-            if [[ "$p" =~ ^#.*  ]]; then
-              echo "   A comment found"
-            else
-              # Get variable and value
-              line=$(echo "$p")
-              variable="$(cut -d'=' -f1 <<<$line)"
-              secret_name="$(cut -d'=' -f2 <<< $line)"
-              echo "    - variable: $variable"
-              echo "      secret_name: $secret_name"
-            fi
-          done          
-        fi
+        printf '%s\n' "$configuration_data" | while IFS= read -r line
+        do
+          echo "$line"
+        done
