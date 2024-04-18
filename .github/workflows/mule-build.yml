@@ -112,3 +112,60 @@ jobs:
 
       - name: Summary - Code Coverage
         uses: CoveredCA/common-devops/packages/summary-codecoverage@main
+
+      #########################################################
+      # Next actions only if application is not a snapshot
+      #########################################################
+      
+      - name: Deploy to anypoint exchange
+        if: "!contains(env.service_version, 'snapshot')"
+        run: |
+          echo " "
+          echo "***********************************************"
+          echo "Deploy to Anypoint Exchange"
+          echo "***********************************************"        
+          echo " "
+          mvn --batch-mode deploy -DskipTests
+          echo " "
+
+      - name: Tag repository with service version
+        if: "!contains(env.service_version, 'snapshot')"
+        shell: bash
+        run: |
+          echo " "
+          echo "***********************************************"
+          echo "Tag repository with service version "
+          echo "***********************************************"
+          echo " "
+          git push origin $service_version
+          echo " "
+
+      - name: Create a release
+        uses: ncipollo/release-action@v1
+        if: "hashFiles('target/*.jar') != '' && !contains(env.service_version, 'snapshot')"
+        with: 
+          artifacts: "target/*.jar"
+          artifactErrorsFailBuild: true
+          makeLatest: true
+          tag: ${{ env.service_version }}
+          name: ${{ env.service_version }}
+
+      - name: Create badge for workflow number
+        uses: CoveredCA/common-devops/packages/badge@main
+        if: "!contains(env.service_version, 'snapshot')"
+        with:
+          label: Build job
+          status: '${{ github.run_number }}'
+          color: '535597'
+          file: ${{ env.service_name }}-wf.svg
+          folder: ${{ env.service_name }}
+      
+      - name: Create badge release only for jar files
+        uses: CoveredCA/common-devops/packages/badge@main
+        if: "hashFiles('target/*.jar') != '' && !contains(env.service_version, 'snapshot')"
+        with:
+          label: Release
+          status: '${{ env.service_version }}'
+          color: '535597'
+          file: ${{ env.service_name }}-re.svg
+          folder: ${{ env.service_name }}
