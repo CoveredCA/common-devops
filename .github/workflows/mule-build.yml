@@ -8,7 +8,7 @@ on:
 
 env:
   CONFIGURATIONS_REPOSITORY: common-configurations
-  SECRETS_MAPPINGFILE: _secrets.enva
+  SECRETS_MAPPINGFILE: _secrets.env
   
 jobs:
 

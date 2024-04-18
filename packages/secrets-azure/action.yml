@@ -81,5 +81,5 @@ runs:
     - name: Get Azure KeyVault
       uses: dmitriybobrovskiy/get-azure-keyvault-secrets@v1.2.0
       with:
-        keyvault: '${{ inputs.keyvault-key }}' # The name of KeyVault in Azure
+        keyvault: '${{ inputs.keyvault-key }}'
         secrets_file_path: configurationmap.txt
