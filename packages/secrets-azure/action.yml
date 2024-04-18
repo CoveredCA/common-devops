@@ -71,5 +71,17 @@ runs:
 
         printf '%s\n' "$configuration_data" | while IFS= read -r line
         do
-          echo "$line"
+          echo "$line" | while read p; do
+
+            if [[ "$p" =~ ^#.*  ]]; then
+              echo "   A comment found"
+            else
+              # Get variable and value
+              line=$(echo "$p")
+              variable="$(cut -d'=' -f1 <<<$line)"
+              secret_name="$(cut -d'=' -f2 <<< $line)"
+              echo "    - variable: $variable"
+              echo "      secret_name: $secret_name"
+            fi
+          done
         done
