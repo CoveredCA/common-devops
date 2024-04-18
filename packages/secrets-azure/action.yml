@@ -72,7 +72,7 @@ runs:
         if [ "$configuration_data" = "null" ] || [ "$configuration_data" = "" ] ; then
           echo "  There are no secrets"
         else
-          service_configuration_lines=$( echo $configuration_bat | tr ' ' '\n' )
+          service_configuration_lines=$( echo $configuration_data | tr ' ' '\n' )
           echo -e "  Configuration formated:\n$service_configuration_lines "
           echo " "
 
