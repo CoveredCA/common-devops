@@ -70,7 +70,7 @@ runs:
         #exit 0
 
         #printf '%s\n' "$configuration_data" | while IFS= read -r line
-        echo "$configuration_data" | while IFS= read -r line
+        echo "$configuration_data" | while IFS= read line
         do
           if [[ "$line" =~ ^#.*  ]]; then
             echo "   A comment found"
