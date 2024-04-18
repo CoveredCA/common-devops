@@ -7,10 +7,6 @@ inputs:
   azure-credentials:
     required: true
     description: Azure Credentials for login
-  secret-mapping:
-    required: true
-    description: Secret mapping file
-
 
 runs:
   using: "composite"
@@ -27,7 +23,7 @@ runs:
         tempvar=$( echo "${{ inputs.azure-credentials }}" | sed 's/./& /g' )
         echo "  azure-credentials: ${{ inputs.azure-credentials }}"
         echo "  keyvault-key: ${{ inputs.keyvault-key }}"
-        echo "  secret-mapping: ${{ inputs.secret-mapping }}"
+        echo "  global_configuration: ${{ env.GLOBAL_CONFIGURATION }}"
         echo " "
 
     - name: Authentication with Azure
@@ -48,7 +44,7 @@ runs:
     - name: Get configuration files
       uses: CoveredCA/common-devops/packages/get-file@main
       with:
-        file: ${{ inputs.secret-mapping }}
+        file: ${{ env.GLOBAL_CONFIGURATION }}
         checkIfExists: true
 
     - name: Get secrets configuration
@@ -62,7 +58,7 @@ runs:
 
         pathdata=""
         function parse_yaml {
-          pathdata=$(cat "${{ inputs.secret-mapping }}" | yq -r "$1")
+          pathdata=$(cat "${{ env.GLOBAL_CONFIGURATION }}" | yq -r "$1")
           if [ "$pathdata" = "null" ] ; then
             echo " The yaml section was not found in the configuration file, section=$1"
             exit 1
@@ -89,15 +85,7 @@ runs:
             echo "      secret_name: "$secret_name
 
             value=$(az keyvault secret show --name $secret_name --vault-name ${{ inputs.keyvault-key }} --query value --output tsv)
-            echo "      Value found azure: $value"
+            echo "      Azure: $value"
             echo "::add-mask::$value"
             echo "$variable=$value" >> $GITHUB_ENV
-        done 
-
-        #secret_name="jks-alias"
-        #value=$(az keyvault secret show --name $secret_name --vault-name ${{ inputs.keyvault-key }} --query value --output tsv)
-        #echo "  Value found: $value"
-        #echo "::add-mask::$value"
-        #echo "$jks_dev_keypassword=$value" >> $GITHUB_ENV
-        #echo "  Value found masked: $value"
-        #exit 0
+        done

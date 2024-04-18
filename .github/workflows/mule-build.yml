@@ -8,8 +8,7 @@ on:
 
 env:
   CONFIGURATIONS_REPOSITORY: common-configurations
-  SECRETS_MAPPINGFILE: _secrets.env
-  GLOBAL_CONFIGURATIONFILE: _global.yml
+  GLOBAL_CONFIGURATION: _global.yml
   SECRETS_AZURE_KEYVAULT: CoveredCA-KV-Mulesoft
 jobs:
 
@@ -59,4 +58,6 @@ jobs:
         with:
           keyvault-key: ${{ env.SECRETS_AZURE_KEYVAULT}}
           azure-credentials: ${{ secrets.AZURE_CREDENTIALS }}
-          secret-mapping: ${{ env.GLOBAL_CONFIGURATIONFILE}}
+
+      - name: Get service configuration
+        uses: btfacrm/common-devops/packages/configuration-servicev4@main
