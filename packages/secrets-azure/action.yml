@@ -7,31 +7,35 @@ inputs:
   azure-credentials:
     required: true
     description: Azure Credentials for login
+  secret-mapping:
+    required: true
+    description: Secret mapping file
+
 
 runs:
   using: "composite"
   steps:
 
-    - name: DEBUG - Show action variables
+    - name: Debug action variables
       shell: bash
       run: |
         echo " "
         echo "*********************************************"      
-        echo "Debug variables"
+        echo "Debug action variables"
         echo "*********************************************"
         echo " "
         tempvar=$( echo "${{ inputs.azure-credentials }}" | sed 's/./& /g' )
         echo "  azure-credentials: ${{ inputs.azure-credentials }}"
         echo "  keyvault-key: ${{ inputs.keyvault-key }}"
-        echo "  configurations-repository: $CONFIGURATIONS_REPOSITORY"
+        echo "  secret-mapping: ${{ inputs.secret-mapping }}"
         echo " "
 
-    - name: DEBUG - Authentication with Azure
+    - name: Authentication with Azure
       uses: azure/login@v2
       with:
         creds: ${{ inputs.azure-credentials }}
         
-    - name: DEBUG - Run Azure CLI
+    - name: Test Azure CLI
       shell: bash
       run: |
         echo "  "
@@ -40,3 +44,36 @@ runs:
         echo "  "
         echo "  az webapp"
         az webapp list --query "[?state=='Running']"
+
+    - name: Get configuration files
+      uses: CoveredCA/common-devops/packages/get-file@main
+      with:
+        file: ${{ inputs.secret-mapping }}
+        checkIfExists: true
+
+    - name: Get secrets configuration
+      env:
+        SECRET_MAP_FILE: _secrets.env 
+      shell: bash
+      run: |
+        echo " "
+        echo "*********************************************"
+        echo "Parse the secrets mapping file"
+        echo "*********************************************"
+        echo " "
+        
+        temporal=""
+        echo "$configurationdata" | while read p; do
+          if [[ "$p" =~ ^#.*  ]]; then
+            echo "   A comment found"
+          else
+            temporal=$(echo "$temporal $p")
+            echo "   Variable found: $p"
+          fi
+          echo "$temporal" > configurationmap.txt
+        done 
+
+        echo ""
+        configurationmap=$(cat configurationmap.txt)
+        echo "Configuration file to get the secrets: $configurationmap"
+        echo ""
