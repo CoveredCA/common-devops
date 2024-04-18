@@ -61,6 +61,14 @@ runs:
         echo " "
         echo "  secret mapping: $configuration_data"
 
+        secret_name="jks-dev-keypassword"
+        value=$(az keyvault secret show --name $secret_get --vault-name ${{ inputs.keyvault-key }} --query value --output tsv)
+        echo "::add-mask::$value"
+        echo "$jks_dev_keypassword=$value" >> $GITHUB_ENV
+        echo "  Value found: $value"
+        exit 0
+
+
         temporal=""
         echo "$configuration_data" | while read p; do
           if [[ "$p" =~ ^#.*  ]]; then
