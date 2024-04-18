@@ -26,10 +26,11 @@ runs:
         echo "Summary - Publish test results"
         echo "*****************************************************"
         echo " "
-        echo "Input variables: "
-        echo "  badge-label: ${{ inputs.badge-label }}"
-        echo "  badge-suffix: ${{ inputs.badge-suffix }}"
-        echo "  path-report: ${{ inputs.path-report}}"        
+        echo "  Input variables: "
+        echo "    badge-label: ${{ inputs.badge-label }}"
+        echo "    badge-suffix: ${{ inputs.badge-suffix }}"
+        echo "    path-report: ${{ inputs.path-report}}"        
+        echo "    path-directoryreports: ${{ inputs.path-directoryreports}}"
         echo " "
 
     # ***********************************************************
@@ -51,10 +52,10 @@ runs:
       run: |
         echo " "
         echo "*****************************************************"
-        echo "JUnit - Set badge color"
+        echo "JUnit - Set badge color for success or failure"
         echo "*****************************************************"
         echo " "
-        echo "BADGE_STATUS=${{ fromJSON( steps.unit-test-results.outputs.json ).formatted.stats.tests }} tests, ${{ fromJSON( steps.unit-test-results.outputs.json ).formatted.stats.runs }} runs: ${{ fromJSON( steps.unit-test-results.outputs.json ).conclusion }}" >> $GITHUB_ENV
+        echo "  BADGE_STATUS=${{ fromJSON( steps.unit-test-results.outputs.json ).formatted.stats.tests }} tests, ${{ fromJSON( steps.unit-test-results.outputs.json ).formatted.stats.runs }} runs: ${{ fromJSON( steps.unit-test-results.outputs.json ).conclusion }}" >> $GITHUB_ENV
 
         case ${{ fromJSON( steps.unit-test-results.outputs.json ).conclusion }} in
           success)
@@ -90,7 +91,7 @@ runs:
         path: ${{inputs.path-directoryreports}}
 
     - name: Create badge for unit test
-      uses: btfacrm/common-devops/packages/badgev2@main
+      uses: CoveredCA/common-devops/packages/badge@main
       if: always()
       with:
         label: ${{inputs.badge-label}}
