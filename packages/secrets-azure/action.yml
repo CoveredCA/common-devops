@@ -86,8 +86,8 @@ runs:
         echo "Configuration file to get the secrets: $configurationmap"
         echo ""
 
-    - name: Get Azure KeyVault
-      uses: dmitriybobrovskiy/get-azure-keyvault-secrets@v1.2.0
-      with:
-        keyvault: '${{ inputs.keyvault-key }}'
-        secrets_file_path: configurationmap.txt
+    #- name: Get Azure KeyVault
+    #  uses: dmitriybobrovskiy/get-azure-keyvault-secrets@v1.2.0
+    #  with:
+    #    keyvault: '${{ inputs.keyvault-key }}'
+    #    secrets_file_path: configurationmap.txt
