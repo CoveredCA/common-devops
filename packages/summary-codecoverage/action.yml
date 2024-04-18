@@ -102,6 +102,7 @@ runs:
         content="${content//$'\r'/'%0D'}"
         # end of optional handling for multi line json
         echo "::set-output name=packageJson::$content"
+        echo " "
 
     - name: Set badge color and code coverage as integer
       if: steps.summary-codecoverage.outputs.CODE_COVERAGE_EXECUTION == 'true'
@@ -111,7 +112,8 @@ runs:
         echo "*****************************************************"
         echo "Code coverage - Set badge color and status"
         echo "*****************************************************"
-        echo " "      
+        echo " "
+        
         coverage_float=${{ fromJSON(steps.json_var.outputs.packageJson).coverage }}
         coverage=${coverage_float%.*}
         minimum=${{ fromJSON(steps.json_var.outputs.packageJson).requiredApplicationCoverage }}
@@ -139,15 +141,14 @@ runs:
         echo " "
         echo "BADGE_COLOR=31c653" >> $GITHUB_ENV
         echo "BADGE_STATUS=Skipped" >> $GITHUB_ENV
+        echo " "
 
     - name: Create badge for code coverage
-      uses: CoveredCA/common-devops/packages/badge@main
+      uses: btfacrm/common-devops/packages/badgev2@main
       if: always()
       with:
         label: Code coverage
         status: ${{ env.BADGE_STATUS }}
         color: ${{ env.BADGE_COLOR }}
         file: ${{ env.service_name }}-cc.svg
-
-
-
+        folder: ${{ env.service_name }}
