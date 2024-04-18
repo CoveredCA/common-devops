@@ -83,10 +83,10 @@ runs:
         echo "$service_configuration_lines" | while read p; do
             # Get variable and value
             line=$(echo "$p")
-            name="$(cut -d'=' -f1 <<<$line)"
-            value="$(cut -d'=' -f2 <<< $line)"
-            echo "    - name: "$name
-            echo "      value: "$value
+            variable="$(cut -d'=' -f1 <<<$line)"
+            secret_name="$(cut -d'=' -f2 <<< $line)"
+            echo "    - variable: "$variable
+            echo "      secret_name: "$secret_name
         done 
 
         #secret_name="jks-alias"
