@@ -8,6 +8,7 @@ on:
 
 env:
   CONFIGURATIONS_REPOSITORY: common-configurations
+  SECRETS_MAPPINGFILE: _secrets.enva
   
 jobs:
 
@@ -57,3 +58,4 @@ jobs:
         with:
           keyvault-key: CoveredCA-KV-Mulesoft
           azure-credentials: ${{ secrets.AZURE_CREDENTIALS }}
+          secret-mapping: ${{ env.SECRETS_MAPPINGFILE}}

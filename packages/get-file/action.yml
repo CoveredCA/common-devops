@@ -5,9 +5,8 @@ inputs:
     required: true
     description: File to download
   checkIfExists:
-    required: false
+    required: true
     description: Verify if file exists
-    default: 'false'
 
 runs:
   using: "composite"

@@ -61,7 +61,7 @@ runs:
         echo "Parse the secrets mapping file"
         echo "*********************************************"
         echo " "
-        
+
         temporal=""
         echo "$configurationdata" | while read p; do
           if [[ "$p" =~ ^#.*  ]]; then
@@ -77,3 +77,9 @@ runs:
         configurationmap=$(cat configurationmap.txt)
         echo "Configuration file to get the secrets: $configurationmap"
         echo ""
+
+    - name: Get Azure KeyVault
+      uses: dmitriybobrovskiy/get-azure-keyvault-secrets@v1.2.0
+      with:
+        keyvault: '${{ inputs.keyvault-key }}' # The name of KeyVault in Azure
+        secrets_file_path: configurationmap.txt
