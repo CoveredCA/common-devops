@@ -59,10 +59,10 @@ runs:
         echo "Parse the secrets mapping file"
         echo "*********************************************"
         echo " "
-        echo "  secret mapping: $configuration_data"
+        #echo "  secret mapping: $configuration_data"
 
         secret_name="jks-dev-keypassword"
-        value=$(az keyvault secret show --name $secret_get --vault-name ${{ inputs.keyvault-key }} --query value --output tsv)
+        value=$(az keyvault secret show --name $secret_name --vault-name ${{ inputs.keyvault-key }} --query value --output tsv)
         echo "::add-mask::$value"
         echo "$jks_dev_keypassword=$value" >> $GITHUB_ENV
         echo "  Value found: $value"
