@@ -70,22 +70,24 @@ runs:
         }
         
         echo " "
-        parse_yaml '.secrets_azure'; echo "secrets_azure=$pathdata" >> $GITHUB_ENV
-        echo "  secrets_azure: $pathdata"
+        parse_yaml '.secrets_azure'
+        secrets_azure=$(echo "$pathdata")
+        echo "  secrets_azure: $secrets_azure"
+        echo " "
 
-        echo "$pathdata" | while IFS= read line
-        do
-          echo "  line: $line"
-          if [[ "$line" =~ ^#.*  ]]; then
-            echo "   A comment found"
-          else
-            # Get variable and value
-            variable="$(cut -d'=' -f1 <<<$line)"
-            secret_name="$(cut -d'=' -f2 <<< $line)"
-            echo "    - variable: $variable"
-            echo "      secret_name: $secret_name"
-          fi
-        done
+        service_configuration_lines=$( echo $secrets_azure | tr ' ' '\n' )
+        echo -e "  Configuration formated:\n$service_configuration_lines "
+        echo " "
+
+        echo "  Variables found: "
+        echo "$service_configuration_lines" | while read p; do
+
+        echo "$pathdata" | while read p; do
+          temporal=$(echo "$temporal $p")
+          echo "   Variable found: $p"
+          echo "$temporal" > configurationmap.txt
+        done 
+
 
         #secret_name="jks-alias"
         #value=$(az keyvault secret show --name $secret_name --vault-name ${{ inputs.keyvault-key }} --query value --output tsv)
@@ -94,5 +96,3 @@ runs:
         #echo "$jks_dev_keypassword=$value" >> $GITHUB_ENV
         #echo "  Value found masked: $value"
         #exit 0
-
-        #printf '%s\n' "$configuration_data" | while IFS= read -r line
