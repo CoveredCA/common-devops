@@ -81,8 +81,6 @@ runs:
 
         echo "  Variables found: "
         echo "$service_configuration_lines" | while read p; do
-
-        echo "$pathdata" | while read p; do
             # Get variable and value
             line=$(echo "$p")
             name="$(cut -d'=' -f1 <<<$line)"
