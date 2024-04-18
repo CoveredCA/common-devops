@@ -9,7 +9,8 @@ on:
 env:
   CONFIGURATIONS_REPOSITORY: common-configurations
   SECRETS_MAPPINGFILE: _secrets.env
-  
+  GLOBAL_CONFIGURATIONFILE: _global.yml
+  SECRETS_AZURE_KEYVAULT: CoveredCA-KV-Mulesoft
 jobs:
 
   ##########################################################################
@@ -56,6 +57,6 @@ jobs:
         id: secrets
         uses: CoveredCA/common-devops/packages/secrets-azure@main
         with:
-          keyvault-key: CoveredCA-KV-Mulesoft
+          keyvault-key: ${{ env.SECRETS_AZURE_KEYVAULT}}
           azure-credentials: ${{ secrets.AZURE_CREDENTIALS }}
-          secret-mapping: ${{ env.SECRETS_MAPPINGFILE}}
+          secret-mapping: ${{ env.GLOBAL_CONFIGURATIONFILE}}

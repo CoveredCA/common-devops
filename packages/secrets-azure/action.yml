@@ -55,22 +55,26 @@ runs:
       shell: bash
       run: |
         echo " "
-        echo "*********************************************"
-        echo "Parse the secrets mapping file"
-        echo "*********************************************"
+        echo "*****************************************************"
+        echo "Parse the secrets from the global configuration file"
+        echo "*****************************************************"
         echo " "
-        #echo "  secret mapping: $configuration_data"
+        echo "  secret mapping: $configuration_data"
 
-        #secret_name="jks-alias"
-        #value=$(az keyvault secret show --name $secret_name --vault-name ${{ inputs.keyvault-key }} --query value --output tsv)
-        #echo "  Value found: $value"
-        #echo "::add-mask::$value"
-        #echo "$jks_dev_keypassword=$value" >> $GITHUB_ENV
-        #echo "  Value found masked: $value"
-        #exit 0
+        pathdata=""
+        function parse_yaml {
+          pathdata=$(cat "$service_name.yml" | yq -r "$1")
+          if [ "$pathdata" = "null" ] ; then
+            echo " The yaml section was not found in the configuration file, section=$1"
+            exit 1
+          fi
+        }
+        
+        echo " "
+        parse_yaml '.secrets_azure'; echo "secrets_azure=$pathdata" >> $GITHUB_ENV
+        echo "  secrets_azure: $pathdata"
 
-        #printf '%s\n' "$configuration_data" | while IFS= read -r line
-        echo "$configuration_data" | while IFS= read line
+        echo "$pathdata" | while IFS= read line
         do
           echo "  line: $line"
           if [[ "$line" =~ ^#.*  ]]; then
@@ -83,3 +87,13 @@ runs:
             echo "      secret_name: $secret_name"
           fi
         done
+
+        #secret_name="jks-alias"
+        #value=$(az keyvault secret show --name $secret_name --vault-name ${{ inputs.keyvault-key }} --query value --output tsv)
+        #echo "  Value found: $value"
+        #echo "::add-mask::$value"
+        #echo "$jks_dev_keypassword=$value" >> $GITHUB_ENV
+        #echo "  Value found masked: $value"
+        #exit 0
+
+        #printf '%s\n' "$configuration_data" | while IFS= read -r line
