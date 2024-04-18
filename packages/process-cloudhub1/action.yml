@@ -1,9 +1,5 @@
 name: 'Deploys a service to Cloudhub/GovCloud'
 description: 'Deploys a service to Cloudhub/GovCloud'
-inputs:
-  deployment-env:
-    required: true
-    description: Deployment environment for the service
 outputs:
   outcome:
     description: "The result of the deployment: sucess, failure"
@@ -13,21 +9,10 @@ runs:
   using: "composite"
   steps:
 
-  - id: debug-workplace
-    name: Debug workplace
-    shell: bash
-    run: |
-      echo " "
-      echo "***************************************"
-      echo "Debug root workplace"
-      echo "***************************************"
-      echo " "
-      ls -l
-
   - name: Install NodeJs
     uses: actions/setup-node@v3
     with:
-      node-version: 18
+      node-version: 20
 
   - name: Install Anypoint CLI
     shell: bash
@@ -47,28 +32,22 @@ runs:
       echo " "
 
   - id: deployment
-    name: Deploy the service to the cloud
+    name: Deploy the service to CloudHub1
     shell: bash
     run: |
       echo " "
-      echo "***************************************"
-      echo "Deploy the service to the cloud"
-      echo "***************************************"
+      echo "************************************************************"
+      echo "Deploy the service to CloudHub1, mulesoft environment: $configuration_deployment_mulesoft_environment"
+      echo "************************************************************"
       echo " "
-
-      # Next variables come from environment variables
-      # cicd_connectedapp_clientid="${{ inputs.connectedapp-clientid}}"
-      # cicd_connectedapp_secret="${{ inputs.connectedapp-secret}}"
-
-
-      # Assign variables for the script
-      echo "Assigning variables to the script"
-      deploymentname="${{ env.configuration_deployment_name }}"
-      deploymentenvironment="${{ inputs.deployment-env }}"
-      deploymentorganization="${{ env.configuration_deployment_organization }}"
-      deploymenthost="${{ env.configuration_deployment_host }}"
-      propscloud="${{ env.configuration_cloudhub }}"
-      propsservice="${{ env.configuration_properties }}"
+      # Environment variables:
+      # - configuration_deployment_name
+      # - configuration_deployment_organization
+      # - configuration_deployment_host
+      # - configuration_deployment_mulesoft_environment
+      # - configuration_cloudhub
+      # - cicd_connectedapp_clientid
+      # - cicd_connectedapp_secret
 
       # Get the jar file
       jar=$(ls *.jar)
@@ -82,10 +61,10 @@ runs:
       QUERY_STATUS="anypoint-cli-v4 runtime-mgr cloudhub-application describe \
                   --client_id $cicd_connectedapp_clientid \
                   --client_secret $cicd_connectedapp_secret \
-                  --environment $deploymentenvironment \
-                  --organization $deploymentorganization \
-                  --host $deploymenthost \
-                  --output json $deploymentname"
+                  --environment $configuration_deployment_mulesoft_environment \
+                  --organization $configuration_deployment_organization \
+                  --host $configuration_deployment_host \
+                  --output json $configuration_deployment_name"
 
       # Get the current status of the service
       echo " "
@@ -104,7 +83,7 @@ runs:
 
       echo " "
       echo "Result"
-      echo "  Service: $deploymentname status: $STATUS, updateStatus: $UPDATE_STATUS"
+      echo "  Service: $configuration_deployment_name status: $STATUS, updateStatus: $UPDATE_STATUS"
       echo " "
 
       # Verify if the service is currently in an inconsistent state
@@ -137,10 +116,10 @@ runs:
       CREATEUPDATE_APP="anypoint-cli-v4 runtime-mgr cloudhub-application $operation \
       --client_id $cicd_connectedapp_clientid \
       --client_secret $cicd_connectedapp_secret \
-      --organization $deploymentorganization \
-      --host $deploymenthost \
-      --environment $deploymentenvironment \
-      $propscloud $propsservice --output json $deploymentname $jar"
+      --organization $configuration_deployment_organization \
+      --host $configuration_deployment_host \
+      --environment $configuration_deployment_mulesoft_environment \
+      $configuration_cloudhub --output json $configuration_deployment_name $jar"
       echo "  Deployment command: $CREATEUPDATE_APP"
       echo " "
       echo "Executing deployment...."
@@ -172,7 +151,7 @@ runs:
         # echo "Quering status: $DEPLOYMENT_INFO"
         STATUS=$(echo $DEPLOYMENT_INFO | jq -r ".status")
         UPDATE_STATUS=$(echo $DEPLOYMENT_INFO | jq -r ".deploymentUpdateStatus")  
-        echo "Service: $deploymentname, operation: $operation, status: $STATUS, updateStatus: $UPDATE_STATUS"
+        echo "Service: $configuration_deployment_name, operation: $operation, status: $STATUS, updateStatus: $UPDATE_STATUS"
 
         end=$(date +%s)
         echo "  Elapsed time: $(($end-$start)) seconds, iteration: $iteration limit: $limit"

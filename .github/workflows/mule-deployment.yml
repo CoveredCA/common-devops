@@ -61,3 +61,22 @@ jobs:
           echo "***************************************"
           echo " "
           ls -l
+
+      - name: Deploy the service in Cloudhub1 
+        id: deployment-ch1
+        uses: CoveredCA/common-devops/packages/process-cloudhub1@main
+
+      - name: Create badge for deployment
+        uses: CoveredCA/common-devops/packages/badge@main
+        with:
+          label: '${{ env.deployment_environment }} version'
+          status: '${{ env.deployment_version }}'
+          color: '535597'
+          file: ${{ env.service_name }}-${{ env.deployment_environment }}.svg
+          folder: ${{ env.service_name }}
+
+      - name: Execute Mulesoft BAT
+        id: bat-testing
+        uses: CoveredCA/common-devops/packages/process-bat@main
+        with:
+          deployment-env: ${{ env.deployment_environment }} 
