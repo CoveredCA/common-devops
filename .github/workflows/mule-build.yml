@@ -59,4 +59,4 @@ jobs:
           echo " "
 
       - name: Install Java environment for Mulesoft Applications
-        uses: CoveredCA/common-devops/packages/install-javav2@main
+        uses: CoveredCA/common-devops/packages/install-java@main
