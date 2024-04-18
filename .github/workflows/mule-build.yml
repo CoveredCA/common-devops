@@ -101,3 +101,14 @@ jobs:
           fi
           mvn --batch-mode $skiptests package $configuration_test_properties
           echo " "
+
+      - name: Summary - Test
+        uses: CoveredCA/common-devops/packages/summary-junit@main
+        with:
+          badge-label: Unit test
+          badge-suffix: ut
+          path-report: 'target/surefire-reports/*.xml'
+          path-directoryreports: 'target/surefire-reports/*'
+
+      - name: Summary - Code Coverage
+        uses: CoveredCA/common-devops/packages/summary-codecoverage@main

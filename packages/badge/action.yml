@@ -1,5 +1,5 @@
-name: 'Summary - Publish test results'
-description: 'Summary - Publish test results'
+name: Create a code badge
+description: Create a code badge
 inputs:
   label:
     required: true
@@ -13,40 +13,62 @@ inputs:
   file:
     required: true
     description: Name of the badge file
+  folder:
+    required: true
+    description: Folder to save the file
 
 runs:
   using: "composite"
   steps:
-
-    - name: Debug message
-      shell: bash
-      run: |
-        echo " "
-        echo "*****************************************************"
-        echo "Create badge"
-        echo "*****************************************************"
-        echo " "            
-
-    - name: Create badge
-      uses: emibcn/badge-action@master
-      with:
-        label: ${{ inputs.label }}
-        status: ${{ inputs.status }}
-        color: ${{ inputs.color }}
-        path: ${{ inputs.file }}
     
-    - name: Debug message
+    - name: Create code badge
       shell: bash
       run: |
         echo " "
         echo "*****************************************************"
-        echo "Upload badge"
+        echo "Create code badge"
         echo "*****************************************************"
         echo " "
+        echo "  Create the badge file and get it as base64"
+        echo " "
 
-    - name: Upload badge to Gist
-      uses: andymckay/append-gist-action@master
-      with:
-        token: ${{ env.github_gist_accesstoken }}
-        gistURL: "https://gist.githubusercontent.com/${{ env.github_gist_path }}"
-        file: ${{ inputs.file }}
+        curl -o ${{ inputs.file }} --verbose --get \
+          --data-urlencode 'label=${{ inputs.label }}' \
+          --data-urlencode 'message=${{ inputs.status }}' \
+          --data-urlencode 'color=${{ inputs.color }}' \
+          'https://img.shields.io/static/v1'
+        echo " " >> ${{ inputs.file }}
+
+        content_base64=$(base64 -w 0 ${{ inputs.file }})
+        cat ${{ inputs.file }}
+
+        echo " "
+        echo "  content_base64=$content_base64"
+        echo " "
+   
+        url="https://api.github.com/repos/${{github.repository_owner}}/$badge_repository/contents/${{ inputs.folder }}/${{ inputs.file }}"
+        echo "  badge url: $url"
+        file_details=$(curl -s -H "Accept: application/vnd.github.v3+json" \
+            -H "Authorization: token ${{ env.github_automationbot_token }}" \
+            $url)
+
+        if [[ $file_details == *"Not Found"* ]]; then
+          message="Create badge ${{ inputs.folder }}/${{ inputs.file }}"
+          echo "  $message"
+
+          curl -s -X PUT \
+            -H "Authorization: token ${{ env.github_automationbot_token }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            -d '{"message": "'"$message"'", "content": "'"$content_base64"'", "branch": "main"}' \
+            "$url"
+        else
+          sha=$(echo "$file_details" | jq -r '.sha')
+          message="Update badge ${{ inputs.file }}/${{ inputs.file }}"
+          echo "  $message, sha: $sha"
+          
+          curl -s -X PUT \
+            -H "Authorization: token ${{ env.github_automationbot_token }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            -d '{"message": "'"$message"'", "sha": "'"$sha"'", "content": "'"$content_base64"'", "branch": "main"}' \
+            "$url"
+        fi
