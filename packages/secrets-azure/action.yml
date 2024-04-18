@@ -59,7 +59,7 @@ runs:
         echo "Parse the secrets mapping file"
         echo "*********************************************"
         echo " "
-        echo "  secret mapping: $configuration_data
+        echo "  secret mapping: $configuration_data"
 
         temporal=""
         echo "$configuration_data" | while read p; do
