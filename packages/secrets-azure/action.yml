@@ -61,33 +61,33 @@ runs:
         echo " "
         #echo "  secret mapping: $configuration_data"
 
-        secret_name="jks-alias"
-        value=$(az keyvault secret show --name $secret_name --vault-name ${{ inputs.keyvault-key }} --query value --output tsv)
-        echo "  Value found: $value"
-        echo "::add-mask::$value"
-        echo "$jks_dev_keypassword=$value" >> $GITHUB_ENV
-        echo "  Value found masked: $value"
-        exit 0
+        #secret_name="jks-alias"
+        #value=$(az keyvault secret show --name $secret_name --vault-name ${{ inputs.keyvault-key }} --query value --output tsv)
+        #echo "  Value found: $value"
+        #echo "::add-mask::$value"
+        #echo "$jks_dev_keypassword=$value" >> $GITHUB_ENV
+        #echo "  Value found masked: $value"
+        #exit 0
 
+        if [ "$configuration_data" = "null" ] || [ "$configuration_data" = "" ] ; then
+          echo "  There are no secrets"
+        else
+          service_configuration_lines=$( echo $configuration_bat | tr ' ' '\n' )
+          echo -e "  Configuration formated:\n$service_configuration_lines "
+          echo " "
 
-        temporal=""
-        echo "$configuration_data" | while read p; do
-          if [[ "$p" =~ ^#.*  ]]; then
-            echo "   A comment found"
-          else
-            temporal=$(echo "$temporal $p")
-            echo "   Variable found: $p"
-          fi
-          echo "$temporal" > configurationmap.txt
-        done 
+          echo "  Variables found: "
+          echo "$service_configuration_lines" | while read p; do
 
-        echo ""
-        configurationmap=$(cat configurationmap.txt)
-        echo "Configuration file to get the secrets: $configurationmap"
-        echo ""
-
-    #- name: Get Azure KeyVault
-    #  uses: dmitriybobrovskiy/get-azure-keyvault-secrets@v1.2.0
-    #  with:
-    #    keyvault: '${{ inputs.keyvault-key }}'
-    #    secrets_file_path: configurationmap.txt
+            if [[ "$p" =~ ^#.*  ]]; then
+              echo "   A comment found"
+            else
+              # Get variable and value
+              line=$(echo "$p")
+              variable="$(cut -d'=' -f1 <<<$line)"
+              secret_name="$(cut -d'=' -f2 <<< $line)"
+              echo "    - variable: $variable"
+              echo "      secret_name: $secret_name"
+            fi
+          done          
+        fi
