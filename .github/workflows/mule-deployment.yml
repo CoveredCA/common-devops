@@ -75,8 +75,8 @@ jobs:
           file: ${{ env.service_name }}-${{ env.deployment_environment }}.svg
           folder: ${{ env.service_name }}
 
-      - name: Execute Mulesoft BAT
-        id: bat-testing
+      - name: BAT Testing
+        id: bat
         uses: CoveredCA/common-devops/packages/process-bat@main
         with:
           deployment-env: ${{ env.deployment_environment }} 

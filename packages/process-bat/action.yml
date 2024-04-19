@@ -14,7 +14,7 @@ runs:
   steps:
 
     - name: Execute Mulesoft BAT
-      if: ${{ hashFiles('bat') == '' }}
+      if: ${{ hashFiles('bat') != '' }}
       shell: bash
       run: |
         echo " "
@@ -22,7 +22,6 @@ runs:
         echo "Install Anypoint CLI"
         echo "***************************************"
         echo " "      
-        echo "test_outcome=skipped" >> $GITHUB_ENV
         curl -o- 'https://s3.amazonaws.com/bat-wrapper/install.sh' | bash
         echo " "
         echo "bat -version: $(bat -version)"
