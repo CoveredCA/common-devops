@@ -35,6 +35,8 @@ runs:
 
     - name: Summary - Test
       uses: CoveredCA/common-devops/packages/summary-junit@main
+      env:
+        GITHUB_TOKEN: ${{ env.github_automationbot_token }}
       if: always()
       with:
         badge-label: ${{ env.deployment_environment }} test
