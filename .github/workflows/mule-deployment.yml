@@ -18,17 +18,18 @@ env:
   MESSAGE_SERVICE_NO_BAT: "There aren't any BAT tests"
   MESSAGE_SERVICE_BAT_FAILURE: "BAT testig with failures"
 
-  # Needed by the Unit Test Action
-permissions:
-  contents: write
-  issues: write
-  checks: write
-
-  jobs:
+jobs:
 
   CloudHub:
     name: CloudHub
     runs-on: ubuntu-latest
+
+    # Assigning permissions to jobs - https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs
+    permissions:
+      actions: write
+      checks: write
+      contents: write
+
     steps:
 
       - name: Get token from Github App
