@@ -78,5 +78,7 @@ jobs:
       - name: BAT Testing
         id: bat
         uses: CoveredCA/common-devops/packages/process-bat@main
+        env:
+          GITHUB_TOKEN: ${{ env.github_automationbot_token }}
         with:
           deployment-env: ${{ env.deployment_environment }} 
