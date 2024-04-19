@@ -18,7 +18,13 @@ env:
   MESSAGE_SERVICE_NO_BAT: "There aren't any BAT tests"
   MESSAGE_SERVICE_BAT_FAILURE: "BAT testig with failures"
 
-jobs:
+  # Needed by the Unit Test Action
+permissions:
+  contents: write
+  issues: write
+  checks: write
+
+  jobs:
 
   CloudHub:
     name: CloudHub
@@ -78,7 +84,5 @@ jobs:
       - name: BAT Testing
         id: bat
         uses: CoveredCA/common-devops/packages/process-bat@main
-        env:
-          GITHUB_TOKEN: ${{ env.github_automationbot_token }}
         with:
           deployment-env: ${{ env.deployment_environment }} 
