@@ -58,16 +58,17 @@ runs:
         # Verify if the test report was created
         if test -f ${{ inputs.path-report}}; then
           echo "The test report is present"
-          echo "BADGE_STATUS=${{ fromJSON( steps.unit-test-results.outputs.json ).formatted.stats.tests }} tests, ${{ fromJSON( steps.unit-test-results.outputs.json ).formatted.stats.runs }} runs: ${{ fromJSON( steps.unit-test-results.outputs.json ).conclusion }}" >> $GITHUB_ENV
-          case ${{ fromJSON( steps.unit-test-results.outputs.json ).conclusion }} in
+          label_tests=$(echo "${{steps.unit-test-results.outputs.json}}" | jq -r ".formatted.stats.tests")
+          label_run=$(echo "${{steps.unit-test-results.outputs.json}}" | jq -r ".formatted.stats.runs")
+          label_conclusion=$(echo "${{steps.unit-test-results.outputs.json}}" | jq -r ".conclusion")
+
+          echo "BADGE_STATUS=$label_tests tests, $label_run runs: $label_conclusion" >> $GITHUB_ENV
+          case $label_conclusion in
             success)
               echo "BADGE_COLOR=31c653" >> $GITHUB_ENV
               ;;
-            failure)
+            *)
               echo "BADGE_COLOR=800000" >> $GITHUB_ENV
-              ;;
-            neutral)
-              echo "BADGE_COLOR=696969" >> $GITHUB_ENV
               ;;
           esac
         else
@@ -85,11 +86,11 @@ runs:
         path: ${{inputs.path-directoryreports}}
 
     - name: Create badge for unit test
-      uses: CoveredCA/common-devops/packages/badge@main
+      uses: btfacrm/common-devops/packages/badge@main
       if: always()
       with:
         label: ${{inputs.badge-label}}
-        status: '${{ env.BADGE_STATUS }}'
+        status: ${{ env.BADGE_STATUS }}
         color: ${{ env.BADGE_COLOR }}
         file: ${{ env.service_name }}-${{inputs.badge-suffix}}.svg
         folder: ${{ env.service_name }}
