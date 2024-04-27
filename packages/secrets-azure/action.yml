@@ -85,7 +85,7 @@ runs:
             echo "      secret_name: "$secret_name
 
             value=$(az keyvault secret show --name $secret_name --vault-name ${{ inputs.keyvault-key }} --query value --output tsv)
-            echo "      Azure: $value"
             echo "::add-mask::$value"
+            echo "      Azure:$value"
             echo "$variable=$value" >> $GITHUB_ENV
         done

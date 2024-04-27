@@ -102,6 +102,11 @@ runs:
       with:
         file: "$GLOBAL_CONFIGURATION $service_name.yml"
 
+    - name: Get configuration files
+      uses: CoveredCA/common-devops/packages/get-file@main
+      with:
+        file: "$service_name.yml"
+
     - name: Debug 
       shell: bash
       run: |
