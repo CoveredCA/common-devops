@@ -33,7 +33,7 @@ runs:
           configurationdata=$(curl -sH "Authorization: token $github_automationbot_token" $urlconfigurationfile)
 
           # Verify if configuration file was found
-          if [[ $configurationdata != *"Not Found"* ]]; then
+          if [[ "$configurationdata" != *"Not Found"* ]]; then
             echo "  The file was found"
             echo "$configurationdata" > $readFile
           else
