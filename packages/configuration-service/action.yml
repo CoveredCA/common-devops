@@ -115,6 +115,15 @@ runs:
         echo "Debug mark 1"
         echo "**************************************"
 
+    - name: Debug 
+      shell: bash
+      run: |
+        echo " "
+        echo "**************************************"
+        echo "Debug mark 2"
+        echo "**************************************"
+        exit 1
+
     - name: Import variables from _global.yml
       uses: zlatko-ms/envarfiles@main
       with:
