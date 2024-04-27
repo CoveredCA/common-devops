@@ -98,7 +98,7 @@ runs:
         echo " "
 
     - name: Get configuration files
-      uses: btfacrm/common-devops/packages/get-filev2@main
+      uses: CoveredCA/common-devops/packages/get-file@main
       with:
         file: "$GLOBAL_CONFIGURATION $service_name.yml"
 

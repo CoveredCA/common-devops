@@ -86,7 +86,7 @@ runs:
         path: ${{inputs.path-directoryreports}}
 
     - name: Create badge for unit test
-      uses: btfacrm/common-devops/packages/badge@main
+      uses: CoveredCA/common-devops/packages/badge@main
       if: always()
       with:
         label: ${{inputs.badge-label}}

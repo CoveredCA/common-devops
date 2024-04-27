@@ -144,7 +144,7 @@ runs:
         echo " "
 
     - name: Create badge for code coverage
-      uses: btfacrm/common-devops/packages/badgev2@main
+      uses: CoveredCA/common-devops/packages/badge@main
       if: always()
       with:
         label: Code coverage
