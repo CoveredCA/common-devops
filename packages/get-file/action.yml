@@ -32,20 +32,24 @@ runs:
           urlconfigurationfile="https://raw.githubusercontent.com/${{ github.repository_owner }}/$CONFIGURATIONS_REPOSITORY/main/$readFile"
           echo "  URL of file: $urlconfigurationfile"
           configurationdata=$(curl -sH "Authorization: token $github_automationbot_token" $urlconfigurationfile)
-          echo -e "  File content: \n$configurationdata" | colrm 101 
+          echo "  File content (first 100 chars):  ${configurationdata:0:100}...." 
           echo "  "
 
           # Verify if configuration file was found
           if [[ "$configurationdata" != *"Not Found"* ]]; then
             echo "  The file was found"
-            #echo "$configurationdata" > $readFile
+            echo "$configurationdata" > $readFile
+          else
+            if [[ ${{ inputs.checkIfExists }} == "true" ]]; then
+              echo "  File not found, aborting the pipeline"
+              exit 1
+            else
+              echo "  File not found, returning an empty file"
+              touch $readFile
+            fi
           fi
 
-          echo "  The file was found"
-          echo "$configurationdata" > $readFile
-
           echo "  Create the env variable configuration_data with the content of the file"
-          
           echo "configuration_data=$(echo $configurationdata)" >> $GITHUB_ENV
         done
         echo " "
