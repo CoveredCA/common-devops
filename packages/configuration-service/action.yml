@@ -100,7 +100,7 @@ runs:
     - name: Get configuration files
       uses: CoveredCA/common-devops/packages/get-file@main
       with:
-        file: "$GLOBAL_CONFIGURATION $service_name.yml"
+        file: "$GLOBAL_CONFIGURATION"
 
     - name: Get configuration files
       uses: CoveredCA/common-devops/packages/get-file@main
