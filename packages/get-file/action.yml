@@ -32,7 +32,7 @@ runs:
           urlconfigurationfile="https://raw.githubusercontent.com/${{ github.repository_owner }}/$CONFIGURATIONS_REPOSITORY/main/$readFile"
           echo "  URL of file: $urlconfigurationfile"
           configurationdata=$(curl -sH "Authorization: token $github_automationbot_token" $urlconfigurationfile)
-          echo "  File content (first 100 chars):  ${configurationdata:0:100}...." 
+          echo -e "  File content (first 100 chars): \n${configurationdata:0:100}...." 
           echo "  "
 
           # Verify if configuration file was found
