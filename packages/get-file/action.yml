@@ -6,7 +6,7 @@ inputs:
     description: File to download
   checkIfExists:
     required: true
-    default: true
+    default: "true"
     description: Verify if file exists
 
 runs:
@@ -22,8 +22,8 @@ runs:
         echo "Get configuration file"
         echo "*********************************************"
         echo " "
-        echo "github_automationbot_token: $github_automationbot_token"
-        echo "inputs.file: ${{ inputs.file }}"
+        echo "  github_automationbot_token: $github_automationbot_token"
+        echo "  inputs.file: ${{ inputs.file }}"
         listFiles="${{ inputs.file }}"
         for readFile in $listFiles
         do
@@ -32,7 +32,14 @@ runs:
           urlconfigurationfile="https://raw.githubusercontent.com/${{ github.repository_owner }}/$CONFIGURATIONS_REPOSITORY/main/$readFile"
           echo "  URL of file: $urlconfigurationfile"
           configurationdata=$(curl -sH "Authorization: token $github_automationbot_token" $urlconfigurationfile)
-          echo -e "  File content: \n$configurationdata"
+          echo -e "  File content: \n$configurationdata" | colrm 101 
+          echo "  "
+
+          # Verify if configuration file was found
+          if [[ "$configurationdata" != *"Not Found"* ]]; then
+            echo "  The file was found"
+            #echo "$configurationdata" > $readFile
+          fi
 
           echo "  The file was found"
           echo "$configurationdata" > $readFile
