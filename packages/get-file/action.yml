@@ -6,6 +6,7 @@ inputs:
     description: File to download
   checkIfExists:
     required: true
+    default: true
     description: Verify if file exists
 
 runs:
@@ -31,7 +32,7 @@ runs:
           urlconfigurationfile="https://raw.githubusercontent.com/${{ github.repository_owner }}/$CONFIGURATIONS_REPOSITORY/main/$readFile"
           echo "  URL of file: $urlconfigurationfile"
           configurationdata=$(curl -sH "Authorization: token $github_automationbot_token" $urlconfigurationfile)
-          echo "File content: \n$configurationdata"
+          echo -e "  File content: \n$configurationdata"
 
           echo "  The file was found"
           echo "$configurationdata" > $readFile
