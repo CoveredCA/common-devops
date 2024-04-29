@@ -26,10 +26,11 @@ runs:
         echo " "
         echo "bat -version: $(bat -version)"
 
+        bat_executable=$( echo "$deployment_environment.yaml")
         cd bat
         mkdir target
         echo "outcome=failure" >> $GITHUB_OUTPUT      
-        bat
+        bat $bat_executable
         echo "outcome=success" >> $GITHUB_OUTPUT
         echo " "   
 
