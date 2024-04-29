@@ -70,7 +70,7 @@ runs:
           label_formatted=$(echo "${{steps.unit-test-results.outputs.json}}" | jq -r ".formatted")
           echo "  The 'formatted' node: $label_formatted"
           label_stats=$(echo "${{steps.unit-test-results.outputs.json}}" | jq -r ".formatted.stats")
-          echo "  The 'formatted' node: $label_stats"
+          echo "  The 'formatted.stats' node: $label_stats"
           label_tests=$(echo "${{steps.unit-test-results.outputs.json}}" | jq -r ".formatted.stats.tests")
           echo "  Label test: $label_tests"
           label_run=$(echo "${{steps.unit-test-results.outputs.json}}" | jq -r ".formatted.stats.runs")
