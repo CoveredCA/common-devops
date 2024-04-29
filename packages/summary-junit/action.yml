@@ -71,15 +71,15 @@ runs:
           echo "  TEST: ${{ fromJSON( steps.unit-test-results.outputs.json ).formatted.stats.tests }}"
 
 
-          label_formatted=$(echo "${{steps.unit-test-results.outputs.json}}" | jq -r ".formatted")
+          label_formatted=$(echo '${{steps.unit-test-results.outputs.json}}' | jq -r ".formatted")
           echo "  The 'formatted' node: $label_formatted"
-          label_stats=$(echo "${{steps.unit-test-results.outputs.json}}" | jq -r ".formatted.stats")
+          label_stats=$(echo '${{steps.unit-test-results.outputs.json}}' | jq -r ".formatted.stats")
           echo "  The 'formatted.stats' node: $label_stats"
-          label_tests=$(echo "${{steps.unit-test-results.outputs.json}}" | jq -r ".formatted.stats.tests")
+          label_tests=$(echo '${{steps.unit-test-results.outputs.json}}' | jq -r ".formatted.stats.tests")
           echo "  Label test: $label_tests"
-          label_run=$(echo "${{steps.unit-test-results.outputs.json}}" | jq -r ".formatted.stats.runs")
+          label_run=$(echo '${{steps.unit-test-results.outputs.json}}' | jq -r ".formatted.stats.runs")
           echo "  Label run: $label_run"
-          label_conclusion=$(echo "${{steps.unit-test-results.outputs.json}}" | jq -r ".conclusion")
+          label_conclusion=$(echo '${{steps.unit-test-results.outputs.json}}' | jq -r ".conclusion")
           echo "  Label conclusion: $label_conclusion"
           echo "BADGE_STATUS=$label_tests tests, $label_run runs: $label_conclusion" >> $GITHUB_ENV
           echo "  Badge status: $BADGE_STATUS"
