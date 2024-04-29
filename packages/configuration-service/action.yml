@@ -163,7 +163,8 @@ runs:
           parse_yaml ".$deployment_environment.deployment.host"; echo "configuration_deployment_host=$pathdata" >> $GITHUB_ENV
           parse_yaml ".$deployment_environment.deployment.customlogger"; echo "configuration_deployment_customlogger=$pathdata" >> $GITHUB_ENV
           parse_yaml ".$deployment_environment.deployment.mulesoft_environment"; echo "configuration_deployment_mulesoft_environment=$pathdata" >> $GITHUB_ENV
-          parse_yaml ".$deployment_environment.bat"; echo "configuration_bat=$pathdata" >> $GITHUB_ENV
+          parse_yaml ".$deployment_environment.bat.environment_script"; echo "configuration_bat_environment_script=$pathdata" >> $GITHUB_ENV
+          parse_yaml ".$deployment_environment.bat.variables"; echo "configuration_bat_variables=$pathdata" >> $GITHUB_ENV
           parse_yaml ".$deployment_environment.cloudhub";
           substitution_cloudhub=$(eval "echo $pathdata")
           echo "configuration_cloudhub=$substitution_cloudhub" >> $GITHUB_ENV
@@ -182,10 +183,10 @@ runs:
         echo "***********************************************"
         echo " "
 
-        if [ "$configuration_bat" = "null" ] || [ "$configuration_bat" = "" ] ; then
+        if [ "$configuration_bat_variables" = "null" ] || [ "$configuration_bat_variables" = "" ] ; then
           echo "  There are no environment variables for bat!"
         else
-          service_configuration_lines=$( echo $configuration_bat | tr ' ' '\n' )
+          service_configuration_lines=$( echo $configuration_bat_variables | tr ' ' '\n' )
           echo -e "  Configuration formated:\n$service_configuration_lines "
           echo " "
 
