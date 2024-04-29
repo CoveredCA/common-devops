@@ -61,7 +61,9 @@ runs:
         echo "JUnit - Set badge color for success or failure"
         echo "*****************************************************"
         echo " "
-
+        echo "  The JUnit results parse with json: ${{steps.unit-test-results.outputs.json}}"
+        echo " "
+        
         # Verify if the test report was created
         if test -f ${{ inputs.path-report}}; then
           echo "  The test report is present"
