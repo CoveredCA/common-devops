@@ -63,9 +63,9 @@ jobs:
           echo " "
           ls -l
 
-      #- name: Deploy the service in Cloudhub1 
-      #  id: deployment-ch1
-      #  uses: CoveredCA/common-devops/packages/process-cloudhub1@main
+      - name: Deploy the service in Cloudhub1 
+        id: deployment-ch1
+        uses: CoveredCA/common-devops/packages/process-cloudhub1@main
 
       - name: Create badge for deployment
         uses: CoveredCA/common-devops/packages/badge@main
