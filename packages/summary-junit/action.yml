@@ -33,11 +33,18 @@ runs:
         echo "    path-directoryreports: ${{ inputs.path-directoryreports}}"
         echo " "
 
+    - name: Upload test reports to job
+      if: ${{ hashFiles(inputs.path-report) != '' }}
+      uses: actions/upload-artifact@master
+      with:
+        name: test-report
+        path: ${{inputs.path-directoryreports}}
+
     # ***********************************************************
     # https://github.com/EnricoMi/publish-unit-test-result-action
     # Note: permissions on job, check documentation
     # ***********************************************************
-    - name: Summary - Publish test results
+    - name: Publish test results in summary section
       id: unit-test-results
       if: ${{ hashFiles(inputs.path-report) != '' }}
       uses: EnricoMi/publish-unit-test-result-action@v2
@@ -82,13 +89,6 @@ runs:
           echo "BADGE_STATUS=Skipped" >> $GITHUB_ENV
         fi
         echo " "
-
-    - name: Publish - MUnit Report
-      if: ${{ hashFiles(inputs.path-report) != '' }}
-      uses: actions/upload-artifact@master
-      with:
-        name: test-report
-        path: ${{inputs.path-directoryreports}}
 
     - name: Create badge for unit test
       uses: CoveredCA/common-devops/packages/badge@main
