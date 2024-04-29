@@ -68,7 +68,7 @@ runs:
         if test -f ${{ inputs.path-report}}; then
           echo "  The test report is present. Parsing the json results"
 
-          echo "  TEST: ${{ fromJSON( steps.test-results.outputs.json ).formatted.stats.tests }}"
+          echo "  TEST: ${{ fromJSON( steps.unit-test-results.outputs.json ).formatted.stats.tests }}"
 
 
           label_formatted=$(echo "${{steps.unit-test-results.outputs.json}}" | jq -r ".formatted")
