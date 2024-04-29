@@ -67,6 +67,10 @@ runs:
         # Verify if the test report was created
         if test -f ${{ inputs.path-report}}; then
           echo "  The test report is present. Parsing the json results"
+
+          echo "  TEST: ${{ fromJSON( steps.test-results.outputs.json ).formatted.stats.tests }}"
+
+
           label_formatted=$(echo "${{steps.unit-test-results.outputs.json}}" | jq -r ".formatted")
           echo "  The 'formatted' node: $label_formatted"
           label_stats=$(echo "${{steps.unit-test-results.outputs.json}}" | jq -r ".formatted.stats")
