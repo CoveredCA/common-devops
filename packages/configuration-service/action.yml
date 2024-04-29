@@ -121,11 +121,10 @@ runs:
         echo "*********************************************"
         echo " "
         echo "  Configuration variables:"
-        echo "    scandependencies_user= $scandependencies_user"
-        echo "    github_deploymentproject= $github_deploymentproject"
-        echo "    github_gist_path= $github_gist_path"
-        echo "    salesforcesapi_dev= $salesforcesapi_dev"
-        echo "    salesforcesapi_prd= $salesforcesapi_prd"
+        echo "    scandependencies_user: $scandependencies_user"
+        echo "    deployment_project: $deployment_project"
+        echo "    badge_repository: $badge_repository"
+        echo "    salesforcecontactsap_dev: $salesforcecontactsap_dev"
         echo " "
 
     
