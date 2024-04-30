@@ -83,6 +83,7 @@ runs:
           # echo "COVERAGE_PROCESS='False'" >> $GITHUB_ENV
           echo "CODE_COVERAGE_EXECUTION=false" >> $GITHUB_OUTPUT
         fi
+        echo " "            
 
     - name: Set the code coverage results as environment variable
       if: steps.summary-codecoverage.outputs.CODE_COVERAGE_EXECUTION == 'true'

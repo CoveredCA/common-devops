@@ -60,7 +60,7 @@ jobs:
 
       - name: Custom Logging
         id: custom-logging
-        uses: CoveredCA/common-devops/packages/customlogger@main
+        uses: CoveredCA/common-devops/packages/process-customlog@main
         with:
           deployment-env: ${{ env.deployment_environment }}
 
