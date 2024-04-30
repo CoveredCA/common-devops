@@ -2,7 +2,7 @@
 # Mulesoft CICD Pipeline - Deploy Mulesoft Application
 ##########################################################################
 
-name: Deployment
+name: CustomLogging
 on:
   workflow_call:
 
@@ -67,7 +67,7 @@ jobs:
       - name: Create badge for custom logging
         uses: CoveredCA/common-devops/packages/badge@main
         with:
-          label: 'Custom logging'
+          label: '${{ env.deployment_environment }} custom log'
           status: 'true'
           color: '535597'
           file: ${{ env.service_name }}-${{ env.deployment_environment }}-cl.svg
