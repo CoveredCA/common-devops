@@ -65,8 +65,8 @@ runs:
         echo " "
 
         # Verify if the test report was created
-        if [[ ${{ hashFiles(inputs.path-report) != '' }} ]]; then
-          echo "  The test report is present. Parsing the json results"
+        if [[ "$configuration_skiptests" != "true" ]]; then
+          echo "  The test cases were not skipped, parsing the Unit Test json result"
           label_tests=$(echo '${{steps.unit-test-results.outputs.json}}' | jq -r ".formatted.stats.tests")
           echo "  Label test: $label_tests"
           label_run=$(echo '${{steps.unit-test-results.outputs.json}}' | jq -r ".formatted.stats.runs")
