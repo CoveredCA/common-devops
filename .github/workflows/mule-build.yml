@@ -180,14 +180,17 @@ jobs:
           echo "Create Deployment Issue "
           echo "***********************************************"
           echo " "
-          echo "  Create issue for deployment in the first environment from list: $configuration_environments"
+          echo "  List of environments for deployment: $configuration_environments"
 
-          # Environment list to an array
-          read -a array <<< "$configuration_environments"
-          echo "  Environment to deploy the application: ${array[0]}"
-          gh -R "${{ github.repository }}" issue create \
-              -t "Deployment ${array[0]} ${{ env.service_name }} ${{ env.service_version }}" \
-              -a "${{ github.triggering_actor}}" \
-              -b "${{ env.MESSAGE_SERVICE_TRIGGER_DEPLOYMENT }}" \
-              -l "deployment" \
-              -p "${{ env.deployment_project }}"
+          first_environment="${configuration_environments%% *}"
+          if [[ $first_environment == "" ]]; then
+            echo "  The artifact is not configured to be deployed"
+          else
+            echo "  Environment to deploy the application: $first_environment"
+            gh -R "${{ github.repository }}" issue create \
+            -t "Deployment $first_environment ${{ env.service_name }} ${{ env.service_version }}" \
+            -a "${{ github.triggering_actor}}" \
+            -b "${{ env.MESSAGE_SERVICE_TRIGGER_DEPLOYMENT }}" \
+            -l "deployment" \
+            -p "${{ env.deployment_project }}"
+          fi
