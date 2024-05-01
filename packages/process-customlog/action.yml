@@ -1,9 +1,5 @@
 name: 'Sets the custom logging in Cloudhub/GovCloud'
 description: 'Sets the custom logging in Cloudhub/GovCloud'
-inputs:
-  deployment-env:
-    required: true
-    description: Deployment environment for the service
 outputs:
   outcome:
     description: "The result of the deployment: sucess, failure"
@@ -12,6 +8,15 @@ outputs:
 runs:
   using: "composite"
   steps:
+
+  - name: Create badge default logging system
+    uses: CoveredCA/common-devops/packages/badge@main
+    with:
+      label: '${{ env.deployment_environment }} log'
+      status: 'Anypoint'
+      color: '535597'
+      file: ${{ env.service_name }}-${{ env.deployment_environment }}-cl.svg
+      folder: ${{ env.service_name }}
 
   - id: custom-logger
     name: Set custom logger
@@ -47,7 +52,7 @@ runs:
           curl \
           https://$configuration_deployment_host/accounts/api/organizations/$configuration_deployment_organization/environments \
           -H "Authorization: Bearer $ACCESS_TOKEN" \
-        | jq -r '.data[] | select(.name == "${{ inputs.deployment-env }}") | {id}' \
+        | jq -r '.data[] | select(.name == "${{ env.deployment_environment }}") | {id}' \
         | jq -r ".id ")
       echo "ENVIRONMENT_ID: $ENVIRONMENT_ID"
 
@@ -125,3 +130,12 @@ runs:
       done
 
       echo " "
+
+  - name: Create badge for custom logging
+    uses: CoveredCA/common-devops/packages/badge@main
+    with:
+      label: '${{ env.deployment_environment }} log'
+      status: '${{ env.custom_log_platform }}'
+      color: '535597'
+      file: ${{ env.service_name }}-${{ env.deployment_environment }}-cl.svg
+      folder: ${{ env.service_name }}

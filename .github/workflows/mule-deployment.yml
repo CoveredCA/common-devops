@@ -76,40 +76,10 @@ jobs:
           file: ${{ env.service_name }}-${{ env.deployment_environment }}.svg
           folder: ${{ env.service_name }}
 
-      - name: Create badge for custom logging
-        uses: CoveredCA/common-devops/packages/badge@main
-        with:
-          label: 'Custom logging'
-          status: 'false'
-          color: '535597'
-          file: ${{ env.service_name }}-${{ env.deployment_environment }}-cl.svg
-          folder: ${{ env.service_name }}
-
-      - name: Custom logging
+      - name: Custom Logging
         id: custom-logging
-        env:
-          GITHUB_TOKEN: ${{ env.github_automationbot_token }}
-        shell: bash
-        run: |
-          echo " "
-          echo "***********************************************"
-          echo "Custom logging for application"
-          echo "  ${{ github.event.issue.html_url }}"
-          echo "***********************************************"
-          echo " "
-          echo "  Current environment: $deployment_environment, from: $configuration_environments"
-          echo "  configuration_deployment_customlogger: $configuration_deployment_customlogger"
-          echo " "
-
-          if [[ $configuration_deployment_customlogger == "true" ]]; then
-
-            gh -R "${{ github.repository }}" issue create \
-                -t "CustomLogging $deployment_environment ${{ env.service_name }} ${{ env.service_version }}" \
-                -a "${{ github.event.issue.assignee.login }}" \
-                -b "The deployment job in $deployment_environment environment triggered this custom logging for the application" \
-                -l "deployment" \
-                -p "${{ env.deployment_project }}"
-          fi
+        if: "env.configuration_deployment_customlogger == 'true'"
+        uses: CoveredCA/common-devops/packages/process-customlog@main
 
       - name: BAT Testing
         id: bat
