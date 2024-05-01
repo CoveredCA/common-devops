@@ -163,7 +163,6 @@ runs:
           parse_yaml ".$deployment_environment.deployment.host"; echo "configuration_deployment_host=$pathdata" >> $GITHUB_ENV
           parse_yaml ".$deployment_environment.deployment.customlogger"; echo "configuration_deployment_customlogger=$pathdata" >> $GITHUB_ENV
           parse_yaml ".$deployment_environment.deployment.mulesoft_environment"; echo "configuration_deployment_mulesoft_environment=$pathdata" >> $GITHUB_ENV
-          parse_yaml ".$deployment_environment.bat.environment_script"; echo "configuration_bat_environment_script=$pathdata" >> $GITHUB_ENV
           parse_yaml ".$deployment_environment.bat.variables"; echo "configuration_bat_variables=$pathdata" >> $GITHUB_ENV
           parse_yaml ".$deployment_environment.cloudhub";
           substitution_cloudhub=$(eval "echo $pathdata")
@@ -229,4 +228,4 @@ runs:
         echo "  configuration_deployment_customlogger= $configuration_deployment_customlogger"
         echo "  configuration_deployment_mulesoft_environment= $configuration_deployment_mulesoft_environment"
         echo "  configuration_cloudhub= $configuration_cloudhub"
-        echo "  configuration_bat= $configuration_bat"
+        echo "  configuration_bat_variables= $configuration_bat_variables"
