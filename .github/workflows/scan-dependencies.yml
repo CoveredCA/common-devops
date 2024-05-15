@@ -14,6 +14,11 @@ env:
   GLOBAL_CONFIGURATION: _global.yml
   SECRETS_AZURE_KEYVAULT: CoveredCA-KV-Mulesoft
   ISSUE_MESSAGE: "The service has dependencies that needs to be updated"
+  BADGE_LABEL: "Dependencies"
+  BADGE_STATUS_SUCCESS: "Verified"
+  BADGE_STATUS_INVALID: "Invalid"
+  BADGE_STATUS_SUCCESS_COLOR: "31c653"
+  BADGE_STATUS_INVALID_COLOR: "800000"
 
 jobs:
   scan-dependencies:
@@ -87,9 +92,12 @@ jobs:
             echo "Dependencies up to date"
           fi
 
-          # The GH_TOKEN was exposed as env variable en app-token action
+          # The GH_TOKEN was exposed as env variable in the app-token action. The next commented code
+          # is used only if We need to use the github CLI with another token
           # export GH_TOKEN=$github_automationbot_token
 
+          # Get the date for the code badge 
+          current_date=$(date +'%Y-%m-%d')
           if [[ "$ERROR" = "true" ]]; then
             echo "  Create a scan-dependencies issue for: myuser"
             gh -R "${{ github.repository }}" issue create \
@@ -98,11 +106,24 @@ jobs:
             -b "${{ env.ISSUE_MESSAGE }}" \
             -l "deployment" \
             -p "${{ env.deployment_project }}"
-          fi
 
-          if [ "$ERROR" = "true" ]; then
-            echo " "
             echo " "
             echo "Project plugins/dependencies should be updated!"
-            exit 1 # terminate and indicate error 
+            echo "dependencies_badge_status=${{ env.BADGE_STATUS_INVALID }} $current_date" >> $GITHUB_ENV
+            echo "dependencies_badge_color=${{ env.BADGE_STATUS_INVALID_COLOR }}" >> $GITHUB_ENV
+
+            exit 1 # terminate and indicate error
+          else
+            echo "dependencies_badge_status=${{ env.BADGE_STATUS_SUCCESS }} $current_date" >> $GITHUB_ENV
+            echo "dependencies_badge_color=${{ env.BADGE_STATUS_SUCCESS_COLOR }}" >> $GITHUB_ENV 
           fi
+
+    - name: Create badge
+      uses: CoveredCA/common-devops/packages/badge@main
+      if: always()
+      with:
+        label: ${{ env.BADGE_LABEL}}
+        status: ${{ env.dependencies_status }}
+        color: ${{ env.dependencies_badge_color }}
+        file: ${{ env.service_name }}-dependencies.svg
+        folder: ${{ env.service_name }}
