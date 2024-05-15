@@ -87,8 +87,8 @@ jobs:
             echo "Dependencies up to date"
           fi
 
-          GH_TOKEN=$github_automationbot_token
-          
+          export GH_TOKEN=$github_automationbot_token
+
           if [[ "$ERROR" = "true" ]]; then
             echo "  Create a scan-dependencies issue for: myuser"
             gh -R "${{ github.repository }}" issue create \
