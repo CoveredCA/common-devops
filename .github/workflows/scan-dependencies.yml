@@ -9,29 +9,35 @@ on:
     # cron: "0 0 * * 5"
   workflow_call:
 
+env:
+  ISSUE_MESSAGE: "The service has dependencies that needs to be updated"
+
 jobs:
   scan-dependencies:
-    name: scan
+    name: Scan dependencies
     runs-on: ubuntu-latest
 
     steps:
-      - name: Get the source code
-        uses: actions/checkout@v4
 
-      - name: Cache local Maven repository
-        uses: actions/cache@v3
+      - name: Get token from Github App
+        id: app-token
+        uses: CoveredCA/common-devops/packages/app-token@main
         with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-maven-
-                
-      - name: Setup JDK 8
-        uses: actions/setup-java@v3
+          client-id: ${{ secrets.MULESOFT_GITHUBAPP_CLIENTID}}
+          privatekey: ${{ secrets.MULESOFT_GITHUBAPP_PRIVATEKEY }}
+
+      - name: Get secrets from Azure Key Vault
+        id: secrets
+        uses: CoveredCA/common-devops/packages/secrets-azure@main
         with:
-          java-version: '8'
-          distribution: 'temurin'
-          cache: 'maven'
+          keyvault-key: ${{ env.SECRETS_AZURE_KEYVAULT}}
+          azure-credentials: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Get service configuration
+        uses: CoveredCA/common-devops/packages/configuration-service@main
+
+      - name: Install Java environment for Mulesoft Applications
+        uses: CoveredCA/common-devops/packages/install-java@main
 
       - name: Scan maven dependencies
         shell: bash
@@ -78,10 +84,20 @@ jobs:
             echo "Dependencies up to date"
           fi
 
+          first_environment="${configuration_environments%% *}"
+          if [[ "$ERROR" = "true" ]]; then
+            echo "  Create a scan-dependencies issue for: myuser"
+            gh -R "${{ github.repository }}" issue create \
+            -t "scan-dependencies Update ${{ env.service_name }} ${{ env.service_version }}" \
+            -a "${{ github.triggering_actor}}" \
+            -b "${{ env.ISSUE_MESSAGE }}" \
+            -l "deployment" \
+            -p "${{ env.deployment_project }}"
+          fi
+
           if [ "$ERROR" = "true" ]; then
             echo " "
             echo " "
             echo "Project plugins/dependencies should be updated!"
             exit 1 # terminate and indicate error 
           fi
-
