@@ -87,7 +87,8 @@ jobs:
             echo "Dependencies up to date"
           fi
 
-          export GH_TOKEN=$github_automationbot_token
+          # The GH_TOKEN was exposed as env variable en app-token action
+          # export GH_TOKEN=$github_automationbot_token
 
           if [[ "$ERROR" = "true" ]]; then
             echo "  Create a scan-dependencies issue for: myuser"
