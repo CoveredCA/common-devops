@@ -92,8 +92,8 @@ jobs:
           if [[ "$ERROR" = "true" ]]; then
             echo "  Create a scan-dependencies issue for: myuser"
             gh -R "${{ github.repository }}" issue create \
-            -t "scan-dependencies Update ${{ env.service_name }} ${{ env.service_version }}" \
-            -a "${{ github.triggering_actor}}" \
+            -t "scan-dependencies update ${{ env.service_name }} ${{ env.service_version }}" \
+            -a "$scandependencies_user" \
             -b "${{ env.ISSUE_MESSAGE }}" \
             -l "deployment" \
             -p "${{ env.deployment_project }}"
