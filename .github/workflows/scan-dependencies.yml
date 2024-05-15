@@ -118,12 +118,12 @@ jobs:
             echo "dependencies_badge_color=${{ env.BADGE_STATUS_SUCCESS_COLOR }}" >> $GITHUB_ENV 
           fi
 
-    - name: Create badge
-      uses: CoveredCA/common-devops/packages/badge@main
-      if: always()
-      with:
-        label: ${{ env.BADGE_LABEL}}
-        status: ${{ env.dependencies_status }}
-        color: ${{ env.dependencies_badge_color }}
-        file: ${{ env.service_name }}-dependencies.svg
-        folder: ${{ env.service_name }}
+      - name: Create badge
+        uses: CoveredCA/common-devops/packages/badge@main
+        if: always()
+        with:
+          label: ${{ env.BADGE_LABEL}}
+          status: ${{ env.dependencies_status }}
+          color: ${{ env.dependencies_badge_color }}
+          file: ${{ env.service_name }}-dependencies.svg
+          folder: ${{ env.service_name }}
