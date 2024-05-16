@@ -99,7 +99,7 @@ jobs:
           # Get the date for the code badge 
           current_date=$(date +'%Y-%m-%d')
           if [[ "$ERROR" = "true" ]]; then
-            echo "  Create a scan-dependencies issue for: myuser"
+            echo "  Create a scan-dependencies issue"
             gh -R "${{ github.repository }}" issue create \
             -t "scan-dependencies update ${{ env.service_name }} ${{ env.service_version }}" \
             -a "$scandependencies_user" \
@@ -123,7 +123,7 @@ jobs:
         if: always()
         with:
           label: ${{ env.BADGE_LABEL}}
-          status: ${{ env.dependencies_status }}
+          status: ${{ env.dependencies_badge_status }}
           color: ${{ env.dependencies_badge_color }}
           file: ${{ env.service_name }}-dependencies.svg
           folder: ${{ env.service_name }}
