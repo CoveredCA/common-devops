@@ -102,9 +102,9 @@ jobs:
             echo "  Create a scan-dependencies issue"
             gh -R "${{ github.repository }}" issue create \
             -t "scan-dependencies update ${{ env.service_name }} ${{ env.service_version }}" \
-            -a "$scandependencies_user" \
+            -a "$configuration_scandependencies_assignees" \
             -b "${{ env.ISSUE_MESSAGE }}" \
-            -l "deployment" \
+            -l "$scandependencies_issue_label" \
             -p "${{ env.deployment_project }}"
 
             echo " "

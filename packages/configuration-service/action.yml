@@ -151,6 +151,7 @@ runs:
         parse_yaml '.environments'; echo "configuration_environments=$pathdata" >> $GITHUB_ENV
         parse_yaml ".apptype"; echo "configuration_apptype=$pathdata" >> $GITHUB_ENV
         parse_yaml ".redeployment-next-environment"; echo "configuration_redeployment_next_environment=$pathdata" >> $GITHUB_ENV
+        parse_yaml ".scandependencies-assignees"; echo "configuration_scandependencies_assignees=$pathdata" >> $GITHUB_ENV
 
         parse_yaml '.test-properties';
         substitution_test_properties=$(eval "echo $pathdata")
@@ -221,6 +222,7 @@ runs:
         echo "  configuration_environments= $configuration_environments"
         echo "  configuration_apptype= $configuration_apptype"
         echo "  configuration_redeployment_next_environment= $configuration_redeployment_next_environment"
+        echo "  configuration_scandependencies_assignees= $configuration_scandependencies_assignees"
         echo "  configuration_test_properties= $configuration_test_properties"
         echo "  configuration_deployment_name= $configuration_deployment_name"
         echo "  configuration_deployment_organization= $configuration_deployment_organization"
