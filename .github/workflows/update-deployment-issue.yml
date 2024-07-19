@@ -31,21 +31,11 @@ env:
 
 jobs:
   updateIssue:
-    name:
+    name: Update Project Issue
     runs-on: ubuntu-latest
     permissions: write-all
 
     steps:
-
-      - name: debug secrets
-        shell: bash
-        env:
-          MULESOFT_GITHUBAPP_CLIENTID: ${{ secrets.MULESOFT_GITHUBAPP_CLIENTID}}
-          MULESOFT_GITHUBAPP_PRIVATEKEY: ${{ secrets.MULESOFT_GITHUBAPP_PRIVATEKEY }}
-        run: |
-          echo "MULESOFT_GITHUBAPP_CLIENTID == $MULESOFT_GITHUBAPP_CLIENTID"
-          echo "MULESOFT_GITHUBAPP_PRIVATEKEY == $MULESOFT_GITHUBAPP_PRIVATEKEY"
-          echo "GH_TOKEN == $GH_TOKEN"
 
       - name: Get token from Github App
         id: app-token
