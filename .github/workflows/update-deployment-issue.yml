@@ -110,7 +110,7 @@ jobs:
           echo "        ******************"
 
           PROJECT_ID=$(gh api graphql -f query='{
-            organization(login: $org) {
+            organization(login: "${{ inputs.organization }}") {
               login
               projectsV2(first: 100) {
                 edges {
@@ -121,7 +121,7 @@ jobs:
                 }
               }
             }
-          }' -f org="${{ inputs.organization }}" | jq -r '.data.organization.projectsV2.edges[] | select(.node.title | test("Deployment")) | .node.id')
+          }' | jq -r '.data.organization.projectsV2.edges[] | select(.node.title | test("Deployment")) | .node.id')
 
           echo "        ******************"
           echo "        * Get Field ID's *"
