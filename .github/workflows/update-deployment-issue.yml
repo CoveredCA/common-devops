@@ -22,16 +22,40 @@ on: # DEBUG TESTING VALUE
         required: true
         default: "1.0.10"
         description: The version of the application to be deployed to the environment
+      debug:
+        required: false
+        default: false
+        description: more verbose output for debugging purposes
 
 jobs:
   updateIssue:
     name:
     runs-on: ubuntu-latest
     steps:
+
+    - name: Create a GitHub App installation access token
+      id: app-token
+      uses: peter-murray/workflow-application-token-action@v3
+      with:
+        application_id: ${{ secrets.MULESOFT_GITHUBAPP_CLIENTID}}
+        application_private_key: ${{ secrets.MULESOFT_GITHUBAPP_PRIVATEKEY }}
+
+    - name: Verify app token
+      shell: bash
+      run: |
+        echo " "
+        echo "***********************************************"
+        echo "Verify App token"
+        echo "***********************************************"
+        echo "  "
+        echo "  App token: ${{ steps.app-token.outputs.token }}"
+        echo "github_automationbot_token=${{ steps.app-token.outputs.token }}" >> $GITHUB_ENV
+        echo "GH_TOKEN=${{ steps.app-token.outputs.token }}" >> $GITHUB_ENV
+        echo " "
+
+
       - name: Collect ID's for Deployment Issue Update
         shell: bash
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
 
           echo "*********************************************"
