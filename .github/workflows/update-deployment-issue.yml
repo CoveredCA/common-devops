@@ -32,7 +32,8 @@ jobs:
     name:
     runs-on: ubuntu-latest
     permissions: write-all
-    
+    environment: production_environment
+
     steps:
 
       - name: debug secrets
