@@ -2,27 +2,27 @@ name: Update Deployment Issue
 description: Deployment issues need custom project fields filled out
 on: # DEBUG TESTING VALUE
   workflow_call: # DEBUG TESTING VALUE
-inputs:
-  organization:
-    required: true
-    default: "CoveredCA"
-    description: Name of the organization the project is in
-  project-number:
-    required: true
-    default: 5
-    description: The number of the project from the project web url
-  application-name:
-    required: true
-    default: "cca-salesforce-sapi" # DEBUG TESTING VALUE
-    description: The name of the application the deployment issue was created for
-  environment:
-    required: true
-    default: "dev" # DEBUG TESTING VALUE
-    description: The enmviropnment the deployment issue is calling for
-  version:
-    required: true
-    default: "1.0.10"
-    description: The version of the application to be deployed to the environment
+    inputs:
+      organization:
+        required: true
+        default: "CoveredCA"
+        description: Name of the organization the project is in
+      project-number:
+        required: true
+        default: 5
+        description: The number of the project from the project web url
+      application-name:
+        required: true
+        default: "cca-salesforce-sapi" # DEBUG TESTING VALUE
+        description: The name of the application the deployment issue was created for
+      environment:
+        required: true
+        default: "dev" # DEBUG TESTING VALUE
+        description: The enmviropnment the deployment issue is calling for
+      version:
+        required: true
+        default: "1.0.10"
+        description: The version of the application to be deployed to the environment
 
 jobs:
   updateIssue:
