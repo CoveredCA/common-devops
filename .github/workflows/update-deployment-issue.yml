@@ -28,16 +28,7 @@ jobs:
     name:
     runs-on: ubuntu-latest
     steps:
-      - name: Get token from Github App
-        id: app-token
-        uses: CoveredCA/common-devops/packages/app-token@main
-        with:
-          client-id: ${{ secrets.MULESOFT_GITHUBAPP_CLIENTID}}
-          privatekey: ${{ secrets.MULESOFT_GITHUBAPP_PRIVATEKEY }}
-
       - name: Collect ID's for Deployment Issue Update
-        env:
-          GITHUB_TOKEN: ${{ env.github_automationbot_token }}
         shell: bash
         run: |
 
