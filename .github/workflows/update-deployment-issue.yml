@@ -28,8 +28,10 @@ jobs:
     name:
     runs-on: ubuntu-latest
     steps:
-      - name: Collect ID's for Deployment Issue Update
+     - name: Collect ID's for Deployment Issue Update
         shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
 
           echo "*********************************************"
