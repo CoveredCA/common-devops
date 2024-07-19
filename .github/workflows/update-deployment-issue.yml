@@ -1,7 +1,7 @@
 name: Update Deployment Issue
 description: Deployment issues need custom project fields filled out
 on: # DEBUG TESTING VALUE
-  workflow_call: # DEBUG TESTING VALUE
+  workflow_dispatch: # DEBUG TESTING VALUE
     inputs:
       organization:
         required: true
