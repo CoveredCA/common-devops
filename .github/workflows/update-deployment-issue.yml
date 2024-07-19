@@ -47,30 +47,22 @@ jobs:
           echo "MULESOFT_GITHUBAPP_PRIVATEKEY == $MULESOFT_GITHUBAPP_PRIVATEKEY"
           echo "GH_TOKEN == $GH_TOKEN"
 
-      # - name: Get token from Github App
-      #   id: app-token
-      #   uses: CoveredCA/common-devops/packages/app-token@main
-      #   with:
-      #     client-id: ${{ secrets.MULESOFT_GITHUBAPP_CLIENTID}}
-      #     privatekey: ${{ secrets.MULESOFT_GITHUBAPP_PRIVATEKEY }}
+      - name: Get token from Github App
+        id: app-token
+        uses: CoveredCA/common-devops/packages/app-token@main
+        with:
+          client-id: ${{ secrets.MULESOFT_GITHUBAPP_CLIENTID}}
+          privatekey: ${{ secrets.MULESOFT_GITHUBAPP_PRIVATEKEY }}
 
       - name: Collect ID's for Deployment Issue Update
         shell: bash
         env:
-          GITHUB_TOKEN: ${{github.token}}
-          # GITHUB_TOKEN: ${{ env.github_automationbot_token }}
-          GH_TOKEN: ${{github.token}}
+          GITHUB_TOKEN: ${{ env.github_automationbot_token }}
         run: |
 
           echo "*********************************************"
           echo "GitHub Graph API Grab ID's For Graph Queries "
           echo "*********************************************"
-
-          echo "user.name: ${{ github.actor }}"
-          echo "user.email: ${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com"
-          git config --global init.defaultBranch main
-          git config --global user.name "${{ github.actor }}"
-          git config --global user.email "${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com"
 
           echo "        ****************"
           echo "        * Get Issue ID *"
