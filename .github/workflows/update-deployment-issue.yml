@@ -26,6 +26,8 @@ on: # DEBUG TESTING VALUE
         required: false
         default: false
         description: more verbose output for debugging purposes
+env:
+  GH_TOKEN: ${{github.token}}
 
 jobs:
   updateIssue:
@@ -43,6 +45,7 @@ jobs:
         run: |
           echo "MULESOFT_GITHUBAPP_CLIENTID == $MULESOFT_GITHUBAPP_CLIENTID"
           echo "MULESOFT_GITHUBAPP_PRIVATEKEY == $MULESOFT_GITHUBAPP_PRIVATEKEY"
+          echo "GH_TOKEN == $GH_TOKEN"
 
       - name: Get token from Github App
         id: app-token
