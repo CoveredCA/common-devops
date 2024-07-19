@@ -32,15 +32,17 @@ jobs:
     name:
     runs-on: ubuntu-latest
     permissions: write-all
-    environment: production_environment
 
     steps:
 
       - name: debug secrets
         shell: bash
+        env:
+          MULESOFT_GITHUBAPP_CLIENTID: ${{ secrets.MULESOFT_GITHUBAPP_CLIENTID}}
+          MULESOFT_GITHUBAPP_PRIVATEKEY: ${{ secrets.MULESOFT_GITHUBAPP_PRIVATEKEY }}
         run: |
-          echo "MULESOFT_GITHUBAPP_CLIENTID == ${{ secrets.MULESOFT_GITHUBAPP_CLIENTID}}"
-          echo "MULESOFT_GITHUBAPP_PRIVATEKEY == ${{ secrets.MULESOFT_GITHUBAPP_PRIVATEKEY }}"
+          echo "MULESOFT_GITHUBAPP_CLIENTID == $MULESOFT_GITHUBAPP_CLIENTID"
+          echo "MULESOFT_GITHUBAPP_PRIVATEKEY == $MULESOFT_GITHUBAPP_PRIVATEKEY"
 
       - name: Get token from Github App
         id: app-token
@@ -48,7 +50,6 @@ jobs:
         with:
           client-id: ${{ secrets.MULESOFT_GITHUBAPP_CLIENTID}}
           privatekey: ${{ secrets.MULESOFT_GITHUBAPP_PRIVATEKEY }}
-        secrets: inherit
 
       - name: Collect ID's for Deployment Issue Update
         shell: bash
