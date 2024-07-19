@@ -48,6 +48,7 @@ jobs:
         with:
           client-id: ${{ secrets.MULESOFT_GITHUBAPP_CLIENTID}}
           privatekey: ${{ secrets.MULESOFT_GITHUBAPP_PRIVATEKEY }}
+        secrets: inherit
 
       - name: Collect ID's for Deployment Issue Update
         shell: bash
