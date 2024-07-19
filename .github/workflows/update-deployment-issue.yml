@@ -1,6 +1,6 @@
 name: Update Deployment Issue
-on: # DEBUG TESTING VALUE
-  workflow_dispatch: # DEBUG TESTING VALUE
+on: 
+  workflow_dispatch:
     inputs:
       organization:
         required: true
@@ -12,11 +12,11 @@ on: # DEBUG TESTING VALUE
         description: The number of the project from the project web url
       application-name:
         required: true
-        default: "cca-salesforce-sapi" # DEBUG TESTING VALUE
+        default: "cca-salesforce-sapi"
         description: The name of the application the deployment issue was created for
       environment:
         required: true
-        default: "dev" # DEBUG TESTING VALUE
+        default: "dev"
         description: The enmviropnment the deployment issue is calling for
       version:
         required: true
