@@ -27,12 +27,27 @@ on: # DEBUG TESTING VALUE
         default: false
         description: more verbose output for debugging purposes
 
+env:
+  CONFIGURATIONS_REPOSITORY: common-configurations
+  GLOBAL_CONFIGURATION: _global.yml
+  SECRETS_AZURE_KEYVAULT: CoveredCA-KV-Mulesoft
+
+  CCA_BRANCH:  ${{github.ref_name}}
+  CCA_USER_NAME: ${{github.actor}}
+  CCA_PROJECT_DIR:  ${{inputs.serviceName}}
+  GH_TOKEN: ${{github.token}}
+
 jobs:
   updateIssue:
     name: Update Project Issue
     runs-on: ubuntu-latest
 
-    permissions: write-all
+    permissions:
+      contents: write
+      checks: write
+      issues: write
+      pull-requests: write
+      actions: write
 
     steps:
 
