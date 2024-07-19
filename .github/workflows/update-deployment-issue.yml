@@ -26,13 +26,12 @@ on: # DEBUG TESTING VALUE
         required: false
         default: false
         description: more verbose output for debugging purposes
-env:
-  GH_TOKEN: ${{github.token}}
 
 jobs:
   updateIssue:
     name: Update Project Issue
     runs-on: ubuntu-latest
+
     permissions: write-all
 
     steps:
@@ -48,6 +47,7 @@ jobs:
         shell: bash
         env:
           GITHUB_TOKEN: ${{ env.github_automationbot_token }}
+          GH_TOKEN: ${{ env.github_automationbot_token }}
         run: |
 
           echo "*********************************************"
