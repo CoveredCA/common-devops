@@ -105,6 +105,8 @@ jobs:
 
           ISSUE_ID=$(jq -r '. | select(.content.title | test("Deployment")) | select(.content.title | test("${{ inputs.environment }}")) | select(.content.title | test("${{ inputs.application-name }}")) | select(.content.title | test("${{ inputs.version }}")) | .id' deployment_issues.json)
 
+          echo "ISSUE_ID == $ISSUE_ID"
+
           echo "        ******************"
           echo "        * Get Project ID *"
           echo "        ******************"
@@ -122,6 +124,9 @@ jobs:
               }
             }
           }' | jq -r '.data.organization.projectsV2.edges[] | select(.node.title | test("Deployment")) | .node.id')
+
+          echo "ISSUE_ID == $ISSUE_ID"
+          echo "PROJECT_ID == $PROJECT_ID"
 
           echo "        ******************"
           echo "        * Get Field ID's *"
@@ -155,6 +160,11 @@ jobs:
           FIELD_ID_ENVIRONMENT=$(echo "$FIELD_DATA" | jq -r '. | select(.name | test("Environment")) | .id')
           FIELD_ID_VERSION=$(echo "$FIELD_DATA" | jq -r '. | select(.name | test("Version")) | .id')
 
+          echo "ISSUE_ID == $ISSUE_ID"
+          echo "PROJECT_ID == $PROJECT_ID"
+          echo "FIELD_ID_ENVIRONMENT == $FIELD_ID_ENVIRONMENT"
+          echo "FIELD_ID_VERSION == $FIELD_ID_VERSION"
+
           echo "        *************************************"
           echo "        * Get Environment Field Option ID's *"
           echo "        *************************************"
@@ -184,11 +194,38 @@ jobs:
                         }
                       }' -f org="${{ inputs.organization }}" -F number="${{ inputs.project-number }}" | jq '.data.organization.projectV2.fields.nodes[] | select(.name | test("Environment")) | .options[]' | jq -r '. | select(.name | test("${{ inputs.environment }}")) | .id')
 
+          echo "ISSUE_ID == $ISSUE_ID"
+          echo "PROJECT_ID == $PROJECT_ID"
+          echo "FIELD_ID_ENVIRONMENT == $FIELD_ID_ENVIRONMENT"
+          echo "FIELD_ID_VERSION == $FIELD_ID_VERSION"
+          echo "FIELD_ENVIRONMENT_OPTION_ID == $FIELD_ENVIRONMENT_OPTION_ID"
+
           echo "*******************************************************"
           echo "GitHub Graph API Update Custom Fields on Project Items "
           echo "*******************************************************"
 
           echo "Updating Environment Field"
+          echo ""
+          echo "Graph Query 1"
+          echo ""
+          echo "gh api graphql -f query='
+              mutation {
+                  updateProjectV2ItemFieldValue(
+                      input: {
+                          projectId: \"$PROJECT_ID\"
+                          itemId: \"$ISSUE_ID\"
+                          fieldId: \"$FIELD_ID_ENVIRONMENT\"
+                          value: {
+                              singleSelectOptionId: \"$FIELD_ENVIRONMENT_OPTION_ID\"
+                          }
+                      }
+                  )
+                  {
+                      projectV2Item {
+                          id
+                      }
+                  }
+              }'"
           echo ""
           gh api graphql -f query='
               mutation {
@@ -212,7 +249,27 @@ jobs:
           echo ""
           echo "Updating Version Field"
           echo ""
-
+          echo "Graph Query 2"
+          echo ""
+          echo "gh api graphql -f query='
+              mutation {
+                  updateProjectV2ItemFieldValue(
+                      input: {
+                          projectId: \"$PROJECT_ID\"
+                          itemId: \"$ISSUE_ID\"
+                          fieldId: \"$FIELD_ID_VERSION\"
+                          value: {
+                              text: \"${{ inputs.version }}\"
+                          }
+                      }
+                  )
+                  {
+                      projectV2Item {
+                          id
+                      }
+                  }
+              }'"
+          echo ""
           gh api graphql -f query='
               mutation {
                   updateProjectV2ItemFieldValue(
