@@ -33,6 +33,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
 
+      - name: debug secrets
+        shell: bash
+        run: |
+          echo "MULESOFT_GITHUBAPP_CLIENTID == ${{ secrets.MULESOFT_GITHUBAPP_CLIENTID}}"
+          echo "MULESOFT_GITHUBAPP_PRIVATEKEY == ${{ secrets.MULESOFT_GITHUBAPP_PRIVATEKEY }}"
+
       - name: Get token from Github App
         id: app-token
         uses: CoveredCA/common-devops/packages/app-token@main
