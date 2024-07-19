@@ -1,0 +1,227 @@
+name: Update Deployment Issue
+description: Deployment issues need custom project fields filled out
+on: # DEBUG TESTING VALUE
+  workflow_call: # DEBUG TESTING VALUE
+inputs:
+  organization:
+    required: true
+    default: "CoveredCA"
+    description: Name of the organization the project is in
+  project-number:
+    required: true
+    default: 5
+    description: The number of the project from the project web url
+  application-name:
+    required: true
+    default: "cca-salesforce-sapi" # DEBUG TESTING VALUE
+    description: The name of the application the deployment issue was created for
+  environment:
+    required: true
+    default: "dev" # DEBUG TESTING VALUE
+    description: The enmviropnment the deployment issue is calling for
+  version:
+    required: true
+    default: "1.0.10"
+    description: The version of the application to be deployed to the environment
+
+jobs:
+  updateIssue:
+    name:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get token from Github App
+        id: app-token
+        uses: CoveredCA/common-devops/packages/app-token@main
+        with:
+          client-id: ${{ secrets.MULESOFT_GITHUBAPP_CLIENTID}}
+          privatekey: ${{ secrets.MULESOFT_GITHUBAPP_PRIVATEKEY }}
+
+      - name: Collect ID's for Deployment Issue Update
+        env:
+          GITHUB_TOKEN: ${{ env.github_automationbot_token }}
+        shell: bash
+        run: |
+
+          echo "*********************************************"
+          echo "GitHub Graph API Grab ID's For Graph Queries "
+          echo "*********************************************"
+
+          echo "        ****************"
+          echo "        * Get Issue ID *"
+          echo "        ****************"
+
+          # Initial cursor is empty
+          CURSOR=""
+
+          # Loop until all pages are fetched
+          while : ; do
+              # Execute GraphQL query
+              RESPONSE=$(gh api graphql -f query='
+              query($org: String!, $number: Int!, $cursor: String) {
+                  organization(login: $org) {
+                      projectV2(number: $number) {
+                          items(first: 100, after: $cursor) {
+                              pageInfo {
+                                  hasNextPage
+                                  endCursor
+                              }
+                              nodes {
+                                  id
+                                  content {
+                                      ... on Issue {
+                                          id
+                                          number
+                                          title
+                                      }
+                                  }
+                              }
+                          }
+                      }
+                  }
+              }' -f org="${{ inputs.organization }}" -F number="${{ inputs.project-number }}" -f cursor="$CURSOR")
+
+              # Parse items and do something with them, e.g., append to a file
+              echo "$RESPONSE" | jq '.data.organization.projectV2.items.nodes[]' >> deployment_issues.json
+
+              # Check if there's a next page; if not, break the loop
+              HAS_NEXT_PAGE=$(echo "$RESPONSE" | jq '.data.organization.projectV2.items.pageInfo.hasNextPage')
+              if [ "$HAS_NEXT_PAGE" != "true" ]; then
+                  break
+              fi
+
+              # Update cursor to fetch next page
+              CURSOR=$(echo "$RESPONSE" | jq -r '.data.organization.projectV2.items.pageInfo.endCursor')
+          done
+
+          echo "All items fetched successfully."
+
+          echo "Parsing output data file"
+
+          ISSUE_ID=$(jq -r '. | select(.content.title | test("Deployment")) | select(.content.title | test("${{ inputs.environment }}")) | select(.content.title | test("${{ inputs.application-name }}")) | select(.content.title | test("${{ inputs.version }}")) | .id' deployment_issues.json)
+
+          echo "        ******************"
+          echo "        * Get Project ID *"
+          echo "        ******************"
+
+          PROJECT_ID=$(gh api graphql -f query='{
+            organization(login: $org) {
+              login
+              projectsV2(first: 100) {
+                edges {
+                  node {
+                    id
+                    title
+                  }
+                }
+              }
+            }
+          }' -f org="${{ inputs.organization }}" | jq -r '.data.organization.projectsV2.edges[] | select(.node.title | test("Deployment")) | .node.id')
+
+          echo "        ******************"
+          echo "        * Get Field ID's *"
+          echo "        ******************"
+
+          FIELD_DATA=$(gh api graphql -f query='
+                      query($org: String!, $number: Int!) {
+                        organization(login: $org){
+                          projectV2(number: $number) {
+                            id
+                            fields(first:20) {
+                              nodes {
+                                ... on ProjectV2Field {
+                                  id
+                                  name
+                                }
+                                ... on ProjectV2SingleSelectField {
+                                  id
+                                  name
+                                  options {
+                                    id
+                                    name
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }' -f org="${{ inputs.organization }}" -F number="5" | jq '.data.organization.projectV2.fields.nodes[] | select((.name | test("Environment")) or (.name | test("Version")))')
+
+          FIELD_ID_ENVIRONMENT=$(echo "$FIELD_DATA" | jq -r '. | select(.name | test("Environment")) | .id')
+          FIELD_ID_VERSION=$(echo "$FIELD_DATA" | jq -r '. | select(.name | test("Version")) | .id')
+
+          echo "        *************************************"
+          echo "        * Get Environment Field Option ID's *"
+          echo "        *************************************"
+
+          FIELD_ENVIRONMENT_OPTION_ID=$(gh api graphql -f query='
+                      query($org: String!, $number: Int!) {
+                        organization(login: $org){
+                          projectV2(number: $number) {
+                            id
+                            fields(first:20) {
+                              nodes {
+                                ... on ProjectV2Field {
+                                  id
+                                  name
+                                }
+                                ... on ProjectV2SingleSelectField {
+                                  id
+                                  name
+                                  options {
+                                    id
+                                    name
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }' -f org="${{ inputs.organization }}" -F number="${{ inputs.project-number }}" | jq '.data.organization.projectV2.fields.nodes[] | select(.name | test("Environment")) | .options[]' | jq -r '. | select(.name | test("${{ inputs.environment }}")) | .id')
+
+          echo "*******************************************************"
+          echo "GitHub Graph API Update Custom Fields on Project Items "
+          echo "*******************************************************"
+
+          echo "Updating Environment Field"
+          echo ""
+          gh api graphql -f query='
+              mutation {
+                  updateProjectV2ItemFieldValue(
+                      input: {
+                          projectId: "$PROJECT_ID"
+                          itemId: "$ISSUE_ID"
+                          fieldId: "$FIELD_ID_ENVIRONMENT"
+                          value: {
+                              singleSelectOptionId: "$FIELD_ENVIRONMENT_OPTION_ID"
+                          }
+                      }
+                  )
+                  {
+                      projectV2Item {
+                          id
+                      }
+                  }
+              }'
+
+          echo ""
+          echo "Updating Version Field"
+          echo ""
+
+          gh api graphql -f query='
+              mutation {
+                  updateProjectV2ItemFieldValue(
+                      input: {
+                          projectId: "$PROJECT_ID"
+                          itemId: "$ISSUE_ID"
+                          fieldId: "$FIELD_ID_VERSION"
+                          value: {
+                              text: "${{ inputs.version }}"
+                          }
+                      }
+                  )
+                  {
+                      projectV2Item {
+                          id
+                      }
+                  }
+              }'
