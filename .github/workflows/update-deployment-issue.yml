@@ -47,17 +47,18 @@ jobs:
           echo "MULESOFT_GITHUBAPP_PRIVATEKEY == $MULESOFT_GITHUBAPP_PRIVATEKEY"
           echo "GH_TOKEN == $GH_TOKEN"
 
-      - name: Get token from Github App
-        id: app-token
-        uses: CoveredCA/common-devops/packages/app-token@main
-        with:
-          client-id: ${{ secrets.MULESOFT_GITHUBAPP_CLIENTID}}
-          privatekey: ${{ secrets.MULESOFT_GITHUBAPP_PRIVATEKEY }}
+      # - name: Get token from Github App
+      #   id: app-token
+      #   uses: CoveredCA/common-devops/packages/app-token@main
+      #   with:
+      #     client-id: ${{ secrets.MULESOFT_GITHUBAPP_CLIENTID}}
+      #     privatekey: ${{ secrets.MULESOFT_GITHUBAPP_PRIVATEKEY }}
 
       - name: Collect ID's for Deployment Issue Update
         shell: bash
         env:
           GITHUB_TOKEN: ${{ env.github_automationbot_token }}
+          GH_TOKEN: ${{github.token}}
         run: |
 
           echo "*********************************************"
