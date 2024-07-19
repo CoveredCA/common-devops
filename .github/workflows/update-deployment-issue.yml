@@ -227,24 +227,24 @@ jobs:
                   }
               }'"
           echo ""
-          gh api graphql -f query='
-              mutation {
-                  updateProjectV2ItemFieldValue(
-                      input: {
-                          projectId: "$PROJECT_ID"
-                          itemId: "$ISSUE_ID"
-                          fieldId: "$FIELD_ID_ENVIRONMENT"
-                          value: {
-                              singleSelectOptionId: "$FIELD_ENVIRONMENT_OPTION_ID"
-                          }
-                      }
-                  )
-                  {
-                      projectV2Item {
-                          id
-                      }
-                  }
-              }'
+          # gh api graphql -f query='
+          #     mutation {
+          #         updateProjectV2ItemFieldValue(
+          #             input: {
+          #                 projectId: "$PROJECT_ID"
+          #                 itemId: "$ISSUE_ID"
+          #                 fieldId: "$FIELD_ID_ENVIRONMENT"
+          #                 value: {
+          #                     singleSelectOptionId: "$FIELD_ENVIRONMENT_OPTION_ID"
+          #                 }
+          #             }
+          #         )
+          #         {
+          #             projectV2Item {
+          #                 id
+          #             }
+          #         }
+          #     }'
 
           echo ""
           echo "Updating Version Field"
