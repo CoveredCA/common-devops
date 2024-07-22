@@ -28,12 +28,32 @@ inputs:
 runs:
   using: "composite"
   steps:
+    - name: Split Version Fields
+      id: version-fields
+      shell: bash
+      run: |
+        echo ""
+        echo "*************************"
+        echo "* Split Version Numbers *"
+        echo "*************************"
+        echo ""
+        VERSION_MAJOR=$(echo "${{ inputs.version }}" | cut -d "." -f 1)
+        VERSION_MINOR=$(echo "${{ inputs.version }}" | cut -d "." -f 2)
+        VERSION_PATCH=$(echo "${{ inputs.version }}" | cut -d "." -f 3)
+        echo "VERSION_MAJOR == $VERSION_MAJOR"
+        echo "VERSION_MINOR == $VERSION_MINOR"
+        echo "VERSION_PATCH == $VERSION_PATCH"
+        echo "VERSION_MAJOR=$VERSION_MAJOR" >> $GITHUB_OUTPUT
+        echo "VERSION_MINOR=$VERSION_MINOR" >> $GITHUB_OUTPUT
+        echo "VERSION_PATCH=$VERSION_PATCH" >> $GITHUB_OUTPUT
+
     - name: Get project ID
       id: project-id
       shell: bash
       env:
         GITHUB_TOKEN: ${{ inputs.token }}
       run: |
+        echo ""
         echo "******************"
         echo "* Get Project ID *"
         echo "******************"
@@ -54,17 +74,13 @@ runs:
 
         echo "PROJECT_ID=$PROJECT_ID" >> $GITHUB_OUTPUT
 
-    - name: DEBUG - PROJECT_ID
-      if: ${{ github.event.inputs.debug == 'true' }}
-      shell: bash
-      run: echo "PROJECT_ID = ${{steps.project-id.outputs.PROJECT_ID}}"
-
     - name: Get issue ID
       id: issue-id
       shell: bash
       env:
         GITHUB_TOKEN: ${{ inputs.token }}
       run: |
+        echo ""
         echo "****************"
         echo "* Get Issue ID *"
         echo "****************"
@@ -120,18 +136,13 @@ runs:
 
         echo "ISSUE_ID=$ISSUE_ID" >> $GITHUB_OUTPUT
 
-    - name: DEBUG - ISSUE_ID
-      if: ${{ github.event.inputs.debug == 'true' }}
-      shell: bash
-      run: echo "ISSUE_ID = ${{steps.issue-id.outputs.ISSUE_ID}}"
-
-    - name: Get field ID
+    - name: Get field IDs
       id: field-id
       shell: bash
       env:
         GITHUB_TOKEN: ${{ inputs.token }}
       run: |
-
+        echo ""
         echo "******************"
         echo "* Get Field ID's *"
         echo "******************"
@@ -159,20 +170,19 @@ runs:
                           }
                         }
                       }
-                    }' -f org="${{ inputs.organization }}" -F number="${{ inputs.project-number }}" | jq '.data.organization.projectV2.fields.nodes[] | select((.name | test("Environment")) or (.name | test("Version")))')
+                    }' -f org="${{ inputs.organization }}" -F number="${{ inputs.project-number }}" | jq '.data.organization.projectV2.fields.nodes[] | select((.name | test("Environment")) or (.name | test("Version")) or (.name | test("major")) or (.name | test("minor")) or (.name | test("patch")))')
 
         FIELD_ID_ENVIRONMENT=$(echo "$FIELD_DATA" | jq -r '. | select(.name | test("Environment")) | .id')
         FIELD_ID_VERSION=$(echo "$FIELD_DATA" | jq -r '. | select(.name | test("Version")) | .id')
+        FIELD_ID_MAJOR=$(echo "$FIELD_DATA" | jq -r '. | select(.name | test("major")) | .id')
+        FIELD_ID_MINOR=$(echo "$FIELD_DATA" | jq -r '. | select(.name | test("minor")) | .id')
+        FIELD_ID_PATCH=$(echo "$FIELD_DATA" | jq -r '. | select(.name | test("patch")) | .id')
 
         echo "FIELD_ID_ENVIRONMENT=$FIELD_ID_ENVIRONMENT" >> $GITHUB_OUTPUT
         echo "FIELD_ID_VERSION=$FIELD_ID_VERSION" >> $GITHUB_OUTPUT
-
-    - name: DEBUG - FIELD_ID
-      if: ${{ github.event.inputs.debug == 'true' }}
-      shell: bash
-      run: |
-        echo "FIELD_ID_ENVIRONMENT = ${{steps.field-id.outputs.FIELD_ID_ENVIRONMENT}}"
-        echo "FIELD_ID_VERSION = ${{steps.field-id.outputs.FIELD_ID_VERSION}}"
+        echo "FIELD_ID_MAJOR=$FIELD_ID_MAJOR" >> $GITHUB_OUTPUT
+        echo "FIELD_ID_MINOR=$FIELD_ID_MINOR" >> $GITHUB_OUTPUT
+        echo "FIELD_ID_PATCH=$FIELD_ID_PATCH" >> $GITHUB_OUTPUT
 
     - name: Get Environment Field Option ID
       id: environment-option-id
@@ -180,7 +190,7 @@ runs:
       env:
         GITHUB_TOKEN: ${{ inputs.token }}
       run: |
-
+        echo ""
         echo "***********************************"
         echo "* Get Environment Field Option ID *"
         echo "***********************************"
@@ -212,41 +222,15 @@ runs:
 
         echo "FIELD_ENVIRONMENT_OPTION_ID=$FIELD_ENVIRONMENT_OPTION_ID" >> $GITHUB_OUTPUT
 
-    - name: DEBUG - FIELD_ENVIRONMENT_OPTION_ID
-      if: ${{ github.event.inputs.debug == 'true' }}
-      shell: bash
-      run: echo "FIELD_ENVIRONMENT_OPTION_ID = ${{steps.environment-option-id.outputs.FIELD_ENVIRONMENT_OPTION_ID}}"
-
     - name: Update Deployment Issue Environment Field
       shell: bash
       env:
         GITHUB_TOKEN: ${{ inputs.token }}
       run: |
         echo ""
-        echo "Updating Environment Field"
-        echo ""
-        echo "Graph Query 1"
-        echo ""
-        echo "gh api graphql -f query='
-            mutation {
-                updateProjectV2ItemFieldValue(
-                    input: {
-                        projectId: \"${{ steps.project-id.outputs.PROJECT_ID }}\"
-                        itemId: \"${{ steps.issue-id.outputs.ISSUE_ID }}\"
-                        fieldId: \"${{ steps.field-id.outputs.FIELD_ID_ENVIRONMENT }}\"
-                        value: {
-                            singleSelectOptionId: \"${{ steps.environment-option-id.outputs.FIELD_ENVIRONMENT_OPTION_ID }}\"
-                        }
-                    }
-                )
-                {
-                    projectV2Item {
-                        id
-                    }
-                }
-            }'"
-        echo ""
-        echo "Running Query 1 now..."
+        echo "******************************"
+        echo "* Updating Environment Field *"
+        echo "******************************"
         echo ""
         gh api graphql -f query='
             mutation {
@@ -273,30 +257,9 @@ runs:
         GITHUB_TOKEN: ${{ inputs.token }}
       run: |
         echo ""
-        echo "Updating Version Field"
-        echo ""
-        echo "Graph Query 2"
-        echo ""
-        echo "gh api graphql -f query='
-            mutation {
-                updateProjectV2ItemFieldValue(
-                    input: {
-                        projectId: \"${{steps.project-id.outputs.PROJECT_ID}}\"
-                        itemId: \"${{ steps.issue-id.outputs.ISSUE_ID }}\"
-                        fieldId: \"${{ steps.field-id.outputs.FIELD_ID_VERSION }}\"
-                        value: {
-                            text: \"${{ inputs.version }}\"
-                        }
-                    }
-                )
-                {
-                    projectV2Item {
-                        id
-                    }
-                }
-            }'"
-        echo ""
-        echo "Running query 2 now..."
+        echo "**************************"
+        echo "* Updating Version Field *"
+        echo "**************************"
         echo ""
         gh api graphql -f query='
             mutation {
@@ -307,6 +270,87 @@ runs:
                         fieldId: "${{ steps.field-id.outputs.FIELD_ID_VERSION }}"
                         value: {
                             text: "${{ inputs.version }}"
+                        }
+                    }
+                )
+                {
+                    projectV2Item {
+                        id
+                    }
+                }
+            }'
+
+    - name: Update Version Individual Fields
+      shell: bash
+      env:
+        GITHUB_TOKEN: ${{ inputs.token }}
+      run: |
+        echo ""
+        echo "**************************************"
+        echo "* Updating Individual Version Fields *"
+        echo "**************************************"
+        echo ""
+        echo "*****************"
+        echo "* MAJOR VERSION *"
+        echo "*****************"
+        echo ""
+        gh api graphql -f query='
+            mutation {
+                updateProjectV2ItemFieldValue(
+                    input: {
+                        projectId: "${{steps.project-id.outputs.PROJECT_ID}}"
+                        itemId: "${{ steps.issue-id.outputs.ISSUE_ID }}"
+                        fieldId: "${{ steps.field-id.outputs.FIELD_ID_MAJOR }}"
+                        value: {
+                            text: "${{ steps.version-fields.outputs.VERSION_MAJOR }}"
+                        }
+                    }
+                )
+                {
+                    projectV2Item {
+                        id
+                    }
+                }
+            }'
+
+        echo ""
+        echo "*****************"
+        echo "* MINOR VERSION *"
+        echo "*****************"
+        echo ""
+        gh api graphql -f query='
+            mutation {
+                updateProjectV2ItemFieldValue(
+                    input: {
+                        projectId: "${{steps.project-id.outputs.PROJECT_ID}}"
+                        itemId: "${{ steps.issue-id.outputs.ISSUE_ID }}"
+                        fieldId: "${{ steps.field-id.outputs.FIELD_ID_MINOR }}"
+                        value: {
+                            text: "${{ steps.version-fields.outputs.VERSION_MINOR }}"
+                        }
+                    }
+                )
+                {
+                    projectV2Item {
+                        id
+                    }
+                }
+            }'
+
+        echo ""
+        echo "*****************"
+        echo "* PATCH VERSION *"
+        echo "*****************"
+        echo ""
+        gh api graphql -f query='
+            mutation {
+                updateProjectV2ItemFieldValue(
+                    input: {
+                        projectId: "${{steps.project-id.outputs.PROJECT_ID}}"
+                        itemId: "${{ steps.issue-id.outputs.ISSUE_ID }}"
+                        fieldId: "${{ steps.field-id.outputs.FIELD_ID_PATCH }}"
+                        value: {
+                            text: "${{ steps.version-fields.outputs.VERSION_PATCH }}"
                         }
                     }
                 )
