@@ -30,18 +30,26 @@ jobs:
         id: app-token
         uses: CoveredCA/common-devops/packages/app-token@main
         with:
-          client-id: ${{ secrets.MULESOFT_GITHUBAPP_CLIENTID}}
+          client-id: ${{ secrets.MULESOFT_GITHUBAPP_CLIENTID }}
           privatekey: ${{ secrets.MULESOFT_GITHUBAPP_PRIVATEKEY }}
 
       - name: Get secrets from Azure Key Vault
         id: secrets
         uses: CoveredCA/common-devops/packages/secrets-azure@main
         with:
-          keyvault-key: ${{ env.SECRETS_AZURE_KEYVAULT}}
+          keyvault-key: ${{ env.SECRETS_AZURE_KEYVAULT }}
           azure-credentials: ${{ secrets.AZURE_CREDENTIALS }}
 
       - name: Get service configuration
         uses: CoveredCA/common-devops/packages/configuration-service@main
+
+      - name: Update deployment issue custom fields
+        uses: CoveredCA/common-devops/packages/update-deployment-issue@main
+        with:
+          token: ${{ env.github_automationbot_token }}
+          environment: ${{ env.deployment_environment }}
+          application-name: ${{ env.service_name }}
+          version: ${{ env.deployment_version }}
 
       - name: Get jar file
         uses: dsaltares/fetch-gh-release-asset@master
@@ -51,14 +59,6 @@ jobs:
           regex: false
           file: "${{ env.service_artifact }}-${{ env.deployment_version }}-${{ env.configuration_apptype }}.jar"
           token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Update deployment issue custom fields
-        uses: CoveredCA/common-devops/packages/update-deployment-issue@main
-        with:
-          token: ${{ env.github_automationbot_token }}
-          environment: ${{ env.deployment_environment }}
-          application-name: ${{ env.service_name }}
-          version: ${{ env.deployment_version }}
 
       - name: Debug show root files
         id: debug-show-root-files
@@ -71,7 +71,7 @@ jobs:
           echo " "
           ls -l
 
-      - name: Deploy the service in Cloudhub1 
+      - name: Deploy the service in Cloudhub1
         id: deployment-ch1
         uses: CoveredCA/common-devops/packages/process-cloudhub1@main
 
@@ -93,7 +93,7 @@ jobs:
         id: bat
         uses: CoveredCA/common-devops/packages/process-bat@main
         with:
-          deployment-env: ${{ env.deployment_environment }} 
+          deployment-env: ${{ env.deployment_environment }}
 
       #################################################################
       # Issue Management: create, close, add comments
@@ -130,19 +130,19 @@ jobs:
               -r "completed"
 
             echo "  Deployment analysis:"
-            echo "    github.run_number= ${{github.run_number}}"
-            echo "    github.run_attempt= ${{github.run_attempt}}"
-            echo "    github.event.issue.assignee.login= ${{github.event.issue.assignee.login}}"
+            echo "    github.run_number= ${{ github.run_number }}"
+            echo "    github.run_attempt= ${{ github.run_attempt }}"
+            echo "    github.event.issue.assignee.login= ${{ github.event.issue.assignee.login }}"
             echo " "
 
             execute_deployment="true"
-            if [[ "${{github.run_attempt}}" != "1" ]]; then
+            if [[ "${{ github.run_attempt }}" != "1" ]]; then
               echo "  The workflow was re-run"
               if [[ "$configuration_redeployment_next_environment" == "false" ]]; then
                 execute_deployment="false"
                 echo " "
                 echo "  Service won't be deployed to the next environment,redeployment-next-environment= $configuration_redeployment_next_environment"
-              
+
               else
                 echo "  The service it is a candiate for deployment in next environment, configuration_redeployment_next_environment= $configuration_redeployment_next_environment"
               fi
@@ -157,10 +157,10 @@ jobs:
               echo "  ***********************************************"
               echo " "
               echo "  Current environment: $deployment_environment, from: $configuration_environments"
-              
+
               # Environment list to an array
               read -a array <<< "$configuration_environments"
-    
+
               # Find the current environment in the list
               currentIndex=-1
               for i in "${!array[@]}"; do
@@ -168,19 +168,19 @@ jobs:
                   currentIndex=$i;
                 fi
               done
-    
+
               if (( $currentIndex == -1 )); then
                 echo "Error, the current environment is not in the list of deployment"
                 exit 1
               fi
-    
+
               # Find the next environment for deployment
               sizearray=${#array[@]}
               nextindex=$(($currentIndex + 1))
-    
+
               if (( $sizearray > $nextindex )); then
                 nextenvironment=${array[$nextindex]}
-    
+
                 echo "  Next environment to deploy the application: $nextenvironment"
                 gh -R "${{ github.repository }}" issue create \
                     -t "Deployment $nextenvironment ${{ env.service_name }} ${{ env.service_version }}" \
@@ -193,4 +193,4 @@ jobs:
               fi
             fi  # $execute_deployment != true
 
-          fi # steps.deployment-ch1.outputs.outcome != success 
+          fi # steps.deployment-ch1.outputs.outcome != success
