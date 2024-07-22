@@ -22,10 +22,32 @@ on:
         required: true
         default: "1.0.10"
         description: The version of the application to be deployed to the environment
-      debug:
-        required: false
+        debug:
+          required: false
         default: false
         description: more verbose output for debugging purposes
+  workflow_call:
+    inputs:
+      organization:
+        required: false
+        default: "CoveredCA"
+        description: Name of the organization the project is in
+      project-number:
+        required: false
+        default: 5
+        description: The number of the project from the project web url
+      application-name:
+        required: true
+        default: "cca-salesforce-sapi"
+        description: The name of the application the deployment issue was created for
+      environment:
+        required: true
+        default: "dev"
+        description: The enmviropnment the deployment issue is calling for
+      version:
+        required: true
+        default: "1.0.10"
+        description: The version of the application to be deployed to the environment
 
 jobs:
   updateIssue:
