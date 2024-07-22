@@ -52,6 +52,13 @@ jobs:
           file: "${{ env.service_artifact }}-${{ env.deployment_version }}-${{ env.configuration_apptype }}.jar"
           token: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Update deployment issue custom fields
+        uses: CoveredCA/common-devops/packages/update-deployment-issue@main
+        with:
+          environment: ${{ env.deployment_environment }}
+          application-name: ${{ env.service_name }}
+          version: ${{ env.deployment_version }}
+
       - name: Debug show root files
         id: debug-show-root-files
         shell: bash
