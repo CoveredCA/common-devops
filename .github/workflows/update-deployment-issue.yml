@@ -3,11 +3,11 @@ on:
   workflow_dispatch:
     inputs:
       organization:
-        required: true
+        required: false
         default: "CoveredCA"
         description: Name of the organization the project is in
       project-number:
-        required: true
+        required: false
         default: 5
         description: The number of the project from the project web url
       application-name:
@@ -69,7 +69,7 @@ jobs:
           echo "PROJECT_ID=$PROJECT_ID" >> $GITHUB_OUTPUT
 
       - name: DEBUG - PROJECT_ID
-        if:  runner.debug == '1'
+        if:  env.debug == '1'
         run: echo "PROJECT_ID = ${{steps.project-id.outputs.PROJECT_ID}}"
 
       - name: Get issue ID
@@ -135,7 +135,7 @@ jobs:
           echo "ISSUE_ID=$ISSUE_ID" >> $GITHUB_OUTPUT
 
       - name: DEBUG - ISSUE_ID
-        if:  runner.debug == '1'
+        if:  env.debug == '1'
         run: echo "ISSUE_ID = ${{steps.issue-id.outputs.ISSUE_ID}}"
 
       - name: Get field ID
@@ -182,7 +182,7 @@ jobs:
           echo "FIELD_ID_VERSION=$FIELD_ID_VERSION" >> $GITHUB_OUTPUT
 
       - name: DEBUG - FIELD_ID
-        if:  runner.debug == '1'
+        if:  env.debug == '1'
         run: |
           echo "FIELD_ID_ENVIRONMENT = ${{steps.field-id.outputs.FIELD_ID_ENVIRONMENT}}"
           echo "FIELD_ID_VERSION = ${{steps.field-id.outputs.FIELD_ID_VERSION}}"
@@ -227,7 +227,7 @@ jobs:
           echo "FIELD_ENVIRONMENT_OPTION_ID=$FIELD_ENVIRONMENT_OPTION_ID" >> $GITHUB_OUTPUT
 
       - name: DEBUG - FIELD_ENVIRONMENT_OPTION_ID
-        if:  runner.debug == '1'
+        if:  env.debug == '1'
         run: echo "FIELD_ENVIRONMENT_OPTION_ID = ${{steps.environment-option-id.outputs.FIELD_ENVIRONMENT_OPTION_ID}}"
 
       - name: Update Deployment Issue Environment Field
