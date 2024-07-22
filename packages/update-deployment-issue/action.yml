@@ -302,7 +302,7 @@ runs:
                         itemId: "${{ steps.issue-id.outputs.ISSUE_ID }}"
                         fieldId: "${{ steps.field-id.outputs.FIELD_ID_MAJOR }}"
                         value: {
-                            number: "${{ steps.version-fields.outputs.VERSION_MAJOR }}"
+                            number: ${{ steps.version-fields.outputs.VERSION_MAJOR }}
                         }
                     }
                 )
@@ -326,7 +326,7 @@ runs:
                         itemId: "${{ steps.issue-id.outputs.ISSUE_ID }}"
                         fieldId: "${{ steps.field-id.outputs.FIELD_ID_MINOR }}"
                         value: {
-                            number: "${{ steps.version-fields.outputs.VERSION_MINOR }}"
+                            number: ${{ steps.version-fields.outputs.VERSION_MINOR }}
                         }
                     }
                 )
@@ -350,7 +350,7 @@ runs:
                         itemId: "${{ steps.issue-id.outputs.ISSUE_ID }}"
                         fieldId: "${{ steps.field-id.outputs.FIELD_ID_PATCH }}"
                         value: {
-                            number: "${{ steps.version-fields.outputs.VERSION_PATCH }}"
+                            number:${{ steps.version-fields.outputs.VERSION_PATCH }}"
                         }
                     }
                 )
