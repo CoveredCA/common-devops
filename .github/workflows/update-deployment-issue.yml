@@ -167,7 +167,6 @@ jobs:
           FIELD_ID_VERSION=$(echo "$FIELD_DATA" | jq -r '. | select(.name | test("Version")) | .id')
 
           echo "ISSUE_ID == $ISSUE_ID"
-          echo "PROJECT_ID == $PROJECT_ID"
           echo "FIELD_ID_ENVIRONMENT == $FIELD_ID_ENVIRONMENT"
           echo "FIELD_ID_VERSION == $FIELD_ID_VERSION"
 
@@ -201,7 +200,6 @@ jobs:
                       }' -f org="${{ inputs.organization }}" -F number="${{ inputs.project-number }}" | jq '.data.organization.projectV2.fields.nodes[] | select(.name | test("Environment")) | .options[]' | jq -r '. | select(.name | test("${{ inputs.environment }}")) | .id')
 
           echo "ISSUE_ID == $ISSUE_ID"
-          echo "PROJECT_ID == $PROJECT_ID"
           echo "FIELD_ID_ENVIRONMENT == $FIELD_ID_ENVIRONMENT"
           echo "FIELD_ID_VERSION == $FIELD_ID_VERSION"
           echo "FIELD_ENVIRONMENT_OPTION_ID == $FIELD_ENVIRONMENT_OPTION_ID"
@@ -218,7 +216,7 @@ jobs:
               mutation {
                   updateProjectV2ItemFieldValue(
                       input: {
-                          projectId: \"$PROJECT_ID\"
+                          projectId: \"${{steps.project-id.outputs.PROJECT_ID}}\"
                           itemId: \"$ISSUE_ID\"
                           fieldId: \"$FIELD_ID_ENVIRONMENT\"
                           value: {
@@ -261,7 +259,7 @@ jobs:
               mutation {
                   updateProjectV2ItemFieldValue(
                       input: {
-                          projectId: \"$PROJECT_ID\"
+                          projectId: \"${{steps.project-id.outputs.PROJECT_ID}}\"
                           itemId: \"$ISSUE_ID\"
                           fieldId: \"$FIELD_ID_VERSION\"
                           value: {
