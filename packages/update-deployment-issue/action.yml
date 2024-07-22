@@ -21,23 +21,18 @@ inputs:
     required: true
     default: "1.0.10"
     description: The version of the application to be deployed to the environment
+  token:
+    required: true
+    description: The token for the mulebot so that github api actions can be performed
 
 runs:
   using: "composite"
   steps:
-    - name: Get token from Github App
-      id: app-token
-      uses: CoveredCA/common-devops/packages/app-token@main
-      with:
-        client-id: ${{ secrets.MULESOFT_GITHUBAPP_CLIENTID }}
-        privatekey: ${{ secrets.MULESOFT_GITHUBAPP_PRIVATEKEY }}
-
     - name: Get project ID
       id: project-id
       shell: bash
       env:
-        GITHUB_TOKEN: ${{ env.github_automationbot_token }}
-        GH_TOKEN: ${{ env.github_automationbot_token }}
+        GITHUB_TOKEN: ${{ inputs.token }}
       run: |
         echo "******************"
         echo "* Get Project ID *"
@@ -61,14 +56,14 @@ runs:
 
     - name: DEBUG - PROJECT_ID
       if: ${{ github.event.inputs.debug == 'true' }}
+      shell: bash
       run: echo "PROJECT_ID = ${{steps.project-id.outputs.PROJECT_ID}}"
 
     - name: Get issue ID
       id: issue-id
       shell: bash
       env:
-        GITHUB_TOKEN: ${{ env.github_automationbot_token }}
-        GH_TOKEN: ${{ env.github_automationbot_token }}
+        GITHUB_TOKEN: ${{ inputs:token }}
       run: |
         echo "****************"
         echo "* Get Issue ID *"
@@ -127,14 +122,14 @@ runs:
 
     - name: DEBUG - ISSUE_ID
       if: ${{ github.event.inputs.debug == 'true' }}
+      shell: bash
       run: echo "ISSUE_ID = ${{steps.issue-id.outputs.ISSUE_ID}}"
 
     - name: Get field ID
       id: field-id
       shell: bash
       env:
-        GITHUB_TOKEN: ${{ env.github_automationbot_token }}
-        GH_TOKEN: ${{ env.github_automationbot_token }}
+        GITHUB_TOKEN: ${{ inputs:token }}
       run: |
 
         echo "******************"
@@ -174,6 +169,7 @@ runs:
 
     - name: DEBUG - FIELD_ID
       if: ${{ github.event.inputs.debug == 'true' }}
+      shell: bash
       run: |
         echo "FIELD_ID_ENVIRONMENT = ${{steps.field-id.outputs.FIELD_ID_ENVIRONMENT}}"
         echo "FIELD_ID_VERSION = ${{steps.field-id.outputs.FIELD_ID_VERSION}}"
@@ -182,8 +178,7 @@ runs:
       id: environment-option-id
       shell: bash
       env:
-        GITHUB_TOKEN: ${{ env.github_automationbot_token }}
-        GH_TOKEN: ${{ env.github_automationbot_token }}
+        GITHUB_TOKEN: ${{ inputs:token }}
       run: |
 
         echo "***********************************"
@@ -219,13 +214,13 @@ runs:
 
     - name: DEBUG - FIELD_ENVIRONMENT_OPTION_ID
       if: ${{ github.event.inputs.debug == 'true' }}
+      shell: bash
       run: echo "FIELD_ENVIRONMENT_OPTION_ID = ${{steps.environment-option-id.outputs.FIELD_ENVIRONMENT_OPTION_ID}}"
 
     - name: Update Deployment Issue Environment Field
       shell: bash
       env:
-        GITHUB_TOKEN: ${{ env.github_automationbot_token }}
-        GH_TOKEN: ${{ env.github_automationbot_token }}
+        GITHUB_TOKEN: ${{ inputs:token }}
       run: |
         echo ""
         echo "Updating Environment Field"
@@ -275,8 +270,7 @@ runs:
     - name: Update Deployment Issue Version Field
       shell: bash
       env:
-        GITHUB_TOKEN: ${{ env.github_automationbot_token }}
-        GH_TOKEN: ${{ env.github_automationbot_token }}
+        GITHUB_TOKEN: ${{ inputs:token }}
       run: |
         echo ""
         echo "Updating Version Field"
