@@ -68,20 +68,20 @@ jobs:
 
           echo "PROJECT_ID=$PROJECT_ID" >> $GITHUB_OUTPUT
 
-      - name: Collect ID's for Deployment Issue Update
+      - name: DEBUG - PROJECT_ID
+        if:  runner.debug == '1'
+        run: echo "PROJECT_ID = ${{steps.project-id.outputs.PROJECT_ID}}"
+
+      - name: Get issue ID
+        id: issue-id
         shell: bash
         env:
           GITHUB_TOKEN: ${{ env.github_automationbot_token }}
           GH_TOKEN: ${{ env.github_automationbot_token }}
         run: |
-
-          echo "*********************************************"
-          echo "GitHub Graph API Grab ID's For Graph Queries "
-          echo "*********************************************"
-
-          echo "        ****************"
-          echo "        * Get Issue ID *"
-          echo "        ****************"
+          echo "****************"
+          echo "* Get Issue ID *"
+          echo "****************"
 
           # Initial cursor is empty
           CURSOR=""
@@ -132,11 +132,23 @@ jobs:
 
           ISSUE_ID=$(jq -r '. | select(.content.title | test("Deployment")) | select(.content.title | test("${{ inputs.environment }}")) | select(.content.title | test("${{ inputs.application-name }}")) | select(.content.title | test("${{ inputs.version }}")) | .id' deployment_issues.json)
 
-          echo "ISSUE_ID == $ISSUE_ID"
+          echo "ISSUE_ID=$ISSUE_ID" >> $GITHUB_OUTPUT
 
-          echo "        ******************"
-          echo "        * Get Field ID's *"
-          echo "        ******************"
+      - name: DEBUG - ISSUE_ID
+        if:  runner.debug == '1'
+        run: echo "ISSUE_ID = ${{steps.issue-id.outputs.ISSUE_ID}}"
+
+      - name: Get field ID
+        id: field-id
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ env.github_automationbot_token }}
+          GH_TOKEN: ${{ env.github_automationbot_token }}
+        run: |
+
+          echo "******************"
+          echo "* Get Field ID's *"
+          echo "******************"
 
           FIELD_DATA=$(gh api graphql -f query='
                       query($org: String!, $number: Int!) {
@@ -166,13 +178,24 @@ jobs:
           FIELD_ID_ENVIRONMENT=$(echo "$FIELD_DATA" | jq -r '. | select(.name | test("Environment")) | .id')
           FIELD_ID_VERSION=$(echo "$FIELD_DATA" | jq -r '. | select(.name | test("Version")) | .id')
 
-          echo "ISSUE_ID == $ISSUE_ID"
-          echo "FIELD_ID_ENVIRONMENT == $FIELD_ID_ENVIRONMENT"
-          echo "FIELD_ID_VERSION == $FIELD_ID_VERSION"
+          echo "FIELD_ID_ENVIRONMENT=$FIELD_ID_ENVIRONMENT" >> $GITHUB_OUTPUT
+          echo "FIELD_ID_VERSION=$FIELD_ID_VERSION" >> $GITHUB_OUTPUT
 
-          echo "        *************************************"
-          echo "        * Get Environment Field Option ID's *"
-          echo "        *************************************"
+      - name: DEBUG - FIELD_ID
+        if:  runner.debug == '1'
+        run: echo "FIELD_ID = ${{steps.field-id.outputs.FIELD_ID}}"
+
+      - name: Get Environment Field Option ID
+        id: environment-option-id
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ env.github_automationbot_token }}
+          GH_TOKEN: ${{ env.github_automationbot_token }}
+        run: |
+
+          echo "***********************************"
+          echo "* Get Environment Field Option ID *"
+          echo "***********************************"
 
           FIELD_ENVIRONMENT_OPTION_ID=$(gh api graphql -f query='
                       query($org: String!, $number: Int!) {
@@ -199,28 +222,32 @@ jobs:
                         }
                       }' -f org="${{ inputs.organization }}" -F number="${{ inputs.project-number }}" | jq '.data.organization.projectV2.fields.nodes[] | select(.name | test("Environment")) | .options[]' | jq -r '. | select(.name | test("${{ inputs.environment }}")) | .id')
 
-          echo "ISSUE_ID == $ISSUE_ID"
-          echo "FIELD_ID_ENVIRONMENT == $FIELD_ID_ENVIRONMENT"
-          echo "FIELD_ID_VERSION == $FIELD_ID_VERSION"
-          echo "FIELD_ENVIRONMENT_OPTION_ID == $FIELD_ENVIRONMENT_OPTION_ID"
+          echo "FIELD_ENVIRONMENT_OPTION_ID=$FIELD_ENVIRONMENT_OPTION_ID" >> $GITHUB_OUTPUT
 
-          echo "*******************************************************"
-          echo "GitHub Graph API Update Custom Fields on Project Items "
-          echo "*******************************************************"
+      - name: DEBUG - FIELD_ENVIRONMENT_OPTION_ID
+        if:  runner.debug == '1'
+        run: echo "FIELD_ENVIRONMENT_OPTION_ID = ${{steps.environment-option-id.outputs.FIELD_ENVIRONMENT_OPTION_ID}}"
 
+      - name: Update Deployment Issue Environment Field
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ env.github_automationbot_token }}
+          GH_TOKEN: ${{ env.github_automationbot_token }}
+        run: |
+          echo ""
           echo "Updating Environment Field"
           echo ""
           echo "Graph Query 1"
           echo ""
-          echo "gh api graphql -f query='\
+          echo "gh api graphql -f query='
               mutation {
                   updateProjectV2ItemFieldValue(
                       input: {
-                          projectId: \"${{steps.project-id.outputs.PROJECT_ID}}\"
-                          itemId: \"$ISSUE_ID\"
-                          fieldId: \"$FIELD_ID_ENVIRONMENT\"
+                          projectId: \"${{ steps.project-id.outputs.PROJECT_ID }}\"
+                          itemId: \"${{ steps.issue-id.outputs.ISSUE_ID }}\"
+                          fieldId: \"${{ steps.field-id.outputs.FIELD_ID_ENVIRONMENT }}\"
                           value: {
-                              singleSelectOptionId: \"$FIELD_ENVIRONMENT_OPTION_ID\"
+                              singleSelectOptionId: \"${{ steps.environment-option-id.outputs.FIELD_ENVIRONMENT_OPTION_ID }}\"
                           }
                       }
                   )
@@ -231,15 +258,17 @@ jobs:
                   }
               }'"
           echo ""
+          echo "Running Query 1 now..."
+          echo ""
           gh api graphql -f query='
               mutation {
                   updateProjectV2ItemFieldValue(
                       input: {
                           projectId: "${{steps.project-id.outputs.PROJECT_ID}}"
-                          itemId: "$ISSUE_ID"
-                          fieldId: "$FIELD_ID_ENVIRONMENT"
+                          itemId: "${{ steps.issue-id.outputs.ISSUE_ID }}"
+                          fieldId: "${{ steps.field-id.outputs.FIELD_ID_ENVIRONMENT }}"
                           value: {
-                              singleSelectOptionId: "$FIELD_ENVIRONMENT_OPTION_ID"
+                              singleSelectOptionId: "${{ steps.environment-option-id.outputs.FIELD_ENVIRONMENT_OPTION_ID }}"
                           }
                       }
                   )
@@ -250,6 +279,12 @@ jobs:
                   }
               }'
 
+      - name: Update Deployment Issue Version Field
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ env.github_automationbot_token }}
+          GH_TOKEN: ${{ env.github_automationbot_token }}
+        run: |
           echo ""
           echo "Updating Version Field"
           echo ""
@@ -260,8 +295,8 @@ jobs:
                   updateProjectV2ItemFieldValue(
                       input: {
                           projectId: \"${{steps.project-id.outputs.PROJECT_ID}}\"
-                          itemId: \"$ISSUE_ID\"
-                          fieldId: \"$FIELD_ID_VERSION\"
+                          itemId: \"${{ steps.issue-id.outputs.ISSUE_ID }}\"
+                          fieldId: \"${{ steps.field-id.outputs.FIELD_ID_VERSION }}\"
                           value: {
                               text: \"${{ inputs.version }}\"
                           }
@@ -274,13 +309,15 @@ jobs:
                   }
               }'"
           echo ""
+          echo "Running query 2 now..."
+          echo ""
           gh api graphql -f query='
               mutation {
                   updateProjectV2ItemFieldValue(
                       input: {
                           projectId: "${{steps.project-id.outputs.PROJECT_ID}}"
-                          itemId: "$ISSUE_ID"
-                          fieldId: "$FIELD_ID_VERSION"
+                          itemId: "${{ steps.issue-id.outputs.ISSUE_ID }}"
+                          fieldId: "${{ steps.field-id.outputs.FIELD_ID_VERSION }}"
                           value: {
                               text: "${{ inputs.version }}"
                           }
