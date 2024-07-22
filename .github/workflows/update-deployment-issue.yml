@@ -22,8 +22,8 @@ on:
         required: true
         default: "1.0.10"
         description: The version of the application to be deployed to the environment
-        debug:
-          required: false
+      debug:
+        required: false
         default: false
         description: more verbose output for debugging purposes
   workflow_call:
