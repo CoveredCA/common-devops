@@ -63,7 +63,7 @@ runs:
       id: issue-id
       shell: bash
       env:
-        GITHUB_TOKEN: ${{ inputs:token }}
+        GITHUB_TOKEN: ${{ inputs.token }}
       run: |
         echo "****************"
         echo "* Get Issue ID *"
@@ -129,7 +129,7 @@ runs:
       id: field-id
       shell: bash
       env:
-        GITHUB_TOKEN: ${{ inputs:token }}
+        GITHUB_TOKEN: ${{ inputs.token }}
       run: |
 
         echo "******************"
@@ -178,7 +178,7 @@ runs:
       id: environment-option-id
       shell: bash
       env:
-        GITHUB_TOKEN: ${{ inputs:token }}
+        GITHUB_TOKEN: ${{ inputs.token }}
       run: |
 
         echo "***********************************"
@@ -220,7 +220,7 @@ runs:
     - name: Update Deployment Issue Environment Field
       shell: bash
       env:
-        GITHUB_TOKEN: ${{ inputs:token }}
+        GITHUB_TOKEN: ${{ inputs.token }}
       run: |
         echo ""
         echo "Updating Environment Field"
@@ -270,7 +270,7 @@ runs:
     - name: Update Deployment Issue Version Field
       shell: bash
       env:
-        GITHUB_TOKEN: ${{ inputs:token }}
+        GITHUB_TOKEN: ${{ inputs.token }}
       run: |
         echo ""
         echo "Updating Version Field"
