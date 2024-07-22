@@ -66,14 +66,7 @@ jobs:
             }
           }' | jq -r '.data.organization.projectsV2.edges[] | select(.node.title | test("Deployment")) | .node.id')
 
-          echo "PROJECT_ID = $PROJECT_ID"
           echo "PROJECT_ID=$PROJECT_ID" >> $GITHUB_OUTPUT
-
-      - name: test output
-        shell: bash
-        run: echo "${{steps.project-id.outputs.PROJECT_ID}}"
-
-
 
       - name: Collect ID's for Deployment Issue Update
         shell: bash
@@ -141,11 +134,6 @@ jobs:
 
           echo "ISSUE_ID == $ISSUE_ID"
 
-
-
-          echo "ISSUE_ID == $ISSUE_ID"
-          echo "PROJECT_ID == $PROJECT_ID"
-
           echo "        ******************"
           echo "        * Get Field ID's *"
           echo "        ******************"
@@ -173,7 +161,7 @@ jobs:
                             }
                           }
                         }
-                      }' -f org="${{ inputs.organization }}" -F number="5" | jq '.data.organization.projectV2.fields.nodes[] | select((.name | test("Environment")) or (.name | test("Version")))')
+                      }' -f org="${{ inputs.organization }}" -F number="${{ inputs.project-number }}" | jq '.data.organization.projectV2.fields.nodes[] | select((.name | test("Environment")) or (.name | test("Version")))')
 
           FIELD_ID_ENVIRONMENT=$(echo "$FIELD_DATA" | jq -r '. | select(.name | test("Environment")) | .id')
           FIELD_ID_VERSION=$(echo "$FIELD_DATA" | jq -r '. | select(.name | test("Version")) | .id')
@@ -246,23 +234,23 @@ jobs:
               }'"
           echo ""
           # gh api graphql -f query='
-          #     mutation {
-          #         updateProjectV2ItemFieldValue(
-          #             input: {
-          #                 projectId: "$PROJECT_ID"
-          #                 itemId: "$ISSUE_ID"
-          #                 fieldId: "$FIELD_ID_ENVIRONMENT"
-          #                 value: {
-          #                     singleSelectOptionId: "$FIELD_ENVIRONMENT_OPTION_ID"
-          #                 }
-          #             }
-          #         )
-          #         {
-          #             projectV2Item {
-          #                 id
-          #             }
-          #         }
-          #     }'
+              mutation {
+                  updateProjectV2ItemFieldValue(
+                      input: {
+                          projectId: "${{steps.project-id.outputs.PROJECT_ID}}"
+                          itemId: "$ISSUE_ID"
+                          fieldId: "$FIELD_ID_ENVIRONMENT"
+                          value: {
+                              singleSelectOptionId: "$FIELD_ENVIRONMENT_OPTION_ID"
+                          }
+                      }
+                  )
+                  {
+                      projectV2Item {
+                          id
+                      }
+                  }
+              }'
 
           echo ""
           echo "Updating Version Field"
@@ -292,9 +280,9 @@ jobs:
               mutation {
                   updateProjectV2ItemFieldValue(
                       input: {
-                          projectId: $PROJECT_ID
-                          itemId: $ISSUE_ID
-                          fieldId: $FIELD_ID_VERSION
+                          projectId: "${{steps.project-id.outputs.PROJECT_ID}}"
+                          itemId: "$ISSUE_ID"
+                          fieldId: "$FIELD_ID_VERSION"
                           value: {
                               text: "${{ inputs.version }}"
                           }
