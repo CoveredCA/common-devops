@@ -24,14 +24,14 @@ jobs:
         id: app-token
         uses: CoveredCA/common-devops/packages/app-token@main
         with:
-          client-id: ${{ secrets.MULESOFT_GITHUBAPP_CLIENTID}}
+          client-id: ${{ secrets.MULESOFT_GITHUBAPP_CLIENTID }}
           privatekey: ${{ secrets.MULESOFT_GITHUBAPP_PRIVATEKEY }}
 
       - name: Get secrets from Azure Key Vault
         id: secrets
         uses: CoveredCA/common-devops/packages/secrets-azure@main
         with:
-          keyvault-key: ${{ env.SECRETS_AZURE_KEYVAULT}}
+          keyvault-key: ${{ env.SECRETS_AZURE_KEYVAULT }}
           azure-credentials: ${{ secrets.AZURE_CREDENTIALS }}
 
       - name: Get service configuration
@@ -68,17 +68,17 @@ jobs:
           echo " "
           echo "  Configuring the directory for Anypoint Exchange documentation"
           if [ -d "exchange-docs" ]; then
-            echo "    Directory exchange-docs exists and will not be overriden with README.md" 
+            echo "    Directory exchange-docs exists and will not be overriden with README.md"
           else
             echo "    Creating directory 'exchange-doc' with home.md from README.md"
             mkdir -p exchange-docs
             mkdir -p exchange-docs/docs
             cp -Rfpv README.md exchange-docs/home.md
-            cp -Rfpv docs/*.* exchange-docs/docs 
+            cp -Rfpv docs/*.* exchange-docs/docs
           fi
           echo " "
-        
-      - name: Compile code    
+
+      - name: Compile code
         run: mvn --batch-mode compile
 
       - name: Run test cases and package
@@ -91,7 +91,7 @@ jobs:
           echo "***********************************************"
           echo " "
           skiptests=" "
-          if [[ "${{env.configuration_skiptests}}" == "true" ]]; then
+          if [[ "${{ env.configuration_skiptests }}" == "true" ]]; then
             skiptests="-DskipTests"
             echo "  Tests will be skipped"
           else
@@ -114,14 +114,14 @@ jobs:
       #########################################################
       # Next actions only if application is not a snapshot
       #########################################################
-      
+
       - name: Deploy to anypoint exchange
         if: "!contains(env.service_version, 'snapshot')"
         run: |
           echo " "
           echo "***********************************************"
           echo "Deploy to Anypoint Exchange"
-          echo "***********************************************"        
+          echo "***********************************************"
           echo " "
           mvn --batch-mode deploy -DskipTests
           echo " "
@@ -141,7 +141,7 @@ jobs:
       - name: Create a release
         uses: ncipollo/release-action@v1
         if: "hashFiles('target/*.jar') != '' && !contains(env.service_version, 'snapshot')"
-        with: 
+        with:
           artifacts: "target/*.jar"
           artifactErrorsFailBuild: true
           makeLatest: true
@@ -157,7 +157,7 @@ jobs:
           color: '535597'
           file: ${{ env.service_name }}-wf.svg
           folder: ${{ env.service_name }}
-      
+
       - name: Create badge release only for jar files
         uses: CoveredCA/common-devops/packages/badge@main
         if: "hashFiles('target/*.jar') != '' && !contains(env.service_version, 'snapshot')"
@@ -169,7 +169,7 @@ jobs:
           folder: ${{ env.service_name }}
 
       - name: Create a deployment issue
-        id: create-deployment-issue  
+        id: create-deployment-issue
         if: "env.configuration_environments != '' && !contains(env.service_version, 'snapshot')"
         env:
           GITHUB_TOKEN: ${{ env.github_automationbot_token }}
@@ -189,7 +189,7 @@ jobs:
             echo "  Environment to deploy the application: $first_environment"
             gh -R "${{ github.repository }}" issue create \
             -t "Deployment $first_environment ${{ env.service_name }} ${{ env.service_version }}" \
-            -a "${{ github.triggering_actor}}" \
+            -a "${{ github.triggering_actor }}" \
             -b "${{ env.MESSAGE_SERVICE_TRIGGER_DEPLOYMENT }}" \
             -l "deployment" \
             -p "${{ env.deployment_project }}"
