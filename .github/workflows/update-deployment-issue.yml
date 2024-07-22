@@ -38,7 +38,7 @@ jobs:
         id: app-token
         uses: CoveredCA/common-devops/packages/app-token@main
         with:
-          client-id: ${{ secrets.MULESOFT_GITHUBAPP_CLIENTID}}
+          client-id: ${{ secrets.MULESOFT_GITHUBAPP_CLIENTID }}
           privatekey: ${{ secrets.MULESOFT_GITHUBAPP_PRIVATEKEY }}
 
       - name: Get project ID
@@ -69,9 +69,9 @@ jobs:
           echo "PROJECT_ID = $PROJECT_ID"
           echo "PROJECT_ID=$PROJECT_ID" >> $GITHUB_OUTPUT
 
-        - name: test output
-          shell: bash
-          run: echo "${{steps.project-id.outputs.PROJECT_ID}}"
+      - name: test output
+        shell: bash
+        run: echo "${{steps.project-id.outputs.PROJECT_ID}}"
 
 
 
