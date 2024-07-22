@@ -212,7 +212,7 @@ jobs:
           echo ""
           echo "Graph Query 1"
           echo ""
-          echo "gh api graphql -f query='
+          echo "gh api graphql -f query='\
               mutation {
                   updateProjectV2ItemFieldValue(
                       input: {
@@ -231,7 +231,7 @@ jobs:
                   }
               }'"
           echo ""
-          # gh api graphql -f query='
+          gh api graphql -f query='
               mutation {
                   updateProjectV2ItemFieldValue(
                       input: {
