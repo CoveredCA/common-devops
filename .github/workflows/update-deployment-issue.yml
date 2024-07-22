@@ -183,7 +183,9 @@ jobs:
 
       - name: DEBUG - FIELD_ID
         if:  runner.debug == '1'
-        run: echo "FIELD_ID = ${{steps.field-id.outputs.FIELD_ID}}"
+        run: |
+          echo "FIELD_ID_ENVIRONMENT = ${{steps.field-id.outputs.FIELD_ID_ENVIRONMENT}}"
+          echo "FIELD_ID_VERSION = ${{steps.field-id.outputs.FIELD_ID_VERSION}}"
 
       - name: Get Environment Field Option ID
         id: environment-option-id
