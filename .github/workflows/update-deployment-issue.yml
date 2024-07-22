@@ -274,9 +274,9 @@ jobs:
               mutation {
                   updateProjectV2ItemFieldValue(
                       input: {
-                          projectId: "$PROJECT_ID"
-                          itemId: "$ISSUE_ID"
-                          fieldId: "$FIELD_ID_VERSION"
+                          projectId: $PROJECT_ID
+                          itemId: $ISSUE_ID
+                          fieldId: $FIELD_ID_VERSION
                           value: {
                               text: "${{ inputs.version }}"
                           }
