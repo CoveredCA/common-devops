@@ -41,6 +41,40 @@ jobs:
           client-id: ${{ secrets.MULESOFT_GITHUBAPP_CLIENTID}}
           privatekey: ${{ secrets.MULESOFT_GITHUBAPP_PRIVATEKEY }}
 
+      - name: Get project ID
+        id: project-id
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ env.github_automationbot_token }}
+          GH_TOKEN: ${{ env.github_automationbot_token }}
+        run: |
+          echo "******************"
+          echo "* Get Project ID *"
+          echo "******************"
+
+          PROJECT_ID=$(gh api graphql -f query='{
+            organization(login: "${{ inputs.organization }}") {
+              login
+              projectsV2(first: 100) {
+                edges {
+                  node {
+                    id
+                    title
+                  }
+                }
+              }
+            }
+          }' | jq -r '.data.organization.projectsV2.edges[] | select(.node.title | test("Deployment")) | .node.id')
+
+          echo "PROJECT_ID = $PROJECT_ID"
+          echo "PROJECT_ID=$PROJECT_ID" >> $GITHUB_OUTPUT
+
+        - name: test output
+          shell: bash
+          run: echo "${{steps.project-id.outputs.PROJECT_ID}}"
+
+
+
       - name: Collect ID's for Deployment Issue Update
         shell: bash
         env:
@@ -107,23 +141,7 @@ jobs:
 
           echo "ISSUE_ID == $ISSUE_ID"
 
-          echo "        ******************"
-          echo "        * Get Project ID *"
-          echo "        ******************"
 
-          PROJECT_ID=$(gh api graphql -f query='{
-            organization(login: "${{ inputs.organization }}") {
-              login
-              projectsV2(first: 100) {
-                edges {
-                  node {
-                    id
-                    title
-                  }
-                }
-              }
-            }
-          }' | jq -r '.data.organization.projectsV2.edges[] | select(.node.title | test("Deployment")) | .node.id')
 
           echo "ISSUE_ID == $ISSUE_ID"
           echo "PROJECT_ID == $PROJECT_ID"
