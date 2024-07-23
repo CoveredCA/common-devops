@@ -350,7 +350,7 @@ runs:
                         itemId: "${{ steps.issue-id.outputs.ISSUE_ID }}"
                         fieldId: "${{ steps.field-id.outputs.FIELD_ID_PATCH }}"
                         value: {
-                            number:${{ steps.version-fields.outputs.VERSION_PATCH }}"
+                            number: ${{ steps.version-fields.outputs.VERSION_PATCH }}
                         }
                     }
                 )
