@@ -236,7 +236,7 @@ runs:
                           }
                         }
                       }
-                    }' -f org="${{ inputs.organization }}" -F number="${{ inputs.project-number }}" | jq '.data.organization.projectV2.fields.nodes[] | select(.name | test("Environment")) | .options[]' | jq -r '. | select(.name | test("${{ inputs.environment }}")) | .id')
+                    }' -f org="${{ inputs.organization }}" -F number="${{ inputs.project-number }}" | jq -r '.data.organization.projectV2.fields.nodes[] | select(.name=="Environment").options[] | select(.name=="${{ inputs.environment }}") | .id'
 
         echo "FIELD_ENVIRONMENT_OPTION_ID=$FIELD_ENVIRONMENT_OPTION_ID" >> $GITHUB_OUTPUT
 
