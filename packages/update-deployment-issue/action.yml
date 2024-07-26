@@ -57,7 +57,7 @@ runs:
         echo "******************"
         echo "* Get Project ID *"
         echo "******************"
-
+        echo ""
         PROJECT_ID=$(gh api graphql -f query='{
           organization(login: "${{ inputs.organization }}") {
             login
@@ -84,6 +84,7 @@ runs:
         echo "****************"
         echo "* Get Issue ID *"
         echo "****************"
+        echo ""
 
         # Initial cursor is empty
         CURSOR=""
@@ -146,6 +147,7 @@ runs:
         echo "******************"
         echo "* Get Field ID's *"
         echo "******************"
+        echo ""
 
         FIELD_DATA=$(gh api graphql -f query='
                     query($org: String!, $number: Int!) {
@@ -158,6 +160,16 @@ runs:
                                 id
                                 name
                               }
+                            ... on ProjectV2IterationField {
+                            id
+                            name
+                            configuration {
+                                iterations {
+                                startDate
+                                id
+                                }
+                            }
+                            }
                               ... on ProjectV2SingleSelectField {
                                 id
                                 name
@@ -170,19 +182,25 @@ runs:
                           }
                         }
                       }
-                    }' -f org="${{ inputs.organization }}" -F number="${{ inputs.project-number }}" | jq '.data.organization.projectV2.fields.nodes[] | select((.name | test("Environment")) or (.name | test("Version")) or (.name | test("major")) or (.name | test("minor")) or (.name | test("patch")))')
+                    }' -f org="${{ inputs.organization }}" -F number="${{ inputs.project-number }}" | jq '.data.organization.projectV2.fields.nodes[] | select((.name | test("Environment")) or (.name | test("Version")) or (.name | test("major")) or (.name | test("minor")) or (.name | test("patch")) or (.name | test("Created On")) or (.name | test("Iteration")))')
 
         FIELD_ID_ENVIRONMENT=$(echo "$FIELD_DATA" | jq -r '. | select(.name | test("Environment")) | .id')
         FIELD_ID_VERSION=$(echo "$FIELD_DATA" | jq -r '. | select(.name | test("Version")) | .id')
         FIELD_ID_MAJOR=$(echo "$FIELD_DATA" | jq -r '. | select(.name | test("major")) | .id')
         FIELD_ID_MINOR=$(echo "$FIELD_DATA" | jq -r '. | select(.name | test("minor")) | .id')
         FIELD_ID_PATCH=$(echo "$FIELD_DATA" | jq -r '. | select(.name | test("patch")) | .id')
+        FIELD_ID_CREATEDON=$(echo "$FIELD_DATA" | jq -r '. | select(.name | test("Created On")) | .id')
+        FIELD_ID_ITERATION=$(echo "$FIELD_DATA" | jq -r '. | select(.name | test("Iteration")) | .id')
+        CURRENT_ITERATION_ID=$(echo "$FIELD_DATA" | jq -r '. | select(.name | test("Iteration")) | .configuration.iterations[0].id')
 
         echo "FIELD_ID_ENVIRONMENT=$FIELD_ID_ENVIRONMENT" >> $GITHUB_OUTPUT
         echo "FIELD_ID_VERSION=$FIELD_ID_VERSION" >> $GITHUB_OUTPUT
         echo "FIELD_ID_MAJOR=$FIELD_ID_MAJOR" >> $GITHUB_OUTPUT
         echo "FIELD_ID_MINOR=$FIELD_ID_MINOR" >> $GITHUB_OUTPUT
         echo "FIELD_ID_PATCH=$FIELD_ID_PATCH" >> $GITHUB_OUTPUT
+        echo "FIELD_ID_CREATEDON=$FIELD_ID_CREATEDON" >> $GITHUB_OUTPUT
+        echo "FIELD_ID_ITERATION=$FIELD_ID_ITERATION" >> $GITHUB_OUTPUT
+        echo "CURRENT_ITERATION_ID=$CURRENT_ITERATION_ID" >> $GITHUB_OUTPUT
 
     - name: Get Environment Field Option ID
       id: environment-option-id
@@ -351,6 +369,69 @@ runs:
                         fieldId: "${{ steps.field-id.outputs.FIELD_ID_PATCH }}"
                         value: {
                             number: ${{ steps.version-fields.outputs.VERSION_PATCH }}
+                        }
+                    }
+                )
+                {
+                    projectV2Item {
+                        id
+                    }
+                }
+            }'
+
+    - name: Update Created On Date Field
+      shell: bash
+      env:
+        GITHUB_TOKEN: ${{ inputs.token }}
+      run: |
+        echo ""
+        echo "**********************************"
+        echo "* Updating Created On Date Field *"
+        echo "**********************************"
+        echo ""
+        echo "Generate date for date field"
+        echo ""
+        CREATED_ON_DATE=$(date +'%Y-%m-%d')
+        echo "Date used: $CREATED_ON_DATE"
+        echo ""
+        gh api graphql -f query='
+            mutation {
+                updateProjectV2ItemFieldValue(
+                    input: {
+                        projectId: "${{steps.project-id.outputs.PROJECT_ID}}"
+                        itemId: "${{ steps.issue-id.outputs.ISSUE_ID }}"
+                        fieldId: "${{ steps.field-id.outputs.FIELD_ID_CREATEDON }}"
+                        value: {
+                            date: "$CREATED_ON_DATE"
+                        }
+                    }
+                )
+                {
+                    projectV2Item {
+                        id
+                    }
+                }
+            }'
+
+    - name: Update Iteration Field
+      shell: bash
+      env:
+        GITHUB_TOKEN: ${{ inputs.token }}
+      run: |
+        echo ""
+        echo "**********************************"
+        echo "* Updating Created On Date Field *"
+        echo "**********************************"
+        echo ""
+        gh api graphql -f query='
+            mutation {
+                updateProjectV2ItemFieldValue(
+                    input: {
+                        projectId: "${{steps.project-id.outputs.PROJECT_ID}}"
+                        itemId: "${{ steps.issue-id.outputs.ISSUE_ID }}"
+                        fieldId: "${{ steps.field-id.outputs.FIELD_ID_ITERATION }}"
+                        value: {
+                            iterationId: "$CURRENT_ITERATION_ID"
                         }
                     }
                 )
