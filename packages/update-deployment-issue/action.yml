@@ -114,7 +114,7 @@ runs:
                         }
                     }
                 }
-            }' -f org="${{ inputs.organization }}" -F number="${{ inputs.project-number }}" -f cursor="$CURSOR")
+            }' -f org="${{ inputs.organization }}" -F number=${{ inputs.project-number }} -f cursor="$CURSOR")
 
             # Parse items and do something with them, e.g., append to a file
             echo "$RESPONSE" | jq '.data.organization.projectV2.items.nodes[]' >> deployment_issues.json
@@ -182,7 +182,7 @@ runs:
                           }
                         }
                       }
-                    }' -f org="${{ inputs.organization }}" -F number="${{ inputs.project-number }}" | jq '.data.organization.projectV2.fields.nodes[] | select((.name | test("Environment")) or (.name | test("Version")) or (.name | test("major")) or (.name | test("minor")) or (.name | test("patch")) or (.name | test("Created On")) or (.name | test("Iteration")))')
+                    }' -f org="${{ inputs.organization }}" -F number=${{ inputs.project-number }} | jq '.data.organization.projectV2.fields.nodes[] | select(.name | IN("Environment", "Version", "major", "minor", "patch", "Created On", "Iteration"))')
 
         FIELD_ID_ENVIRONMENT=$(echo "$FIELD_DATA" | jq -r '. | select(.name | test("Environment")) | .id')
         FIELD_ID_VERSION=$(echo "$FIELD_DATA" | jq -r '. | select(.name | test("Version")) | .id')
@@ -236,7 +236,7 @@ runs:
                           }
                         }
                       }
-                    }' -f org="${{ inputs.organization }}" -F number="${{ inputs.project-number }}" | jq -r '.data.organization.projectV2.fields.nodes[] | select(.name=="Environment").options[] | select(.name=="${{ inputs.environment }}") | .id'
+                    }' -f org="${{ inputs.organization }}" -F number=${{ inputs.project-number }} | jq -r '.data.organization.projectV2.fields.nodes[] | select(.name=="Environment").options[] | select(.name=="${{ inputs.environment }}") | .id'
 
         echo "FIELD_ENVIRONMENT_OPTION_ID=$FIELD_ENVIRONMENT_OPTION_ID" >> $GITHUB_OUTPUT
 
