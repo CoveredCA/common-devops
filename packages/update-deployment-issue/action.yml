@@ -182,7 +182,8 @@ runs:
                           }
                         }
                       }
-                    }' -f org="${{ inputs.organization }}" -F number=${{ inputs.project-number }} | jq '.data.organization.projectV2.fields.nodes[] | select(.name | IN("Environment", "Version", "major", "minor", "patch", "Created On", "Iteration"))')
+                    }' -f org="${{ inputs.organization }}" -F number=${{ inputs.project-number }} | jq '.data.organization.projectV2.fields.nodes[] | select(.name | IN("Environment", "Version", "major", "minor", "patch", "Created On", "Iteration", "Status"))')
+
 
         FIELD_ID_ENVIRONMENT=$(echo "$FIELD_DATA" | jq -r '. | select(.name | test("Environment")) | .id')
         FIELD_ID_VERSION=$(echo "$FIELD_DATA" | jq -r '. | select(.name | test("Version")) | .id')
@@ -192,6 +193,8 @@ runs:
         FIELD_ID_CREATEDON=$(echo "$FIELD_DATA" | jq -r '. | select(.name | test("Created On")) | .id')
         FIELD_ID_ITERATION=$(echo "$FIELD_DATA" | jq -r '. | select(.name | test("Iteration")) | .id')
         CURRENT_ITERATION_ID=$(echo "$FIELD_DATA" | jq -r '. | select(.name | test("Iteration")) | .configuration.iterations[0].id')
+        FIELD_ID_STATUS=$(echo "$FIELD_DATA" | jq -r '. | select(.name | test("Status")).id')
+        FIELD_ID_STATUS_IN_PROGRESS_ID=$(echo "$FIELD_DATA" | jq -r '. | select(.name | test("Status")).options[] | select(.name=="In Progress").id')
 
         echo "FIELD_ID_ENVIRONMENT=$FIELD_ID_ENVIRONMENT" >> $GITHUB_OUTPUT
         echo "FIELD_ID_VERSION=$FIELD_ID_VERSION" >> $GITHUB_OUTPUT
@@ -201,6 +204,8 @@ runs:
         echo "FIELD_ID_CREATEDON=$FIELD_ID_CREATEDON" >> $GITHUB_OUTPUT
         echo "FIELD_ID_ITERATION=$FIELD_ID_ITERATION" >> $GITHUB_OUTPUT
         echo "CURRENT_ITERATION_ID=$CURRENT_ITERATION_ID" >> $GITHUB_OUTPUT
+        echo "FIELD_ID_STATUS=$FIELD_ID_STATUS" >> $GITHUB_OUTPUT
+        echo "FIELD_ID_STATUS_IN_PROGRESS_ID=$FIELD_ID_STATUS_IN_PROGRESS_ID" >> $GITHUB_OUTPUT
 
     - name: Get Environment Field Option ID
       id: environment-option-id
@@ -443,6 +448,35 @@ runs:
                         fieldId: "${{ steps.field-id.outputs.FIELD_ID_ITERATION }}"
                         value: {
                             iterationId: "${{ steps.field-id.outputs.CURRENT_ITERATION_ID }}"
+                        }
+                    }
+                )
+                {
+                    projectV2Item {
+                        id
+                    }
+                }
+            }'
+
+    - name: Update Issue Status Field
+      shell: bash
+      env:
+        GITHUB_TOKEN: ${{ inputs.token }}
+      run: |
+        echo ""
+        echo "*******************************"
+        echo "* Updating Issue Status Field *"
+        echo "*******************************"
+        echo ""
+        gh api graphql -f query='
+            mutation {
+                updateProjectV2ItemFieldValue(
+                    input: {
+                        projectId: "${{steps.project-id.outputs.PROJECT_ID}}"
+                        itemId: "${{ steps.issue-id.outputs.ISSUE_ID }}"
+                        fieldId: "${{ steps.field-id.outputs.FIELD_ID_STATUS }}"
+                        value: {
+                            singleSelectOptionId: "${{ steps.field-id.outputs.FIELD_ID_STATUS_IN_PROGRESS_ID }}"
                         }
                     }
                 )
