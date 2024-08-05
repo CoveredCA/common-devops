@@ -442,7 +442,7 @@ runs:
                         itemId: "${{ steps.issue-id.outputs.ISSUE_ID }}"
                         fieldId: "${{ steps.field-id.outputs.FIELD_ID_ITERATION }}"
                         value: {
-                            iterationId: "$CURRENT_ITERATION_ID"
+                            iterationId: "${{ steps.field-id.outputs.CURRENT_ITERATION_ID }}"
                         }
                     }
                 )
