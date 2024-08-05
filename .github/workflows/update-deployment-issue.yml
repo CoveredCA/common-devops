@@ -244,7 +244,7 @@ jobs:
                             }
                           }
                         }
-                      }' -f org="${{ inputs.organization }}" -F number="${{ inputs.project-number }}" | jq -r '.data.organization.projectV2.fields.nodes[] | select(.name | IN("Environment")).options[]' | select(.name | IN("${{ inputs.environment }}")).id')
+                      }' -f org="${{ inputs.organization }}" -F number="${{ inputs.project-number }}" | jq -r '.data.organization.projectV2.fields.nodes[] | select(.name | IN("Environment")).options[] | select(.name | IN("${{ inputs.environment }}")).id')
 
           echo "FIELD_ENVIRONMENT_OPTION_ID=$FIELD_ENVIRONMENT_OPTION_ID" >> $GITHUB_OUTPUT
 
