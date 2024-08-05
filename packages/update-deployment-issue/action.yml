@@ -379,6 +379,22 @@ runs:
                 }
             }'
 
+    - name: Assign Date Value Field
+      id: date-field-value
+      shell: bash
+      run: |
+        echo ""
+        echo "****************************************"
+        echo "* Defining Created On Date Field Value *"
+        echo "****************************************"
+        echo ""
+        echo "Generate date for date field"
+        echo ""
+        CREATED_ON_DATE=$(date +'%Y-%m-%d')
+        echo "Date used: $CREATED_ON_DATE"
+        echo "CREATED_ON_DATE=$CREATED_ON_DATE" >> $GITHUB_OUTPUT
+        echo ""
+
     - name: Update Created On Date Field
       shell: bash
       env:
@@ -389,11 +405,6 @@ runs:
         echo "* Updating Created On Date Field *"
         echo "**********************************"
         echo ""
-        echo "Generate date for date field"
-        echo ""
-        CREATED_ON_DATE=$(date +'%Y-%m-%d')
-        echo "Date used: $CREATED_ON_DATE"
-        echo ""
         gh api graphql -f query='
             mutation {
                 updateProjectV2ItemFieldValue(
@@ -402,7 +413,7 @@ runs:
                         itemId: "${{ steps.issue-id.outputs.ISSUE_ID }}"
                         fieldId: "${{ steps.field-id.outputs.FIELD_ID_CREATEDON }}"
                         value: {
-                            date: "$CREATED_ON_DATE"
+                            date: "${{ steps.date-field-value.outputs.CREATED_ON_DATE }}"
                         }
                     }
                 )
