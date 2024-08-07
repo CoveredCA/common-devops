@@ -8,11 +8,26 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+
+      - name: Get token from Github App
+        id: app-token
+        uses: CoveredCA/common-devops/packages/app-token@main
+        with:
+          client-id: ${{ secrets.MULESOFT_GITHUBAPP_CLIENTID}}
+          privatekey: ${{ secrets.MULESOFT_GITHUBAPP_PRIVATEKEY }}
+
+      - name: Get secrets from Azure Key Vault
+        id: secrets
+        uses: CoveredCA/common-devops/packages/secrets-azure@main
+        with:
+          keyvault-key: ${{ env.SECRETS_AZURE_KEYVAULT}}
+          azure-credentials: ${{ secrets.AZURE_CREDENTIALS }}
+
       - name: Create badge
         uses: CoveredCA/common-devops/packages/badge@main
         with:
           label: Release
           status: ${{ env.service_version }}
           color: 31c653
-          file: ${{ env.service_name }}-re.svg
-          folder: ${{ env.service_name }}
+          file: common-parent-pom-re.svg
+          folder: common-parent-pom
