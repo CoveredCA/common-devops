@@ -42,7 +42,7 @@ jobs:
         uses: CoveredCA/common-devops/packages/badge@main
         with:
           label: Release
-          status: ${{ env.service_version }}
+          status: '${{ env.service_version }}'
           color: 31c653
           file: common-parent-pom-re.svg
           folder: common-parent-pom
