@@ -28,6 +28,16 @@ jobs:
           keyvault-key: ${{ env.SECRETS_AZURE_KEYVAULT}}
           azure-credentials: ${{ secrets.AZURE_CREDENTIALS }}
 
+      - name: Get configuration files
+        uses: CoveredCA/common-devops/packages/get-file@main
+        with:
+          file: "$GLOBAL_CONFIGURATION"
+
+      - name: Import variables from _global.yml
+        uses: zlatko-ms/envarfiles@main
+        with:
+          paths: ${{ env.GLOBAL_CONFIGURATION }}
+
       - name: Create badge
         uses: CoveredCA/common-devops/packages/badge@main
         with:
