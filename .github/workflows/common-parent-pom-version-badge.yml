@@ -1,0 +1,18 @@
+name: common-parent-pom-version-badge
+on:
+  workflow_call:
+
+jobs:
+  version-badge:
+    name: Version Badge
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Create badge
+        uses: CoveredCA/common-devops/packages/badge@main
+        with:
+          label: Release
+          status: ${{ env.service_version }}
+          color: 31c653
+          file: ${{ env.service_name }}-re.svg
+          folder: ${{ env.service_name }}
