@@ -1,0 +1,14 @@
+name: common-parent-pom version badge
+description: Create a code badge for common-parent-pom
+
+runs:
+  using: "composite"
+  steps:
+    - name: Create badge
+      uses: CoveredCA/common-devops/packages/badge@main
+      with:
+        label: Release
+        status: ${{ env.service_version }}
+        color: 31c653
+        file: ${{ env.service_name }}-re.svg
+        folder: ${{ env.service_name }}
