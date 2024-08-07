@@ -2,6 +2,11 @@ name: common-parent-pom-version-badge
 on:
   workflow_call:
 
+env:
+  CONFIGURATIONS_REPOSITORY: common-configurations
+  GLOBAL_CONFIGURATION: _global.yml
+  SECRETS_AZURE_KEYVAULT: CoveredCA-KV-Mulesoft
+
 jobs:
   version-badge:
     name: Version Badge
