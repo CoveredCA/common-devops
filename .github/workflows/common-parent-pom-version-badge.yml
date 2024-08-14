@@ -21,22 +21,45 @@ jobs:
           client-id: ${{ secrets.MULESOFT_GITHUBAPP_CLIENTID}}
           privatekey: ${{ secrets.MULESOFT_GITHUBAPP_PRIVATEKEY }}
 
-      - name: Get secrets from Azure Key Vault
-        id: secrets
-        uses: CoveredCA/common-devops/packages/secrets-azure@main
+      - name: Get the source code for build environment
+        uses: actions/checkout@v4
         with:
-          keyvault-key: ${{ env.SECRETS_AZURE_KEYVAULT}}
-          azure-credentials: ${{ secrets.AZURE_CREDENTIALS }}
+          fetch-depth: 0
 
-      - name: Get configuration files
-        uses: CoveredCA/common-devops/packages/get-file@main
-        with:
-          file: "$GLOBAL_CONFIGURATION"
-
-      - name: Import variables from _global.yml
-        uses: zlatko-ms/envarfiles@main
-        with:
-          paths: ${{ env.GLOBAL_CONFIGURATION }}
+      - name: Parse pom.xml
+        shell: bash
+        run: |
+          echo " "
+          echo "**************************************"
+          echo "Parse pom.xml"
+          echo "**************************************"
+          echo " "
+          echo "  Configuration for environment: $deployment_environment"
+          echo " "
+          echo "  Install XMLStarlet in Ubuntu"
+          sudo apt-get install xmlstarlet --fix-missing        
+          echo " "
+          echo "  xmlstarlet --version"
+          xmlstarlet --version
+          echo " "
+          echo "  Parse pom.xml"
+          servicename=$( xmlstarlet sel -N x=http://maven.apache.org/POM/4.0.0 -t -v "/x:project/x:name" pom.xml )
+          serviceversion=$( xmlstarlet sel -N x=http://maven.apache.org/POM/4.0.0 -t -v "/x:project/x:version" pom.xml )
+          servicegroup=$( xmlstarlet sel -N x=http://maven.apache.org/POM/4.0.0 -t -v "/x:project/x:groupId" pom.xml )
+          serviceartifact=$( xmlstarlet sel -N x=http://maven.apache.org/POM/4.0.0 -t -v "/x:project/x:artifactId" pom.xml )
+          echo " "
+          echo "  Create environment variables with pom data"
+          echo "service_name=$servicename" >> $GITHUB_ENV
+          echo "service_version=$serviceversion" >> $GITHUB_ENV
+          echo "service_group=$servicegroup" >> $GITHUB_ENV
+          echo "service_artifact=$serviceartifact" >> $GITHUB_ENV
+          echo " "
+          echo "  Variables generated based on pom.xml:"
+          echo "    service_name= "$servicename
+          echo "    service_version= "$serviceversion          
+          echo "    service_group= "$servicegroup
+          echo "    service_artifact= "$serviceartifact
+          echo " " 
 
       - name: Create badge
         uses: CoveredCA/common-devops/packages/badge@main
