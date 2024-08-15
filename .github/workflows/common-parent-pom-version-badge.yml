@@ -20,7 +20,22 @@ jobs:
         with:
           client-id: ${{ secrets.MULESOFT_GITHUBAPP_CLIENTID}}
           privatekey: ${{ secrets.MULESOFT_GITHUBAPP_PRIVATEKEY }}
+      - name: Get secrets from Azure Key Vault
+        id: secrets
+        uses: CoveredCA/common-devops/packages/secrets-azure@main
+        with:
+          keyvault-key: ${{ env.SECRETS_AZURE_KEYVAULT}}
+          azure-credentials: ${{ secrets.AZURE_CREDENTIALS }}
 
+      - name: Get configuration files
+        uses: CoveredCA/common-devops/packages/get-file@main
+        with:
+          file: "$GLOBAL_CONFIGURATION"
+
+      - name: Import variables from _global.yml
+        uses: zlatko-ms/envarfiles@main
+        with:
+          paths: ${{ env.GLOBAL_CONFIGURATION }}
       - name: Get the source code for build environment
         uses: actions/checkout@v4
         with:
