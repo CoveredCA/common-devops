@@ -197,3 +197,10 @@ jobs:
 
       - name: Count Lines of Code (cloc)
         uses: djdefi/cloc-action@6
+        with:
+          options: --md --report-file=cloc.md
+    
+      - name: Output cloc report
+        shell: bash
+        run: |
+          cat cloc.md >> $GITHUB_STEP_SUMMARY
