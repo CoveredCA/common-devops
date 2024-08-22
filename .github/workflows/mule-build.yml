@@ -203,4 +203,5 @@ jobs:
       - name: Output cloc report
         shell: bash
         run: |
+          echo "# 📊 Mulesoft Code Metrics Report: \n" >> $GITHUB_STEP_SUMMARY
           cat cloc.md >> $GITHUB_STEP_SUMMARY
