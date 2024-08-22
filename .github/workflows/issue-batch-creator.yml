@@ -1,3 +1,4 @@
+name: Issue Batch Creator
 on:
   workflow_call:
     inputs:
@@ -26,6 +27,6 @@ jobs:
 
       - name: Create Issues
         uses: CoveredCA/common-devops/packages/issue-batch-new-repository@main
-        if: "github.event.inputs.template_type == 'new-repository'"
+        if: "inputs.template_type == 'new-repository'"
         with:
-          write: ${{ github.event.inputs.write }}
+          write: ${{ inputs.write }}
