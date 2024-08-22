@@ -11,7 +11,7 @@ inputs:
     description: The number of the project from the project web url
   application-name:
     required: true
-    default: "cca-salesforce-sapi"
+    default: "cca-demo-sapi"
     description: The name of the application the deployment issue was created for
   environment:
     required: true
