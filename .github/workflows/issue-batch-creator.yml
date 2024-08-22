@@ -1,0 +1,33 @@
+on:
+  workflow_dispatch:
+    inputs:
+      write:
+        description: "Change to 'true' to create issues, leave as 'false' to preview output"
+        default: false
+        type: boolean
+      template_type:
+        description: which batch template to apply
+        type: choice
+        options:
+          - new-repository
+          - other
+
+jobs:
+
+  IssueBatch:
+    name: IssueBatch
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Get token from Github App
+        id: app-token
+        uses: CoveredCA/common-devops/packages/app-token@main
+        with:
+          client-id: ${{ secrets.MULESOFT_GITHUBAPP_CLIENTID }}
+          privatekey: ${{ secrets.MULESOFT_GITHUBAPP_PRIVATEKEY }}
+
+      - name: Create Issues
+        uses: CoveredCA/common-devops/packages/issue-batch-${{ github.event.inputs.template_type }}@main
+        with:
+          write: ${{ github.event.inputs.wrtie }}
