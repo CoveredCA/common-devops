@@ -1,27 +1,23 @@
-on:
-  workflow_call:
-    inputs:
-      write:
-        description: "Change to 'true' to create issues, leave as 'false' to preview output"
-        default: "false"
-        type: boolean
+name: "Issue Batch New Repository"
+description: "Create a batch of issues for a brand new repository"
+inputs:
+  write:
+    description: "Change to 'true' to create issues, leave as 'false' to preview output"
+    default: "false"
+    type: boolean
 
-name: Bulk issue creator
+runs:
+  using: "composite"
+  steps:
+    - name: Checkout template and data
+      uses: actions/checkout@v2
 
-jobs:
-  bulk_issue_creator:
-    runs-on: ubuntu-latest
-    name: Bulk Issue Creator
-    steps:
-      - name: Checkout template and data
-        uses: actions/checkout@v2
-
-      - name: Create bulk issues
-        uses: benbalter/bulk-issue-creator@v2
-        with:
-          write: ${{ github.event.inputs.write }}
-          github_token: ${{ env.github_automationbot_token }}
-          csv_path: issue_batch_templates/test.csv
+    - name: Create bulk issues
+      uses: benbalter/bulk-issue-creator@v2
+      with:
+        write: ${{ github.event.inputs.write }}
+        github_token: ${{ env.github_automationbot_token }}
+        csv_path: issue_batch_templates/test.csv
 # TODO write script step to dynamically overwrite the repository with provided application name or use the template syntax for that
 # TODO
 # TODO
