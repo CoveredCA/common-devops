@@ -26,4 +26,4 @@ jobs:
         with:
           write: ${{ github.event.inputs.write }}
           github_token: ${{ env.github_automationbot_token }}
-          csv_path: .github/workflows/issue_batch_creator/templates/test.csv
+          csv_path: .github/workflows/issue_batch_templates/test.csv
