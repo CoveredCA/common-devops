@@ -1,5 +1,5 @@
 on:
-  workflow_dispatch:
+  workflow_call:
     inputs:
       write:
         description: "Change to 'true' to create issues, leave as 'false' to preview output"
