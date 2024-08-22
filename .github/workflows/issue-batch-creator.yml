@@ -25,6 +25,7 @@ jobs:
           privatekey: ${{ secrets.MULESOFT_GITHUBAPP_PRIVATEKEY }}
 
       - name: Create Issues
-        uses: CoveredCA/common-devops/packages/issue-batch-${{ github.event.inputs.template_type }}@main
+        uses: CoveredCA/common-devops/packages/issue-batch-new-repository@main
+        if: "github.event.inputs.template_type == 'new-repository'"
         with:
           write: ${{ github.event.inputs.wrtie }}
