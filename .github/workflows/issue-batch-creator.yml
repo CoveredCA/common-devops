@@ -7,10 +7,7 @@ on:
         type: boolean
       template_type:
         description: which batch template to apply
-        type: choice
-        options:
-          - new-repository
-          - other
+        type: string
 
 jobs:
 
