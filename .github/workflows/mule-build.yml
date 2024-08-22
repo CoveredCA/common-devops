@@ -194,3 +194,14 @@ jobs:
             -l "deployment" \
             -p "${{ env.deployment_project }}"
           fi
+
+      - name: Count Lines of Code (cloc)
+        uses: djdefi/cloc-action@6
+        with:
+          options: --md --report-file=cloc.md
+    
+      - name: Output cloc report
+        shell: bash
+        run: |
+          echo "# 📊 Mulesoft Code Metrics Report:" >> $GITHUB_STEP_SUMMARY
+          cat cloc.md >> $GITHUB_STEP_SUMMARY
