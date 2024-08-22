@@ -28,4 +28,4 @@ jobs:
         uses: CoveredCA/common-devops/packages/issue-batch-new-repository@main
         if: "github.event.inputs.template_type == 'new-repository'"
         with:
-          write: ${{ github.event.inputs.wrtie }}
+          write: ${{ github.event.inputs.write }}
