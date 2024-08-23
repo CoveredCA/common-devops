@@ -48,6 +48,7 @@ jobs:
         uses: CoveredCA/common-devops/packages/install-java@main
 
       - name: Scan maven dependencies
+        id: scan-dependencies
         shell: bash
         run: |
           echo " "
@@ -130,6 +131,7 @@ jobs:
 
       - name: Update deployment issue Todo fields
         uses: CoveredCA/common-devops/packages/update-scan-dependencies-issue@main
+        if: failure() && steps.scan-dependencies.outcome == 'failure'
         with:
           token: ${{ env.github_automationbot_token }}
           application-name: ${{ env.service_name }}
