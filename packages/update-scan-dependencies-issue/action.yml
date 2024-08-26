@@ -111,7 +111,7 @@ runs:
 
         echo "Parsing output data file"
 
-        ISSUE_ID=$(jq -r '. | select(.content.title | test("scan-dependencies")) | select(.content.title | test("${{ inputs.application-name }}")) | select(.content.title | test("${{ inputs.version }}")) | .id' scan-dependency-issues.json)
+        ISSUE_ID=$(jq -r ". | select(.content.title | test(\"scan-dependencies\")) | select(.content.title | test(\"${{ inputs.application-name }}\")) | select(.content.title | test(\"${{ inputs.version }}\")) | .id" scan-dependency-issues.json)
 
         echo "ISSUE_ID=$ISSUE_ID" >> $GITHUB_OUTPUT
 
