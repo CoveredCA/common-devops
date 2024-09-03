@@ -109,11 +109,15 @@ runs:
 
         echo "All items fetched successfully."
 
-        echo "Parsing output data file"      
-        
+        echo "Parsing output data file"
+
         ISSUE_ID=$(jq -r '. | select(.content.title | test("scan-dependencies")) | select(.content.title | test("${{ inputs.application-name }}")) | select(.content.title | test("${{ inputs.version }}")) | .id' scan-dependency-issues.json)
 
+        echo "Exporting Variable to GitHub ACtion Output"
+        
         echo "ISSUE_ID=$ISSUE_ID" >> $GITHUB_OUTPUT
+        
+        echo "Variable Successfully Exported to GitHub ACtion Output"
 
     - name: Get field IDs
       id: field-id
