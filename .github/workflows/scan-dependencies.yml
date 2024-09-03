@@ -135,4 +135,4 @@ jobs:
         with:
           token: ${{ env.github_automationbot_token }}
           application-name: ${{ env.service_name }}
-          version: ${{ env.deployment_version }}
+          version: ${{ env.service_version }}
