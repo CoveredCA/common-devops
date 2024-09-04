@@ -48,6 +48,7 @@ jobs:
         uses: CoveredCA/common-devops/packages/install-java@main
 
       - name: Scan maven dependencies
+        id: scan-dependencies
         shell: bash
         run: |
           echo " "
@@ -127,3 +128,11 @@ jobs:
           color: ${{ env.dependencies_badge_color }}
           file: ${{ env.service_name }}-dependencies.svg
           folder: ${{ env.service_name }}
+
+      - name: Update deployment issue Todo fields
+        uses: CoveredCA/common-devops/packages/update-scan-dependencies-issue@main
+        if: failure() && steps.scan-dependencies.outcome == 'failure'
+        with:
+          token: ${{ env.github_automationbot_token }}
+          application-name: ${{ env.service_name }}
+          version: ${{ env.service_version }}
