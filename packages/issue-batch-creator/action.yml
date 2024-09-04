@@ -6,7 +6,7 @@ inputs:
     required: true
     type: string
     default: "cca-demo-sapi"
-  template_type:
+  template-type:
     description: which batch template to apply
     required: true
     type: string
@@ -34,7 +34,7 @@ runs:
         echo ""
         echo "========= Grab the template data file"
         echo ""
-        file=".github/workflows/issue_batch_templates/${{ inputs.template_type }}.json"
+        file=".github/workflows/issue_batch_templates/${{ inputs.template-type }}.json"
         echo ""
         echo "DEBUG template data file: $file"
         echo ""
@@ -85,7 +85,7 @@ runs:
         echo ""
         echo "========= Grab the template data file"
         echo ""
-        file=".github/workflows/issue_batch_templates/${{ inputs.template_type }}.json"
+        file=".github/workflows/issue_batch_templates/${{ inputs.template-type }}.json"
         echo ""
         echo "DEBUG template data file: $file"
         echo ""
