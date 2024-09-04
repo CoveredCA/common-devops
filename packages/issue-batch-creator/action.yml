@@ -1,0 +1,136 @@
+name: Issue Batch Creator
+description: Deployment issues need custom project fields filled out
+inputs:
+  application-name:
+    description: The name of the application the deployment issue was created for
+    required: true
+    type: string
+    default: "cca-demo-sapi"
+  template_type:
+    description: which batch template to apply
+    required: true
+    type: string
+    default: "new-repository"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Get token from Github App
+      id: app-token
+      uses: CoveredCA/common-devops/packages/app-token@main
+      with:
+        client-id: ${{ secrets.MULESOFT_GITHUBAPP_CLIENTID }}
+        privatekey: ${{ secrets.MULESOFT_GITHUBAPP_PRIVATEKEY }}
+
+    - name: Checkout The Repository for Template Data Files
+      uses: actions/checkout@v4
+      with:
+        sparse-checkout-cone-mode: false
+        sparse-checkout: |
+          .github
+
+    - name: Create Milestones
+      shell: bash
+      run: |
+        echo ""
+        echo "========= Assign Application variable"
+        echo ""
+        APP_NAME="${{ inputs.application-name }}"
+        echo ""
+        echo "DEBUG Repository affected: $APP_NAME"
+        echo ""
+        echo "========= Grab the template data file"
+        echo ""
+        file=".github/workflows/issue_batch_templates/${{ inputs.template_type }}.json"
+        echo ""
+        echo "DEBUG template data file: $file"
+        echo ""
+        echo "========= Get the length of the milestones array:"
+        echo ""
+        length=$(jq '.milestones | length' $file)
+        echo ""
+        echo "DEBUG number of milestones: $length"
+        echo ""
+        echo "========= Create each milestone"
+        echo ""
+        [[ $length -eq 0 ]] && echo "================== No milestones to create in the data file..."
+        if [[ $length > 0 ]]; then
+            echo "============================================================"
+            for (( i=0; i<${length}; i++ ))
+            do
+                # iterable assignments
+                echo "Milestone $((i+1)):"
+                echo "------------------------------------------------------------"
+                title=$(jq -r ".milestones[$i].title" $file)
+                description=$(jq -r ".milestones[$i].description" $file)
+                milestone_date=$(jq -r ".milestones[$i].date" $file)
+
+                # print output for sanity checking
+                echo "Title: $title"
+                echo "Description: $description"
+                echo "Date: $(eval $milestone_date)"
+                echo "------------------------------------------------------------"
+
+                # actual heavy lifting and creating the items
+                gh api --method POST -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" repos/CoveredCA/$APP_NAME/milestones \
+                -f "title=$APP_NAME $title" \
+                -f "description=$description" \
+                -f "due_on=$(eval $milestone_date)"
+            done
+            echo "============================================================"
+        fi
+
+    - name: Create Issues
+      shell: bash
+      run: |
+        echo ""
+        echo "========= Assign Application variable"
+        echo ""
+        APP_NAME="${{ inputs.application-name }}"
+        echo ""
+        echo "DEBUG Repository affected: $APP_NAME"
+        echo ""
+        echo "========= Grab the template data file"
+        echo ""
+        file=".github/workflows/issue_batch_templates/${{ inputs.template_type }}.json"
+        echo ""
+        echo "DEBUG template data file: $file"
+        echo ""
+        echo "========= Get the length of the Issues array:"
+        echo ""
+        length=$(jq '.issues | length' $file)
+        echo ""
+        echo "DEBUG number of issues: $length"
+        echo ""
+        echo "========= Create each issue"
+        echo ""
+        [[ $length -eq 0 ]] && echo "================== No Issues to create in the data file..."
+        if [[ $length > 0 ]]; then
+            echo "============================================================"
+            for (( i=0; i<${length}; i++ ))
+            do
+                # iterable assignments
+                echo "Issue $((i+1)):"
+                echo "------------------------------------------------------------"
+                title=$(jq -r ".issues[$i].title" $file)
+                body=$(jq -r ".issues[$i].body" $file)
+                labels=$(jq -r ".issues[$i].labels" $file)
+                milestone=$(jq -r ".issues[$i].milestone" $file)
+
+                # print output for sanity checking
+                echo "Title: $title"
+                echo "Body: $body"
+                echo "Labels: $labels"
+                echo "Milestone: $APP_NAME $milestone"
+                echo "------------------------------------------------------------"
+
+                # actual heavy lifting and creating the items
+                gh -R "CoveredCA/$APP_NAME" issue create \
+                -t "$title" \
+                -b "$body" \
+                -l "$labels" \
+                -p "Mulesoft Scrum" \
+                -m "$APP_NAME $milestone"
+            done
+            echo "============================================================"
+        fi
