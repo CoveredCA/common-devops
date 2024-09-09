@@ -55,15 +55,15 @@ jobs:
           echo -e "$(mvn --version)" | tee -a message_body.txt
           echo " " | tee -a message_body.txt
           echo "***********************************************" | tee -a message_body.txt
-          echo "Scan plugins" | tee -a message_body.txt
-          echo "***********************************************" | tee -a message_body.txt
-          echo " " | tee -a message_body.txt
+          echo "## Scan plugins" | tee -a message_body.txt
+          echo "***********************************************"
+          echo " "
           SCAN_RESULT=$(mvn versions:display-plugin-updates -Denforcer.skip)
           ERROR="false"
 
           if [[ $SCAN_RESULT == *"The following plugin updates are available"* ]]; then
             echo "  ***********************************************" | tee -a message_body.txt
-            echo "  Update plugins!!" | tee -a message_body.txt
+            echo "  ## Update plugins!!" | tee -a message_body.txt
             echo "  ***********************************************" | tee -a message_body.txt
             echo " " | tee -a message_body.txt
             echo -e "$(mvn versions:display-plugin-updates -Denforcer.skip)" | tee -a message_body.txt
@@ -79,12 +79,12 @@ jobs:
           SCAN_RESULT=$(mvn versions:display-dependency-updates -Denforcer.skip)
           echo " " | tee -a message_body.txt
           echo "***********************************************" | tee -a message_body.txt
-          echo "Scan dependencies" | tee -a message_body.txt
+          echo "## Scan dependencies" | tee -a message_body.txt
           echo "***********************************************" | tee -a message_body.txt
           echo " " | tee -a message_body.txt
           if [[ $SCAN_RESULT == *"The following dependencies"* ]]; then
             echo "  ***********************************************" | tee -a message_body.txt
-            echo "  Update dependencies!!" | tee -a message_body.txt
+            echo "  ## Update dependencies!!" | tee -a message_body.txt
             echo "  ***********************************************" | tee -a message_body.txt
             echo " " | tee -a message_body.txt
             echo -e "$(mvn versions:display-dependency-updates -Denforcer.skip)" | tee -a message_body.txt
