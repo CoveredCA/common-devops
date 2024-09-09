@@ -97,7 +97,7 @@ jobs:
           # is used only if We need to use the github CLI with another token
           # export GH_TOKEN=$github_automationbot_token
 
-          message_body="${{ env.ISSUE_MESSAGE }}\n\n---\n\n$(cat message_body.txt)"
+          message_body="${{ env.ISSUE_MESSAGE }}<br/><br/>---<br/><br/>$(cat message_body.txt)"
 
           # Get the date for the code badge 
           current_date=$(date +'%Y-%m-%d')
@@ -106,7 +106,7 @@ jobs:
             gh -R "${{ github.repository }}" issue create \
             -t "scan-dependencies update ${{ env.service_name }} ${{ env.service_version }}" \
             -a "$configuration_scandependencies_assignees" \
-            -b "$(echo -e $message_body)" \
+            -b "$message_body" \
             -l "$scandependencies_issue_label" \
             -p "${{ env.deployment_project }}"
 
