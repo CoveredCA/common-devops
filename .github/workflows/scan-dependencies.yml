@@ -52,7 +52,7 @@ jobs:
         shell: bash
         run: |
           echo " " | tee -a message_body.txt
-          echo -e $(mvn --version) | tee -a message_body.txt
+          echo -e "$(mvn --version)" | tee -a message_body.txt
           echo " " | tee -a message_body.txt
           echo "***********************************************" | tee -a message_body.txt
           echo "Scan plugins" | tee -a message_body.txt
@@ -66,7 +66,7 @@ jobs:
             echo "  Update plugins!!" | tee -a message_body.txt
             echo "  ***********************************************" | tee -a message_body.txt
             echo " " | tee -a message_body.txt
-            echo -e $(mvn versions:display-plugin-updates -Denforcer.skip) | tee -a message_body.txt
+            echo -e "$(mvn versions:display-plugin-updates -Denforcer.skip)" | tee -a message_body.txt
             ERROR="true"
             echo " " | tee -a message_body.txt
             echo " " | tee -a message_body.txt
@@ -87,7 +87,7 @@ jobs:
             echo "  Update dependencies!!" | tee -a message_body.txt
             echo "  ***********************************************" | tee -a message_body.txt
             echo " " | tee -a message_body.txt
-            echo -e $(mvn versions:display-dependency-updates -Denforcer.skip) | tee -a message_body.txt
+            echo -e "$(mvn versions:display-dependency-updates -Denforcer.skip)" | tee -a message_body.txt
             ERROR="true"
           else
             echo "Dependencies up to date" | tee -a message_body.txt
