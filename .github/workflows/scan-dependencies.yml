@@ -51,43 +51,22 @@ jobs:
         id: scan-dependencies
         shell: bash
         run: |
-          echo " "
-          mvn --version
-          echo " "
-          echo "***********************************************"
-          echo "Scan plugins"
-          echo "***********************************************"
-          echo " "
+          echo " " | tee -a message_body.txt
+          echo -e $(mvn --version) | tee -a message_body.txt
+          echo " " | tee -a message_body.txt
+          echo "***********************************************" | tee -a message_body.txt
+          echo "Scan plugins" | tee -a message_body.txt
+          echo "***********************************************" | tee -a message_body.txt
+          echo " " | tee -a message_body.txt
           SCAN_RESULT=$(mvn versions:display-plugin-updates -Denforcer.skip)
           ERROR="false"
 
           if [[ $SCAN_RESULT == *"The following plugin updates are available"* ]]; then
-            echo "  ***********************************************"
-            echo "  Update plugins!!"
-            echo "  ***********************************************"
-            echo " "
-            mvn versions:display-plugin-updates -Denforcer.skip
-            ERROR="true"
-            echo " "
-            echo " "
-            echo " "
-            echo " "
-          else
-            echo "Plugins up to date"
-          fi
-
-          SCAN_RESULT=$(mvn versions:display-dependency-updates -Denforcer.skip)
-          echo " "
-          echo "***********************************************"
-          echo "Scan dependencies"
-          echo "***********************************************"
-          echo " "
-                    if [[ $SCAN_RESULT == *"The following plugin updates are available"* ]]; then
             echo "  ***********************************************" | tee -a message_body.txt
             echo "  Update plugins!!" | tee -a message_body.txt
             echo "  ***********************************************" | tee -a message_body.txt
             echo " " | tee -a message_body.txt
-            mvn versions:display-plugin-updates -Denforcer.skip | tee -a message_body.txt
+            echo -e $(mvn versions:display-plugin-updates -Denforcer.skip) | tee -a message_body.txt
             ERROR="true"
             echo " " | tee -a message_body.txt
             echo " " | tee -a message_body.txt
@@ -108,7 +87,7 @@ jobs:
             echo "  Update dependencies!!" | tee -a message_body.txt
             echo "  ***********************************************" | tee -a message_body.txt
             echo " " | tee -a message_body.txt
-            mvn versions:display-dependency-updates -Denforcer.skip | tee -a message_body.txt
+            echo -e $(mvn versions:display-dependency-updates -Denforcer.skip) | tee -a message_body.txt
             ERROR="true"
           else
             echo "Dependencies up to date" | tee -a message_body.txt
@@ -127,7 +106,7 @@ jobs:
             gh -R "${{ github.repository }}" issue create \
             -t "scan-dependencies update ${{ env.service_name }} ${{ env.service_version }}" \
             -a "$configuration_scandependencies_assignees" \
-            -b "$message_body" \
+            -b "$(echo -e $message_body)" \
             -l "$scandependencies_issue_label" \
             -p "${{ env.deployment_project }}"
 
