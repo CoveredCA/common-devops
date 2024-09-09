@@ -97,7 +97,7 @@ jobs:
           # is used only if We need to use the github CLI with another token
           # export GH_TOKEN=$github_automationbot_token
 
-          message_body="${{ env.ISSUE_MESSAGE }}<br/><br/>---<br/><br/>$(cat message_body.txt)"
+          message_body="${{ env.ISSUE_MESSAGE }}<br/><br/><hr>$(cat message_body.txt)"
 
           # Get the date for the code badge 
           current_date=$(date +'%Y-%m-%d')
@@ -120,7 +120,6 @@ jobs:
             echo "dependencies_badge_status=${{ env.BADGE_STATUS_SUCCESS }} $current_date" >> $GITHUB_ENV
             echo "dependencies_badge_color=${{ env.BADGE_STATUS_SUCCESS_COLOR }}" >> $GITHUB_ENV 
           fi
-
       - name: Create badge
         uses: CoveredCA/common-devops/packages/badge@main
         if: always()
