@@ -52,18 +52,22 @@ jobs:
         shell: bash
         run: |
           echo " " | tee -a message_body.txt
+          echo "***********************************************"
+          echo "## Maven Version Info" | tee -a message_body.txt
+          echo "***********************************************"
+          echo " " | tee -a message_body.txt
           echo -e "$(mvn --version)" | tee -a message_body.txt
           echo " " | tee -a message_body.txt
-          echo "***********************************************" | tee -a message_body.txt
+          echo "***********************************************"
           echo "## Scan plugins" | tee -a message_body.txt
           echo "***********************************************"
-          echo " "
+          echo " " | tee -a message_body.txt
           SCAN_RESULT=$(mvn versions:display-plugin-updates -Denforcer.skip)
           ERROR="false"
 
           if [[ $SCAN_RESULT == *"The following plugin updates are available"* ]]; then
-            echo "  ***********************************************" | tee -a message_body.txt
-            echo "  ## Update plugins!!" | tee -a message_body.txt
+            echo "  ***********************************************"
+            echo "  ### Update plugins!!" | tee -a message_body.txt
             echo "  ***********************************************" | tee -a message_body.txt
             echo " " | tee -a message_body.txt
             echo -e "$(mvn versions:display-plugin-updates -Denforcer.skip)" | tee -a message_body.txt
@@ -73,24 +77,24 @@ jobs:
             echo " " | tee -a message_body.txt
             echo " " | tee -a message_body.txt
           else
-            echo "Plugins up to date" | tee -a message_body.txt
+            echo "> Plugins up to date" | tee -a message_body.txt
           fi
 
           SCAN_RESULT=$(mvn versions:display-dependency-updates -Denforcer.skip)
           echo " " | tee -a message_body.txt
           echo "***********************************************" | tee -a message_body.txt
           echo "## Scan dependencies" | tee -a message_body.txt
-          echo "***********************************************" | tee -a message_body.txt
+          echo "***********************************************"
           echo " " | tee -a message_body.txt
           if [[ $SCAN_RESULT == *"The following dependencies"* ]]; then
-            echo "  ***********************************************" | tee -a message_body.txt
-            echo "  ## Update dependencies!!" | tee -a message_body.txt
+            echo "  ***********************************************"
+            echo "  ### Update dependencies!!" | tee -a message_body.txt
             echo "  ***********************************************" | tee -a message_body.txt
             echo " " | tee -a message_body.txt
             echo -e "$(mvn versions:display-dependency-updates -Denforcer.skip)" | tee -a message_body.txt
             ERROR="true"
           else
-            echo "Dependencies up to date" | tee -a message_body.txt
+            echo "> Dependencies up to date" | tee -a message_body.txt
           fi
 
           # The GH_TOKEN was exposed as env variable in the app-token action. The next commented code
@@ -120,6 +124,7 @@ jobs:
             echo "dependencies_badge_status=${{ env.BADGE_STATUS_SUCCESS }} $current_date" >> $GITHUB_ENV
             echo "dependencies_badge_color=${{ env.BADGE_STATUS_SUCCESS_COLOR }}" >> $GITHUB_ENV 
           fi
+          
       - name: Create badge
         uses: CoveredCA/common-devops/packages/badge@main
         if: always()
