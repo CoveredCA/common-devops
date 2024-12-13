@@ -1,0 +1,82 @@
+name: "Pushover Notify"
+description: "Notify via Pushover"
+inputs:
+  token:
+    description: "Pushover application token"
+    required: true
+  user:
+    description: "Pushover user key"
+    required: true
+  title:
+    description: "Messages title, otherwise your apps name is used"
+    required: true
+  message:
+    description: "Message to send"
+    required: true
+  attachment:
+    description: "Binary image attachment to send with the message"
+    required: false
+  attachment_base64:
+    description: "Base64-encoded image attachment to send with the message"
+    required: false
+  attachment_type:
+    description: "MIME type of the included attachment or attachment_base64"
+    required: false
+  device:
+    description: "Name of one of your devices to send just to that device instead of all devices"
+    required: false
+  html:
+    description: "Set to 1 to enable HTML parsing"
+    required: false
+  priority:
+    description: "Value of -2, -1, 0 (default), 1, or 2"
+    required: false
+  sound:
+    description: "Name of a supported sound to override your default sound choice"
+    required: false
+  timestamp:
+    description: "Unix timestamp of a time to display instead of when our API received it"
+    required: false
+  ttl:
+    description: "Number of seconds that the message will live, before being deleted automatically"
+    required: false
+  url:
+    description: "Supplementary URL to show with your message"
+    required: false
+  url_title:
+    description: "Title for the URL specified as the url parameter, otherwise just the URL is shown"
+    required: false
+
+runs:
+  using: "composite"
+  steps:
+    - name: Pushover Notify
+      shell: bash
+      run: |
+        set -e
+
+        CMD="curl -s"
+        CMD="$CMD --form-string \"token=${{ inputs.token }}\""
+        CMD="$CMD --form-string \"user=${{ inputs.user }}\""
+        CMD="$CMD --form-string \"message=${{ inputs.title }}\""
+        CMD="$CMD --form-string \"message=${{ inputs.message }}\""
+        [ -n "${{ inputs.attachment }}" ] && CMD="$CMD --form-string \"attachment=${{ inputs.attachment }}\""
+        [ -n "${{ inputs.attachment_base64 }}" ] && CMD="$CMD --form-string \"attachment_base64=${{ inputs.attachment_base64 }}\""
+        [ -n "${{ inputs.attachment_type }}" ] && CMD="$CMD --form-string \"attachment_type=${{ inputs.attachment_type }}\""
+        [ -n "${{ inputs.device }}" ] && CMD="$CMD --form-string \"device=${{ inputs.device }}\""
+        [ -n "${{ inputs.html }}" ] && CMD="$CMD --form-string \"html=${{ inputs.html }}\""
+        [ -n "${{ inputs.priority }}" ] && CMD="$CMD --form-string \"priority=${{ inputs.priority }}\""
+        [ -n "${{ inputs.sound }}" ] && CMD="$CMD --form-string \"sound=${{ inputs.sound }}\""
+        [ -n "${{ inputs.timestamp }}" ] && CMD="$CMD --form-string \"timestamp=${{ inputs.timestamp }}\""
+        [ -n "${{ inputs.ttl }}" ] && CMD="$CMD --form-string \"ttl=${{ inputs.ttl }}\""
+        [ -n "${{ inputs.url }}" ] && CMD="$CMD --form-string \"url=${{ inputs.url }}\""
+        [ -n "${{ inputs.url_title }}" ] && CMD="$CMD --form-string \"url_title=${{ inputs.url_title }}\""
+
+        CMD="$CMD https://api.pushover.net/1/messages.json"
+        echo "*********************************"
+        echo "* This is the formatted command *"
+        echo "*********************************"
+
+        echo "$CMD"
+
+        eval $CMD
