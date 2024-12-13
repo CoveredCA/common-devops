@@ -263,5 +263,5 @@ runs:
         sound: "" # Specify the sound name or leave empty
         timestamp: "" # Add Unix timestamp or leave empty
         ttl: "" # Specify the TTL value or leave empty
-        url: "https://www.github.com/CoveredCA/$configuration_deployment_name/actions" # Add the URL or leave empty
-        url_title: "${{ env.service_name }} - Actions" # Add the URL title or leave empty
+        url: "https://www.github.com/CoveredCA/${{ inputs.application_name }}/actions" # Add the URL or leave empty
+        url_title: "Go To GitHub Actions Log" # Add the URL title or leave empty
