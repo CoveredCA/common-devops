@@ -89,7 +89,7 @@ runs:
         echo "Getting the current status for the service"
         echo "  Query command: $QUERY_STATUS"
 
-        # Get the current status of the service 
+        # Get the current status of the service
         DEPLOYMENT_INFO=$($QUERY_STATUS || true)
         echo " "
         echo "Current status: $DEPLOYMENT_INFO"
@@ -97,7 +97,7 @@ runs:
         echo " "
         echo "Querying variables from deployment result"
         STATUS=$(echo $DEPLOYMENT_INFO | jq -r ".status")
-        UPDATE_STATUS=$(echo $DEPLOYMENT_INFO | jq -r ".deploymentUpdateStatus")  
+        UPDATE_STATUS=$(echo $DEPLOYMENT_INFO | jq -r ".deploymentUpdateStatus")
 
         echo " "
         echo "Result"
@@ -108,13 +108,13 @@ runs:
         if [ "$STATUS" = "UNDEPLOYED" ]; then
           echo "The service is in an inconsistent state: UNDEPLOYED; please delete the service"
           echo "outcome=failure" >> $GITHUB_OUTPUT
-          exit 1 # terminate and indicate error 
+          exit 1 # terminate and indicate error
         fi
 
         if [ "$STATUS" = "DEPLOYING" ]; then
           echo "The service was already in DEPLOYING state, wait until deployment finish or delete it"
           echo "outcome=failure" >> $GITHUB_OUTPUT
-          exit 1 # terminate and indicate error 
+          exit 1 # terminate and indicate error
         fi
 
         # Verify if deployment is for an new application of update an existing one
@@ -146,7 +146,7 @@ runs:
         end=$(date +%s)
         echo " "
         echo "Deployment finished, verifying the deployment...."
-        echo "  Elapsed time: $(($end-$start)) seconds" 
+        echo "  Elapsed time: $(($end-$start)) seconds"
         echo " "
 
         # Process to verify if the service was deployed correctly
@@ -155,26 +155,26 @@ runs:
         echo "Deployment query cycle"
         echo "**********************************"
         echo " "
-        echo "The process of querying deployment starts"      
+        echo "The process of querying deployment starts"
         iteration=1
         limit=70
         while true
-        do 
+        do
           sleep 5
 
           # Get the current status of the service
-          echo " " 
+          echo " "
           echo "Getting deployment status"
           DEPLOYMENT_INFO=$($QUERY_STATUS)
           # echo "Quering status: $DEPLOYMENT_INFO"
           STATUS=$(echo $DEPLOYMENT_INFO | jq -r ".status")
-          UPDATE_STATUS=$(echo $DEPLOYMENT_INFO | jq -r ".deploymentUpdateStatus")  
+          UPDATE_STATUS=$(echo $DEPLOYMENT_INFO | jq -r ".deploymentUpdateStatus")
           echo "Service: $configuration_deployment_name, operation: $operation, status: $STATUS, updateStatus: $UPDATE_STATUS"
 
           end=$(date +%s)
           echo "  Elapsed time: $(($end-$start)) seconds, iteration: $iteration limit: $limit"
 
-          if [ "$operation" = "deploy" ]; then 
+          if [ "$operation" = "deploy" ]; then
               # Create service
 
               if [ "$STATUS" = "STARTED" ] || [ $iteration -eq $limit ]; then
@@ -191,7 +191,7 @@ runs:
           iteration=$(( $iteration + 1 ))
         done
 
-        # Verify if service was successfully deployed 
+        # Verify if service was successfully deployed
         echo " "
         echo "**********************************"
         echo "Analyse the deployment process"
@@ -206,9 +206,9 @@ runs:
             echo "    example: anypoint-cli-v4 runtime-mgr cloudhub-application download-logs {APP-NAME}"
             echo "  The expected iterations were 44 but the proccess reached the limit: $limit"
             echo "outcome=failure" >> $GITHUB_OUTPUT
-            exit 1 # terminate and indicate error 
-            
-          else 
+            exit 1 # terminate and indicate error
+
+          else
             echo "  Deployment successful.."
             echo "outcome=success" >> $GITHUB_OUTPUT
           fi
@@ -253,7 +253,7 @@ runs:
         user: "${{ inputs.pushover_user }}"
         token: "${{ inputs.pushover_token }}"
         title: "Deployment Status - ${{ inputs.application_name }} - ${{ inputs.version }} - ${{ inputs.environment }}" # Set the message title or leave empty
-        message: "Deployment of ${{ inputs.application_name }}-${{ inputs.environment }}:${{ inputs.version }}: Outcome: ${{ env.outcome }}"
+        message: "Deployment of ${{ inputs.application_name }}-${{ inputs.environment }}:${{ inputs.version }}<br>Outcome: ${{ env.outcome }}"
         attachment: "" # Add your attachment path or leave empty
         attachment_base64: "" # Add your Base64-encoded attachment or leave empty
         attachment_type: "" # Add the MIME type of the attachment or leave empty
