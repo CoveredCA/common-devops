@@ -7,7 +7,7 @@ inputs:
   pushover_user:
     description: "Pushover user key"
     required: true
-  application-name:
+  application_name:
     required: true
     default: "cca-demo-sapi"
     description: The name of the application the deployment issue was created for
@@ -253,7 +253,7 @@ runs:
         user: "${{ inputs.pushover_user }}"
         token: "${{ inputs.pushover_token }}"
         title: "Deployment Status - ${{ inputs.application_name }} - ${{ inputs.version }} - ${{ inputs.environment }}" # Set the message title or leave empty
-        message: "Deployment of ${{ inputs.application_name }}-${{ inputs.environment }}:${{ inputs.version }}<br>Outcome: ${{ env.outcome }}"
+        message: "Deployment of ${{ inputs.application_name }}-${{ inputs.environment }}:${{ inputs.version }}<br>Outcome: ${{ steps.deployment.outputs.outcome }}"
         attachment: "" # Add your attachment path or leave empty
         attachment_base64: "" # Add your Base64-encoded attachment or leave empty
         attachment_type: "" # Add the MIME type of the attachment or leave empty

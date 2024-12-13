@@ -78,7 +78,7 @@ jobs:
           pushover_user: ${{ secrets.PUSHOVER_USER_KEY }}
           pushover_token: ${{ secrets.PUSHOVER_TOKEN }}
           environment: ${{ env.deployment_environment }}
-          application-name: ${{ env.service_name }}
+          application_name: ${{ env.service_name }}
           version: ${{ env.deployment_version }}
 
       - name: Create badge for deployment
