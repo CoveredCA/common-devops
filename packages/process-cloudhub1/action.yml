@@ -1,5 +1,24 @@
 name: "Deploys a service to Cloudhub/GovCloud"
 description: "Deploys a service to Cloudhub/GovCloud"
+inputs:
+  pushover_token:
+    description: "Pushover application token"
+    required: true
+  pushover_user:
+    description: "Pushover user key"
+    required: true
+  application-name:
+    required: true
+    default: "cca-demo-sapi"
+    description: The name of the application the deployment issue was created for
+  environment:
+    required: true
+    default: "dev"
+    description: The enmviropnment the deployment issue is calling for
+  version:
+    required: true
+    default: "1.0.10"
+    description: The version of the application to be deployed to the environment
 outputs:
   outcome:
     description: "The result of the deployment: sucess, failure"
@@ -228,11 +247,12 @@ runs:
         echo " "
 
     - name: Run pushover notify
+      id: Pushover
       uses: CoveredCA/common-devops/packages/pushover-notify@main
       with:
-        user: "${{ secrets.PUSHOVER_USER_KEY }}"
-        token: "${{ secrets.PUSHOVER_TOKEN }}"
-        title: "$configuration_deployment_name - App Deployment Status" # Set the message title or leave empty
+        user: "${{ inputs.PUSHOVER_USER_KEY }}"
+        token: "${{ inputs.PUSHOVER_TOKEN }}"
+        title: "Deployment Status - ${{ env.service_name }} - ${{ env.deployment_version }} - ${{ env.deployment_environment }}" # Set the message title or leave empty
         message: "Deployment of jar: $jar</br>Outcome: $outcome"
         attachment: "" # Add your attachment path or leave empty
         attachment_base64: "" # Add your Base64-encoded attachment or leave empty
@@ -244,4 +264,4 @@ runs:
         timestamp: "" # Add Unix timestamp or leave empty
         ttl: "" # Specify the TTL value or leave empty
         url: "https://www.github.com/CoveredCA/$configuration_deployment_name/actions" # Add the URL or leave empty
-        url_title: "$configuration_deployment_name - Actions" # Add the URL title or leave empty
+        url_title: "${{ env.service_name }} - Actions" # Add the URL title or leave empty

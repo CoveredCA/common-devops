@@ -1,5 +1,5 @@
-name: 'Summary - Publish test results'
-description: 'Summary - Publish test results'
+name: "Summary - Publish test results"
+description: "Summary - Publish test results"
 inputs:
   badge-label:
     required: true
@@ -9,15 +9,14 @@ inputs:
     description: Suffix file badge
   path-report:
     required: true
-    description: File path to the junit report  
+    description: File path to the junit report
   path-directoryreports:
     required: true
-    description: Directory path for test reports  
+    description: Directory path for test reports
 
 runs:
   using: "composite"
   steps:
-
     - name: Debug action
       shell: bash
       run: |
@@ -29,7 +28,7 @@ runs:
         echo "  Input variables: "
         echo "    badge-label: ${{ inputs.badge-label }}"
         echo "    badge-suffix: ${{ inputs.badge-suffix }}"
-        echo "    path-report: ${{ inputs.path-report}}"        
+        echo "    path-report: ${{ inputs.path-report}}"
         echo "    path-directoryreports: ${{ inputs.path-directoryreports}}"
         echo " "
 
