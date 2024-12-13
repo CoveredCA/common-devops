@@ -252,8 +252,8 @@ runs:
       with:
         user: "${{ inputs.pushover_user }}"
         token: "${{ inputs.pushover_token }}"
-        title: "Deployment Status - ${{ env.service_name }} - ${{ env.deployment_version }} - ${{ env.deployment_environment }}" # Set the message title or leave empty
-        message: "Deployment of jar: $jar</br>Outcome: $outcome"
+        title: "Deployment Status - ${{ inputs.application_name }} - ${{ inputs.version }} - ${{ inputs.environment }}" # Set the message title or leave empty
+        message: "Deployment of ${{ inputs.application_name }}-${{ inputs.environment }}:${{ inputs.version }}: Outcome: ${{ env.outcome }}"
         attachment: "" # Add your attachment path or leave empty
         attachment_base64: "" # Add your Base64-encoded attachment or leave empty
         attachment_type: "" # Add the MIME type of the attachment or leave empty
