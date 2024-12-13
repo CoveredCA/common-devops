@@ -103,7 +103,7 @@ jobs:
 
           message_body="${{ env.ISSUE_MESSAGE }}<br/><br/><hr>$(cat message_body.txt)"
 
-          # Get the date for the code badge 
+          # Get the date for the code badge
           current_date=$(date +'%Y-%m-%d')
           if [[ "$ERROR" = "true" ]]; then
             echo "  Create a scan-dependencies issue"
@@ -122,9 +122,9 @@ jobs:
             exit 1 # terminate and indicate error
           else
             echo "dependencies_badge_status=${{ env.BADGE_STATUS_SUCCESS }} $current_date" >> $GITHUB_ENV
-            echo "dependencies_badge_color=${{ env.BADGE_STATUS_SUCCESS_COLOR }}" >> $GITHUB_ENV 
+            echo "dependencies_badge_color=${{ env.BADGE_STATUS_SUCCESS_COLOR }}" >> $GITHUB_ENV
           fi
-          
+
       - name: Create badge
         uses: CoveredCA/common-devops/packages/badge@main
         if: always()
