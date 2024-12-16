@@ -150,8 +150,8 @@ jobs:
         with:
           user: "${{ secrets.PUSHOVER_USER_KEY }}"
           token: "${{ secrets.PUSHOVER_TOKEN }}"
-          title: "🤖 Scan Dependencies - ${{ env.service_name }}" # Set the message title or leave empty
-          message: "<b>APP:</b> ${{ env.service_name }}<br><b>VERSION:</b> ${{ env.service_version }}<br><b>REPO:</b> <a href=\"https://github.com/${{ github.repository }}/issues?q=sort%3Aupdated-desc+is%3Aopen+label%3Adependencies\">Scan Deps Issues</a><br><b>OUTCOME:</b> ❌"
+          title: "${{ env.service_name }}" # Set the message title or leave empty
+          message: "<b>JOB:</b> 🤖 Scan Dependencies<br><b>APP:</b> ${{ env.service_name }}<br><b>VERSION:</b> ${{ env.service_version }}<br><b>REPO:</b> <a href=\"https://github.com/${{ github.repository }}/issues?q=sort%3Aupdated-desc+is%3Aopen+label%3Adependencies\">Scan Deps Issues</a><br><b>OUTCOME:</b> ❌"
           html: 1 # Set to 1 to enable HTML parsing or leave empty
           priority: 1 # Set the priority value or leave empty
           sound: "falling" # Specify the sound name or leave empty
