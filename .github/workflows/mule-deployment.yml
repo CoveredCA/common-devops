@@ -75,11 +75,11 @@ jobs:
         id: deployment-ch1
         uses: CoveredCA/common-devops/packages/process-cloudhub1@main
         with:
-          pushover_user: ${{ secrets.PUSHOVER_USER_KEY }}
-          pushover_token: ${{ secrets.PUSHOVER_TOKEN }}
-          environment: ${{ env.deployment_environment }}
-          application_name: ${{ env.service_name }}
-          version: ${{ env.deployment_version }}
+          pushover_user: ${{ secrets.PUSHOVER_USER_KEY }} # Necessary for Pushover-Notify
+          pushover_token: ${{ secrets.PUSHOVER_TOKEN }} # Necessary for Pushover-Notify
+          environment: ${{ env.deployment_environment }} # Necessary for Pushover-Notify
+          application_name: ${{ env.service_name }} # Necessary for Pushover-Notify
+          version: ${{ env.deployment_version }} # Necessary for Pushover-Notify
 
       - name: Create badge for deployment
         uses: CoveredCA/common-devops/packages/badge@main
@@ -100,6 +100,10 @@ jobs:
         uses: CoveredCA/common-devops/packages/process-bat@main
         with:
           deployment-env: ${{ env.deployment_environment }}
+          pushover_user: ${{ secrets.PUSHOVER_USER_KEY }} # Necessary for Pushover-Notify
+          pushover_token: ${{ secrets.PUSHOVER_TOKEN }} # Necessary for Pushover-Notify
+          application_name: ${{ env.service_name }} # Necessary for Pushover-Notify
+          version: ${{ env.deployment_version }} # Necessary for Pushover-Notify
 
       #################################################################
       # Issue Management: create, close, add comments

@@ -139,6 +139,21 @@ jobs:
       #  uses: CoveredCA/common-devops/packages/update-scan-dependencies-issue@main
       #  if: failure() && steps.scan-dependencies.outcome == 'failure'
       #  with:
-      #    token: ${{ env.github_automationbot_token }}
-      #    application-name: ${{ env.service_name }}
-      #    version: ${{ env.service_version }}
+        #    token: ${{ env.github_automationbot_token }}
+        #    application-name: ${{ env.service_name }}
+        #    version: ${{ env.service_version }}
+
+      - name: Run pushover notify
+        id: Pushover
+        uses: CoveredCA/common-devops/packages/pushover-notify@main
+        if: steps.scan-dependencies.outcome == 'failure'
+        with:
+          user: "${{ secrets.PUSHOVER_USER_KEY }}"
+          token: "${{ secrets.PUSHOVER_TOKEN }}"
+          title: "🤖 Scan Dependencies - ${{ env.service_name }}" # Set the message title or leave empty
+          message: "<b>APP:</b> ${{ env.service_name }}<br><b>VERSION:</b> ${{ env.service_version }}<br><b>REPO:</b> <a href=\"https://github.com/${{ github.repository }}/issues?q=sort%3Aupdated-desc+is%3Aopen+label%3Adependencies\">Scan Deps Issues</a><br><b>OUTCOME:</b> ${{ env.dependencies_badge_color == '31c653' && '✅' || '❌'}}" # 31c653 == 'success'
+          html: 1 # Set to 1 to enable HTML parsing or leave empty
+          priority: ${{ env.dependencies_badge_color == '31c653' && '0' || '1' }} # Set the priority value or leave empty
+          sound: "${{ env.dependencies_badge_color == '31c653' && 'bugle' || 'falling'}}" # Specify the sound name or leave empty
+          url: "https://www.github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}" # Add the URL or leave empty
+          url_title: "Go To GitHub Actions Log" # Add the URL title or leave empty

@@ -1,6 +1,20 @@
 name: "Execute Mulesoft BAT"
 description: "Execute Mulesoft BAT"
 inputs:
+  pushover_token:
+    description: "Pushover application token"
+    required: true
+  pushover_user:
+    description: "Pushover user key"
+    required: true
+  application_name:
+    required: true
+    default: "cca-demo-sapi"
+    description: The name of the application the deployment issue was created for
+  version:
+    required: true
+    default: "1.0.10"
+    description: The version of the application to be deployed to the environment
   deployment-env:
     required: true
     description: Deployment environment for the service
@@ -32,6 +46,20 @@ runs:
         bat $bat_executable
         echo "outcome=success" >> $GITHUB_OUTPUT
         echo " "
+
+    - name: Run pushover notify
+      id: Pushover
+      uses: CoveredCA/common-devops/packages/pushover-notify@main
+      with:
+        user: "${{ inputs.pushover_user }}"
+        token: "${{ inputs.pushover_token }}"
+        title: "BAT Testing Status - ${{ inputs.application_name }} - ${{ inputs.version }} - ${{ inputs.deployment_environment }}" # Set the message title or leave empty
+        message: "🦇 BAT Test Notification<br><b>APP:</b> ${{ inputs.application_name }}<br><b>VERSION:</b> ${{ inputs.version }}<br><b>ENV:</b> ${{ inputs.deployment_environment }}<br><b>OUTCOME:</b> ${{ steps.deployment.outputs.outcome == 'success' && '✅' || '❌'}}"
+        html: 1 # Set to 1 to enable HTML parsing or leave empty
+        priority: ${{ steps.deployment.outputs.outcome == 'success' && '0' || '1' }} # Set the priority value or leave empty
+        sound: "${{ steps.deployment.outputs.outcome == 'success' && 'bugle' || 'falling'}}" # Specify the sound name or leave empty
+        url: "https://www.github.com/CoveredCA/${{ inputs.application_name }}/actions/runs/${{ github.run_id }}" # Add the URL or leave empty
+        url_title: "Go To GitHub Actions Log" # Add the URL title or leave empty
 
     - name: Summary - Test
       uses: CoveredCA/common-devops/packages/summary-junit@main
