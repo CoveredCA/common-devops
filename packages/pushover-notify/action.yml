@@ -58,7 +58,7 @@ runs:
         CMD="curl -s"
         CMD="$CMD --form-string \"token=${{ inputs.token }}\""
         CMD="$CMD --form-string \"user=${{ inputs.user }}\""
-        CMD="$CMD --form-string \"message=${{ inputs.title }}\""
+        CMD="$CMD --form-string \"title=${{ inputs.title }}\""
         CMD="$CMD --form-string \"message=${{ inputs.message }}\""
         [ -n "${{ inputs.attachment }}" ] && CMD="$CMD --form-string \"attachment=${{ inputs.attachment }}\""
         [ -n "${{ inputs.attachment_base64 }}" ] && CMD="$CMD --form-string \"attachment_base64=${{ inputs.attachment_base64 }}\""

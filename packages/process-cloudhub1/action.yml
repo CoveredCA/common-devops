@@ -259,7 +259,7 @@ runs:
         attachment_type: "" # Add the MIME type of the attachment or leave empty
         device: "" # Specify device name or leave empty
         html: 1 # Set to 1 to enable HTML parsing or leave empty
-        priority: ${{ steps.deployment.outputs.outcome == 'success' && 0 || 1 }} # Set the priority value or leave empty
+        priority: ${{ steps.deployment.outputs.outcome == 'success' && '0' || '1' }} # Set the priority value or leave empty
         sound: "${{ steps.deployment.outputs.outcome == 'success' && 'bugle' || 'falling'}}" # Specify the sound name or leave empty
         timestamp: "" # Add Unix timestamp or leave empty
         ttl: "" # Specify the TTL value or leave empty
