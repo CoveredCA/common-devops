@@ -146,7 +146,7 @@ jobs:
       - name: Run pushover notify
         id: Pushover
         uses: CoveredCA/common-devops/packages/pushover-notify@main
-        if: env.dependencies_badge_color == '800000'
+        if: always() && env.dependencies_badge_color == '800000'
         with:
           user: "${{ secrets.PUSHOVER_USER_KEY }}"
           token: "${{ secrets.PUSHOVER_TOKEN }}"
