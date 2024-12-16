@@ -253,15 +253,15 @@ runs:
         user: "${{ inputs.pushover_user }}"
         token: "${{ inputs.pushover_token }}"
         title: "Deployment Status - ${{ inputs.application_name }} - ${{ inputs.version }} - ${{ inputs.environment }}" # Set the message title or leave empty
-        message: "Deployment Notification<br><b>APP:</b> ${{ inputs.application_name }}<br><b>VERSION:</b>${{ inputs.version }}<br><b>ENV:</b> ${{ inputs.environment }}<br><b>OUTCOME:</b> ${{ steps.deployment.outputs.outcome == 'success' && '✅' || '❌'}}"
+        message: "Deployment Notification<br><b>APP:</b> ${{ inputs.application_name }}<br><b>VERSION:</b> ${{ inputs.version }}<br><b>ENV:</b> ${{ inputs.environment }}<br><b>OUTCOME:</b> ${{ steps.deployment.outputs.outcome == 'success' && '✅' || '❌'}}"
         attachment: "" # Add your attachment path or leave empty
         attachment_base64: "" # Add your Base64-encoded attachment or leave empty
         attachment_type: "" # Add the MIME type of the attachment or leave empty
         device: "" # Specify device name or leave empty
         html: 1 # Set to 1 to enable HTML parsing or leave empty
-        priority: 0 # Set the priority value or leave empty
-        sound: "" # Specify the sound name or leave empty
+        priority: ${{ steps.deployment.outputs.outcome == 'success' && 1 || 2}} # Set the priority value or leave empty
+        sound: "${{ steps.deployment.outputs.outcome == 'success' && 'bugle' || 'falling'}}" # Specify the sound name or leave empty
         timestamp: "" # Add Unix timestamp or leave empty
         ttl: "" # Specify the TTL value or leave empty
-        url: "https://www.github.com/CoveredCA/${{ inputs.application_name }}/actions/runs/${{ github.run_number }}" # Add the URL or leave empty
+        url: "https://www.github.com/CoveredCA/${{ inputs.application_name }}/actions/runs/${{ github.run_id }}" # Add the URL or leave empty
         url_title: "Go To GitHub Actions Log" # Add the URL title or leave empty
