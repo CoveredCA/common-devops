@@ -199,9 +199,24 @@ jobs:
         uses: djdefi/cloc-action@6
         with:
           options: --md --report-file=cloc.md
-    
+
       - name: Output cloc report
         shell: bash
         run: |
           echo "# 📊 Mulesoft Code Metrics Report:" >> $GITHUB_STEP_SUMMARY
           cat cloc.md >> $GITHUB_STEP_SUMMARY
+
+      - name: Run pushover notify
+        id: Pushover-common-core
+        uses: CoveredCA/common-devops/packages/pushover-notify@main
+        if: env.service_name == 'common-core'
+        with:
+          user: "${{ secrets.PUSHOVER_USER_KEY }}"
+          token: "${{ secrets.PUSHOVER_TOKEN }}"
+          title: "${{ env.service_name }}" # Set the message title or leave empty
+          message: "<b>JOB:</b> 🛠 Build<br><b>APP:</b> ${{ env.service_name }}<br><b>VERSION:</b> ${{ env.service_version }}<br><b>OUTCOME:</b> ✅<br><b>ACTION ITEMS:</b> Update your apps to the latest version: ' && ${{ env.service_version }}"
+          html: 1 # Set to 1 to enable HTML parsing or leave empty
+          priority: 0 # Set the priority value or leave empty
+          sound: 'bugle' # Specify the sound name or leave empty
+          url: "https://www.github.com/CoveredCA/${{ env.service_name }}/actions/runs/${{ github.run_id }}" # Add the URL or leave empty
+          url_title: "Go To GitHub Actions Log" # Add the URL title or leave empty
