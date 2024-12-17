@@ -253,7 +253,7 @@ runs:
         user: "${{ inputs.pushover_user }}"
         token: "${{ inputs.pushover_token }}"
         title: "${{ inputs.application_name }}" # Set the message title or leave empty
-        message: '<b>JOB:</b> 🚀 Deployment<br><b>APP:</b> ${{ inputs.application_name }}<br><b>VERSION:</b> ${{ inputs.version }}<br><b>ENV:</b> ${{ inputs.environment }}<br><b>OUTCOME:</b> ${{ steps.deployment.outputs.outcome == ''success'' && ''✅'' || ''❌''}}${{ inputs.application_name == ''common-core'' && "<br><b>ACTION ITEMS:</b> Update your apps to the latest version: ${{ inputs.version }}" }}'
+        message: "<b>JOB:</b> 🚀 Deployment<br><b>APP:</b> ${{ inputs.application_name }}<br><b>VERSION:</b> ${{ inputs.version }}<br><b>ENV:</b> ${{ inputs.environment }}<br><b>OUTCOME:</b> ${{ steps.deployment.outputs.outcome == 'success' && '✅' || '❌'}}${{ inputs.application_name == 'common-core' && '<br><b>ACTION ITEMS:</b> Update your apps to the latest version: ' && ${{ inputs.version }}}}"
         html: 1 # Set to 1 to enable HTML parsing or leave empty
         priority: ${{ steps.deployment.outputs.outcome == 'success' && '0' || '1' }} # Set the priority value or leave empty
         sound: "${{ steps.deployment.outputs.outcome == 'success' && 'bugle' || 'falling'}}" # Specify the sound name or leave empty
