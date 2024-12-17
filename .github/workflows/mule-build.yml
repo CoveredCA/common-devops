@@ -214,7 +214,7 @@ jobs:
           user: "${{ secrets.PUSHOVER_USER_KEY }}"
           token: "${{ secrets.PUSHOVER_TOKEN }}"
           title: "${{ env.service_name }}" # Set the message title or leave empty
-          message: "<b>JOB:</b> 🛠 Build<br><b>APP:</b> ${{ env.service_name }}<br><b>VERSION:</b> ${{ env.service_version }}<br><b>OUTCOME:</b> ✅<br><b>ACTION ITEMS:</b> Update your apps to the latest version: ' && ${{ env.service_version }}"
+          message: "<b>JOB:</b> 🛠 Build<br><b>APP:</b> ${{ env.service_name }}<br><b>VERSION:</b> ${{ env.service_version }}<br><b>OUTCOME:</b> ✅<br><b>ACTION ITEMS:</b> Update your apps to the latest version: ${{ env.service_version }}"
           html: 1 # Set to 1 to enable HTML parsing or leave empty
           priority: 0 # Set the priority value or leave empty
           sound: 'bugle' # Specify the sound name or leave empty
