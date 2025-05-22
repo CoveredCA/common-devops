@@ -12,15 +12,15 @@ runs:
         key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
         restore-keys: |
           ${{ runner.os }}-maven-
-              
+
     - name: Install JDK
       uses: actions/setup-java@v4
       with:
-        java-version: ${{ env.jdk_version }} 
+        java-version: ${{ env.jdk_version }}
         distribution: ${{ env.jdk_distribution }}
         #check-latest: true
         cache: 'maven'
-    
+
     - name: Install Maven
       uses: stCarolas/setup-maven@v5
       with:
@@ -32,7 +32,7 @@ runs:
         file: "$configuration_settings"
         checkIfExists: true
 
-    - name: Maven configuration 
+    - name: Maven configuration
       id: maven-configuration
       shell: bash
       run: |
@@ -40,7 +40,7 @@ runs:
         echo "*********************************************"
         echo "Maven configuration"
         echo "*********************************************"
-        echo " "   
+        echo " "
         output=$(echo "$configuration_data" | envsubst)
         echo "$output" > $HOME/.m2/settings.xml
 

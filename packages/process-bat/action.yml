@@ -39,7 +39,9 @@ runs:
         curl -o- 'https://s3.amazonaws.com/bat-wrapper/install.sh' | bash
         echo " "
         echo "bat -version: $(bat -version)"
+
         export JAVA_TOOL_OPTIONS='--add-opens=java.base/sun.net.www.protocol.https=ALL-UNNAMED --add-opens=java.base/java.net=ALL-UNNAMED'
+
         bat_executable=$( echo "$deployment_environment.yaml")
         cd bat
         mkdir target
