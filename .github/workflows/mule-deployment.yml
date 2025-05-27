@@ -90,6 +90,24 @@ jobs:
           file: ${{ env.service_name }}-${{ env.deployment_environment }}.svg
           folder: ${{ env.service_name }}
 
+      - name: Create badge for Common-Parent-Pom Version Used
+        uses: CoveredCA/common-devops/packages/badge@main
+        with:
+          label: '${{ env.deployment_environment }} Parent-Pom version'
+          status: '${{ env.service_parent_pom_version }}'
+          color: '458588'
+          file: ${{ env.service_name }}-parent-pom-${{ env.deployment_environment }}.svg
+          folder: ${{ env.service_name }}
+
+      - name: Create badge for Common-Core Version Used
+        uses: CoveredCA/common-devops/packages/badge@main
+        with:
+          label: '${{ env.deployment_environment }} Common-Core version'
+          status: '${{ env.service_common_core_version }}'
+          color: '458588'
+          file: ${{ env.service_name }}-common-core-${{ env.deployment_environment }}.svg
+          folder: ${{ env.service_name }}
+
       - name: Custom Logging
         id: custom-logging
         if: "env.configuration_deployment_customlogger == 'true'"

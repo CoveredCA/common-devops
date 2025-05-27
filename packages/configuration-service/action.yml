@@ -73,7 +73,7 @@ runs:
         echo "  Configuration for environment: $deployment_environment"
         echo " "
         echo "  Install XMLStarlet in Ubuntu"
-        sudo apt-get install xmlstarlet --fix-missing        
+        sudo apt-get install xmlstarlet --fix-missing
         echo " "
         echo "  xmlstarlet --version"
         xmlstarlet --version
@@ -83,18 +83,24 @@ runs:
         serviceversion=$( xmlstarlet sel -N x=http://maven.apache.org/POM/4.0.0 -t -v "/x:project/x:version" pom.xml )
         servicegroup=$( xmlstarlet sel -N x=http://maven.apache.org/POM/4.0.0 -t -v "/x:project/x:groupId" pom.xml )
         serviceartifact=$( xmlstarlet sel -N x=http://maven.apache.org/POM/4.0.0 -t -v "/x:project/x:artifactId" pom.xml )
+        serviceparentpomversion=$( xmlstarlet sel -N x=http://maven.apache.org/POM/4.0.0 -t -v "/x:project/x:parent/x:version" pom.xml )
+        servicecommoncoreversion=$( xmlstarlet sel -N x=http://maven.apache.org/POM/4.0.0 -t -v "/x:project/x:dependencies/x:dependency[x:artifactId='common-core']/x:version" pom.xml )
         echo " "
         echo "  Create environment variables with pom data"
         echo "service_name=$servicename" >> $GITHUB_ENV
         echo "service_version=$serviceversion" >> $GITHUB_ENV
         echo "service_group=$servicegroup" >> $GITHUB_ENV
         echo "service_artifact=$serviceartifact" >> $GITHUB_ENV
+        echo "service_parent_pom_version=$serviceparentpomversion" >> $GITHUB_ENV
+        echo "service_common_core_version=$servicecommoncoreversion" >> $GITHUB_ENV
         echo " "
         echo "  Variables generated based on pom.xml:"
         echo "    service_name= "$servicename
-        echo "    service_version= "$serviceversion          
+        echo "    service_version= "$serviceversion
         echo "    service_group= "$servicegroup
         echo "    service_artifact= "$serviceartifact
+        echo "    service_parent_pom_version= "$serviceparentpomversion
+        echo "    service_common_core_version= "$servicecommoncoreversion
         echo " "
 
     - name: Get configuration files
@@ -116,7 +122,7 @@ runs:
       shell: bash
       run: |
         echo " "
-        echo "*********************************************"      
+        echo "*********************************************"
         echo "DEBUG variables from global.yml"
         echo "*********************************************"
         echo " "
@@ -127,7 +133,6 @@ runs:
         echo "    salesforcecontactsap_dev: $salesforcecontactsap_dev"
         echo " "
 
-    
     - name: Get configuration parameters for the service
       shell: bash
       run: |
@@ -144,7 +149,7 @@ runs:
             exit 1
           fi
         }
-        
+
         echo "  Getting main configuration"
         parse_yaml '.settings'; echo "configuration_settings=$pathdata" >> $GITHUB_ENV
         parse_yaml '.skiptests'; echo "configuration_skiptests=$pathdata" >> $GITHUB_ENV
@@ -170,7 +175,6 @@ runs:
           echo "configuration_cloudhub=$substitution_cloudhub" >> $GITHUB_ENV
         fi
         echo " "
-     
 
     - name: Generate environment variables for BAT
       id: generate-service-env-variables
@@ -204,7 +208,7 @@ runs:
             value_fromvariable=$(eval "echo $value")
             echo "      new value: "$value_fromvariable
             echo "$name=$value_fromvariable" >> $GITHUB_ENV
-          done          
+          done
         fi
         echo " "
 
@@ -212,13 +216,13 @@ runs:
       shell: bash
       run: |
         echo " "
-        echo "*********************************************************"      
+        echo "*********************************************************"
         echo "DEBUG show variables for service in environment: $deployment_environment"
         echo "*********************************************************"
         echo " "
         echo "Configuration variables:"
         echo "  configuration_settings= $configuration_settings"
-        echo "  configuration_skiptests= $configuration_skiptests"          
+        echo "  configuration_skiptests= $configuration_skiptests"
         echo "  configuration_environments= $configuration_environments"
         echo "  configuration_apptype= $configuration_apptype"
         echo "  configuration_redeployment_next_environment= $configuration_redeployment_next_environment"
