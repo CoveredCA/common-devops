@@ -83,16 +83,27 @@ runs:
         serviceversion=$( xmlstarlet sel -N x=http://maven.apache.org/POM/4.0.0 -t -v "/x:project/x:version" pom.xml )
         servicegroup=$( xmlstarlet sel -N x=http://maven.apache.org/POM/4.0.0 -t -v "/x:project/x:groupId" pom.xml )
         serviceartifact=$( xmlstarlet sel -N x=http://maven.apache.org/POM/4.0.0 -t -v "/x:project/x:artifactId" pom.xml )
-        serviceparentpomversion=$( xmlstarlet sel -N x=http://maven.apache.org/POM/4.0.0 -t -v "/x:project/x:parent/x:version" pom.xml )
-        servicecommoncoreversion=$( xmlstarlet sel -N x=http://maven.apache.org/POM/4.0.0 -t -v "/x:project/x:dependencies/x:dependency[x:artifactId='common-core']/x:version" pom.xml )
+        serviceparentpomversion=''
+        servicecommoncoreversion=''
+        # Check if servicename does not start with "common"
+        if [[ ! "$servicename" =~ ^common ]]; then
+            serviceparentpomversion=$( xmlstarlet sel -N x=http://maven.apache.org/POM/4.0.0 -t -v "/x:project/x:parent/x:version" pom.xml )
+            servicecommoncoreversion=$( xmlstarlet sel -N x=http://maven.apache.org/POM/4.0.0 -t -v "/x:project/x:dependencies/x:dependency[x:artifactId='common-core']/x:version" pom.xml )
+
+            echo "Service Parent POM Version: $serviceparentpomversion"
+            echo "Service Common-Core Version: $servicecommoncoreversion"
+
+            echo "service_parent_pom_version=$serviceparentpomversion" >> $GITHUB_ENV
+            echo "service_common_core_version=$servicecommoncoreversion" >> $GITHUB_ENV
+        fi
+
         echo " "
         echo "  Create environment variables with pom data"
         echo "service_name=$servicename" >> $GITHUB_ENV
         echo "service_version=$serviceversion" >> $GITHUB_ENV
         echo "service_group=$servicegroup" >> $GITHUB_ENV
         echo "service_artifact=$serviceartifact" >> $GITHUB_ENV
-        echo "service_parent_pom_version=$serviceparentpomversion" >> $GITHUB_ENV
-        echo "service_common_core_version=$servicecommoncoreversion" >> $GITHUB_ENV
+
         echo " "
         echo "  Variables generated based on pom.xml:"
         echo "    service_name= "$servicename
