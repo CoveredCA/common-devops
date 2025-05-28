@@ -134,23 +134,18 @@ jobs:
             echo "Processing repository: $repo"
 
             clean_repo=$(sed 's/-/_/g' <<< $repo)
-            clean_repo="cca_salesforce_sapi"
+            clean_repo="cca_salesforce_sapi" # TODO REMOVE ME
+
             client_id=\${api_"$clean_repo"_dev_clientid}
             eval "clientid=\"$client_id\""
-            echo $client_id
-            echo $clientid
 
             client_secret=\${api_"$clean_repo"_dev_clientsecret}
             eval "clientsecret=\"$client_secret\""
-            echo $client_secret
-            echo $clientsecret
 
             host=https://"$repo"-dev.usg-w1.gov.cloudhub.io/api/health
-            echo $host
 
-
-
-            # payload=$(curl -s -H "client_id: $client")
+            payload=$(curl -s -H "client_id: $clientid" -H "client_secret: $clientsecret" $host)
+            echo $payload | jq
 
             # # Fetch pom.xml content from the repository
             # pom_content=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" https://raw.githubusercontent.com/CoveredCA/$repo/refs/heads/main/pom.xml)
