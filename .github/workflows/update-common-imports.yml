@@ -65,9 +65,6 @@ jobs:
         with:
           node-version: 20
 
-      # - name: Install jq
-      #   uses: dcarbone/install-jq-action@v2.1.0
-
       - name: Install Anypoint CLI
         shell: bash
         run: |
@@ -97,11 +94,11 @@ jobs:
           --output json \
           common-core"
           echo "command used: $COMMON_CORE_VERSION_COMMAND"
-          common_core_version=$($COMMON_CORE_VERSION_COMMAND | jq -r 'sort_by(.version) | map(.version) | last(.[])')
+          COMMON_CORE_VERSION=$($COMMON_CORE_VERSION_COMMAND | jq -r 'sort_by(.version) | map(.version) | last(.[])')
           echo " "
-          echo "Common-Core version: $common_core_version"
+          echo "Common-Core version: $COMMON_CORE_VERSION"
           echo " "
-          echo "ma_common_core_version=$common_core_version" >> $GITHUB_ENV
+          echo "COMMON_CORE_VERSION=$COMMON_CORE_VERSION" >> $GITHUB_ENV
           echo " "
 
       - name: Show data
@@ -115,7 +112,7 @@ jobs:
             echo " "
             echo "Common Core Version"
             echo " "
-            echo "$common_core_version"
+            echo "$COMMON_CORE_VERSION"
 
             echo " "
             echo "**************************************"
