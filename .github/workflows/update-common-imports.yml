@@ -134,7 +134,7 @@ jobs:
             echo "Processing repository: $repo"
 
             # Fetch pom.xml content from the repository
-            pom_content=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" https://raw.githubusercontent.com/CoveredCA/$repo/refs/heads/main/pom.xml)
+            pom_content=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" https://raw.githubusercontent.com/$repo/refs/heads/main/pom.xml)
 
             # Extract versions from the repository's pom.xml
             app_version=$(echo "$pom_content" | xmlstarlet sel -N x=http://maven.apache.org/POM/4.0.0 -t -v "/x:project/x:version")
