@@ -42,13 +42,17 @@ jobs:
 
           echo "Fetch common-parent-pom and common-core versions"
           echo " "
-          echo "Common Parent Pom:"
+          echo "**************************************"
+          echo "Common Parent Pom"
+          echo "**************************************"
           echo " "
           parent_pom_version=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" https://raw.githubusercontent.com/CoveredCA/common-parent-pom/refs/heads/main/pom.xml | xmlstarlet sel -N x=http://maven.apache.org/POM/4.0.0 -t -v "/x:project/x:version")
           echo "Common Parent POM Version: $parent_pom_version"
 
           echo " "
-          echo "Common Core:"
+          echo "**************************************"
+          echo "Common Core"
+          echo "**************************************"
           echo " "
           common_core_version=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" https://raw.githubusercontent.com/CoveredCA/common-core/refs/heads/main/pom.xml | xmlstarlet sel -N x=http://maven.apache.org/POM/4.0.0 -t -v "/x:project/x:version")
           echo "Common Core Version: $common_core_version"
