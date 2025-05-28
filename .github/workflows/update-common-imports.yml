@@ -159,80 +159,26 @@ jobs:
 
             if [ "$SERVICE_COMMON_PARENT_POM_VERSION" != "$PARENT_POM_VERSION" ]; then
               echo "Parent Pom Version Needs to be updated"
-
-              # Original version string
-              original_version=$SERVICE_COMMON_PARENT_POM_VERSION
-
-              # Split the version into components
-              IFS=. read -r major minor patch <<< "$original_version"
-
-              # Increment the patch version
-              patch=$((patch + 1))
-
-              # Check if patch version exceeds 99
-              if ((patch > 99)); then
-                # Increment minor version
-                minor=$((minor + 1))
-                # Reset patch version to 0
-                patch=0
-
-                # Check if minor version exceeds 99
-                if ((minor > 99)); then
-                  # Increment major version
-                  major=$((major + 1))
-                  # Reset minor version to 0
-                  minor=0
-                fi
+              echo "Service Parent Pom: $SERVICE_COMMON_PARENT_POM_VERSION"
+              echo "Common Parent Pom: $PARENT_POM_VERSION"
+              update_needed=true
               fi
-
-              # Reconstruct the new version string
-              new_version="$major.$minor.$patch"
-
-              # Display the original and new version
-              echo "Original Version: $original_version"
-              echo "New Version: $new_version"
+              if [ "$SERVICE_COMMON_CORE_VERSION" != "$COMMON_CORE_VERSION" ]; then
+              echo "Common Core Version Needs to be updated"
+              echo "Service Common Core: $SERVICE_COMMON_CORE_VERSION"
+              echo "Common Core: $COMMON_CORE_VERSION"
+              update_needed=true
             fi
+              SERVICE_COMMON_CORE_VERSION="1.0.0" #TODO REMOVE ME
             if [ "$SERVICE_COMMON_CORE_VERSION" != "$COMMON_CORE_VERSION" ]; then
               echo "Common Core Version Needs to be updated"
-
-              # Original version string
-              original_version=$SERVICE_COMMON_PARENT_POM_VERSION
-
-              # Split the version into components
-              IFS=. read -r major minor patch <<< "$original_version"
-
-              # Increment the patch version
-              patch=$((patch + 1))
-
-              # Check if patch version exceeds 99
-              if ((patch > 99)); then
-                # Increment minor version
-                minor=$((minor + 1))
-                # Reset patch version to 0
-                patch=0
-
-                # Check if minor version exceeds 99
-                if ((minor > 99)); then
-                  # Increment major version
-                  major=$((major + 1))
-                  # Reset minor version to 0
-                  minor=0
-                fi
-              fi
-
-              # Reconstruct the new version string
-              new_version="$major.$minor.$patch"
-
-              # Display the original and new version
-              echo "Original Version: $original_version"
-              echo "New Version: $new_version"
+              echo "Service Common Core: $SERVICE_COMMON_CORE_VERSION"
+              echo "Common Core: $COMMON_CORE_VERSION"
+              update_needed=true
             fi
-            SERVICE_COMMON_CORE_VERSION="1.0.0" #TODO REMOVE ME
-            if [ "$SERVICE_COMMON_CORE_VERSION" != "$COMMON_CORE_VERSION" ]; then
-              echo "Common Core Version Needs to be updated"
-
+            if [ $update_needed ]; then
               # Original version string
-              original_version=$SERVICE_COMMON_PARENT_POM_VERSION
+              original_version=$SERVICE_VERSION
 
               # Split the version into components
               IFS=. read -r major minor patch <<< "$original_version"
@@ -260,8 +206,8 @@ jobs:
               new_version="$major.$minor.$patch"
 
               # Display the original and new version
-              echo "Original Version: $original_version"
-              echo "New Version: $new_version"
+              echo "Original Service Version: $original_version"
+              echo "New Service Version: $new_version"
             fi
 
             # # Fetch pom.xml content from the repository
