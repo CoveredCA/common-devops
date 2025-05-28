@@ -144,7 +144,7 @@ jobs:
             echo "Application Version: $app_version"
             echo "Application Parent POM Version: $parent_pom_version_app"
             echo "Application Common Core Version: $common_core_version_app"
-
+          done
 
           # echo "Matched repositories:"
           # echo "$matched_repos"
