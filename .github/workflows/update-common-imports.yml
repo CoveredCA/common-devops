@@ -1,7 +1,7 @@
-name: Update Dependencies and Application Versions
+name: Update Common Imports
 
 on:
-  workflow_dispatch:
+  workflow_call:
 
 env:
   CONFIGURATIONS_REPOSITORY: common-configurations
@@ -11,6 +11,7 @@ env:
 jobs:
   updateImports:
     runs-on: ubuntu-latest
+
     steps:
 
       - name: Get token from Github App
