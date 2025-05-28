@@ -134,7 +134,7 @@ jobs:
             echo "Processing repository: $repo"
 
             clean_repo=$(sed 's/-/_/g' <<< $repo)
-
+            clean_repo="cca-salesforce-sapi"
             client_id=\${api_"$clean_repo"_dev_clientid}
             eval "clientid=\"$client_id\""
             echo $client_id
