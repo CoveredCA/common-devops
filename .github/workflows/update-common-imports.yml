@@ -127,23 +127,40 @@ jobs:
         id: repo-list
         shell: bash
         run: |
-          repos=$(gh repo list CoveredCA --topic mulesoft --topic app | awk '{print $1}')
+          repos=$(gh repo list CoveredCA --topic mulesoft --topic app | awk '{print $1}' | awk -F/ '{print $2}')
 
           # Loop through each repository
           for repo in "${repos[@]}"; do
             echo "Processing repository: $repo"
 
-            # Fetch pom.xml content from the repository
-            pom_content=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" https://raw.githubusercontent.com/$repo/refs/heads/main/pom.xml)
+            clean_repo=$(sed 's/-/_/g' <<< $repo)
 
-            # Extract versions from the repository's pom.xml
-            app_version=$(echo "$pom_content" | xmlstarlet sel -N x=http://maven.apache.org/POM/4.0.0 -t -v "/x:project/x:version")
-            parent_pom_version_app=$(echo "$pom_content" | xmlstarlet sel -N x=http://maven.apache.org/POM/4.0.0 -t -v "/x:project/x:parent/x:version")
-            common_core_version_app=$(echo "$pom_content" | xmlstarlet sel -N x=http://maven.apache.org/POM/4.0.0 -t -v "/x:project/x:dependencies/x:dependency[x:artifactId='common-core']/x:version")
+            client_id=\${api_"$clean_repo"_dev_clientid}
+            eval "clientid=\"$client_id\""
+            echo $clientid
 
-            echo "Application Version: $app_version"
-            echo "Application Parent POM Version: $parent_pom_version_app"
-            echo "Application Common Core Version: $common_core_version_app"
+            client_secret=\${api_"$clean_repo"_dev_clientsecret}
+            eval "clientsecret=\"$client_secret\""
+            echo $clientsecret
+
+            host=https://"$repo"-dev.usg-w1.gov.cloudhub.io/api/health
+            echo $host
+
+
+
+            # payload=$(curl -s -H "client_id: $client")
+
+            # # Fetch pom.xml content from the repository
+            # pom_content=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" https://raw.githubusercontent.com/CoveredCA/$repo/refs/heads/main/pom.xml)
+
+            # # Extract versions from the repository's pom.xml
+            # app_version=$(echo "$pom_content" | xmlstarlet sel -N x=http://maven.apache.org/POM/4.0.0 -t -v "/x:project/x:version")
+            # parent_pom_version_app=$(echo "$pom_content" | xmlstarlet sel -N x=http://maven.apache.org/POM/4.0.0 -t -v "/x:project/x:parent/x:version")
+            # common_core_version_app=$(echo "$pom_content" | xmlstarlet sel -N x=http://maven.apache.org/POM/4.0.0 -t -v "/x:project/x:dependencies/x:dependency[x:artifactId='common-core']/x:version")
+
+            # echo "Application Version: $app_version"
+            # echo "Application Parent POM Version: $parent_pom_version_app"
+            # echo "Application Common Core Version: $common_core_version_app"
           done
 
           # echo "Matched repositories:"
