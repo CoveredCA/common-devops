@@ -144,8 +144,8 @@ jobs:
 
             host=https://"$repo"-dev.usg-w1.gov.cloudhub.io/api/health
 
-            payload=$(curl -s -H "client_id: $clientid" -H "client_secret: $clientsecret" $host)
-            echo $payload | jq
+            payload=$(curl -s -H "Content-Type: application/json" -H "client_id: $clientid" -H "client_secret: $clientsecret" $host)
+            echo $payload
 
             # # Fetch pom.xml content from the repository
             # pom_content=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" https://raw.githubusercontent.com/CoveredCA/$repo/refs/heads/main/pom.xml)
