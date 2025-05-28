@@ -60,6 +60,28 @@ jobs:
           echo " "
           #============================================================#
 
+      - name: Install NodeJs
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+
+      # - name: Install jq
+      #   uses: dcarbone/install-jq-action@v2.1.0
+
+      - name: Install Anypoint CLI
+        shell: bash
+        run: |
+          echo " "
+          echo "***************************************"
+          echo "Install Anypoint CLI"
+          echo "***************************************"
+          echo " "
+          echo "Install anypoint-cli-v4..."
+          npm install -g anypoint-cli-v4
+          echo "anypoint-cli-v4 --version: "
+          anypoint-cli-v4 --version
+          echo " "
+
       - name: Acquire Common-Core Latest Version
         shell: bash
         run: |
