@@ -135,6 +135,7 @@ jobs:
 
             clean_repo=$(sed 's/-/_/g' <<< $repo)
             clean_repo="cca_salesforce_sapi" # TODO REMOVE ME
+            repo="cca-salesforce-sapi" # TODO REMOVE ME
 
             client_id=\${api_"$clean_repo"_dev_clientid}
             eval "clientid=\"$client_id\""
