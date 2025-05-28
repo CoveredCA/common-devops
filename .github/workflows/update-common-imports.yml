@@ -40,7 +40,7 @@ jobs:
 
           # serviceversion=$( xmlstarlet sel -N x=http://maven.apache.org/POM/4.0.0 -t -v "/x:project/x:version" pom.xml )
 
-          if [ "$ACTIONS_STEP_DEBUG" = "true" ]; then
+          if [ ${{ runner.debug }} = 1 ]; then
             echo "Debug mode is enabled. Running debug-specific bash commands..."
             echo "Performing debug actions..."
 
