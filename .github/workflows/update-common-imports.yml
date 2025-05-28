@@ -1,0 +1,80 @@
+name: Update Dependencies and Application Versions
+
+on:
+  workflow_dispatch:
+
+env:
+  CONFIGURATIONS_REPOSITORY: common-configurations
+  GLOBAL_CONFIGURATION: _global.yml
+  SECRETS_AZURE_KEYVAULT: CoveredCA-KV-Mulesoft
+
+jobs:
+  updateImports:
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Get token from Github App
+        id: app-token
+        uses: CoveredCA/common-devops/packages/app-token@main
+        with:
+          client-id: ${{ secrets.MULESOFT_GITHUBAPP_CLIENTID }}
+          privatekey: ${{ secrets.MULESOFT_GITHUBAPP_PRIVATEKEY }}
+
+      - name: Parse Common Import poms
+        shell: bash
+        run: |
+          echo " "
+          echo "**************************************"
+          echo "Parse pom.xml"
+          echo "**************************************"
+          echo " "
+          echo "  Configuration for environment: $deployment_environment"
+          echo " "
+          echo "  Install XMLStarlet in Ubuntu"
+          sudo apt-get install xmlstarlet --fix-missing
+          echo " "
+          echo "  xmlstarlet --version"
+          xmlstarlet --version
+          echo " "
+
+          # serviceversion=$( xmlstarlet sel -N x=http://maven.apache.org/POM/4.0.0 -t -v "/x:project/x:version" pom.xml )
+
+          echo "Fetch common-parent-pom and common-core versions"
+          echo " "
+          echo "Common Parent Pom:"
+          echo " "
+          parent_pom_version=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" https://raw.githubusercontent.com/CoveredCA/common-parent-pom/refs/heads/main/pom.xml | xmlstarlet sel -N x=http://maven.apache.org/POM/4.0.0 -t -v "/x:project/x:version")
+          echo "Common Parent POM Version: $parent_pom_version"
+
+          echo " "
+          echo "Common Core:"
+          echo " "
+          common_core_version=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" https://raw.githubusercontent.com/CoveredCA/common-core/refs/heads/main/pom.xml | xmlstarlet sel -N x=http://maven.apache.org/POM/4.0.0 -t -v "/x:project/x:version")
+          echo "Common Core Version: $common_core_version"
+
+      - name: Get List of Repositories
+        id: repo-list
+        shell: bash
+        run: |
+          repos=$(gh repo list CoveredCA --topic mulesoft --topic app | awk '{print $1}')
+
+          # Loop through each repository
+          for repo in "${repos[@]}"; do
+            echo "Processing repository: $repo"
+
+            # Fetch pom.xml content from the repository
+            pom_content=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" https://raw.githubusercontent.com/CoveredCA/$repo/refs/heads/main/pom.xml)
+
+            # Extract versions from the repository's pom.xml
+            app_version=$(echo "$pom_content" | xmlstarlet sel -N x=http://maven.apache.org/POM/4.0.0 -t -v "/x:project/x:version")
+            parent_pom_version_app=$(echo "$pom_content" | xmlstarlet sel -N x=http://maven.apache.org/POM/4.0.0 -t -v "/x:project/x:parent/x:version")
+            common_core_version_app=$(echo "$pom_content" | xmlstarlet sel -N x=http://maven.apache.org/POM/4.0.0 -t -v "/x:project/x:dependencies/x:dependency[x:artifactId='common-core']/x:version")
+
+            echo "Application Version: $app_version"
+            echo "Application Parent POM Version: $parent_pom_version_app"
+            echo "Application Common Core Version: $common_core_version_app"
+
+
+          # echo "Matched repositories:"
+          # echo "$matched_repos"
+          # echo "::set-output name=repos::$matched_repos"
