@@ -11,6 +11,12 @@ env:
 jobs:
   updateImports:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      checks: write
+      issues: write
+      pull-requests: write
+      actions: write
 
     steps:
 
@@ -21,24 +27,66 @@ jobs:
           client-id: ${{ secrets.MULESOFT_GITHUBAPP_CLIENTID }}
           privatekey: ${{ secrets.MULESOFT_GITHUBAPP_PRIVATEKEY }}
 
-      - name: Checkout common-parent-pom repository
-        uses: actions/checkout@v4
+      - name: Get secrets from Azure Key Vault
+        id: secrets
+        uses: CoveredCA/common-devops/packages/secrets-azure@main
         with:
-          repository: CoveredCA/common-parent-pom
-          path: common-parent-pom
-          sparse-checkout-cone-mode: false
-          sparse-checkout: |
-            pom.xml
+          keyvault-key: ${{ env.SECRETS_AZURE_KEYVAULT}}
+          azure-credentials: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Checkout common-core repository
-        uses: actions/checkout@v4
-        with:
-          repository: CoveredCA/common-core
-          path: common-core-pom
-          token: ${{ secrets.GITHUB_TOKEN }}
-          sparse-checkout-cone-mode: false
-          sparse-checkout: |
-            pom.xml
+      - name: Install XML Parser
+        shell: bash
+        run: |
+          echo "  Install XMLStarlet in Ubuntu"
+          sudo apt-get install xmlstarlet --fix-missing
+          echo " "
+          echo "  xmlstarlet --version"
+          xmlstarlet --version
+          echo " "
+
+      - name: Acquire Common-Parent-Pom Latest Version
+        shell: bash
+        run: |
+          echo " "
+          echo "***************************************"
+          echo "Acquiring Common-Parent-Pom latest version"
+          echo "***************************************"
+          echo " "
+          urlconfigurationfile="https://raw.githubusercontent.com/CoveredCA/common-parent-pom/main/pom.xml"
+          echo "  URL of file: $urlconfigurationfile"
+          configurationdata=$(curl -sH "Authorization: token $github_automationbot_token" $urlconfigurationfile)
+          echo " "
+          echo $configurationdata > parent-pom.xml
+          echo "  Parse parent-pom.xml"
+          PARENT_POM_VERSION=$( xmlstarlet sel -N x=http://maven.apache.org/POM/4.0.0 -t -v "/x:project/x:version" parent-pom.xml )
+          echo " "
+          echo "  parent_pom_version: $PARENT_POM_VERSION"
+          echo " "
+          echo "PARENT_POM_VERSION=$PARENT_POM_VERSION" >> $GITHUB_ENV
+          echo " "
+          #============================================================#
+
+      - name: Acquire Common-Core Latest Version
+        shell: bash
+        run: |
+          echo " "
+          echo "***************************************"
+          echo "Acquiring Common-Core latest version"
+          echo "***************************************"
+          COMMON_CORE_VERSION_COMMAND="anypoint-cli-v4 exchange:asset:list \
+          --client_id $cicd_connectedapp_clientid \
+          --client_secret $cicd_connectedapp_secret \
+          --organizationId 83ce023f-20c2-40a9-abdd-efdab38b2bcf \
+          --host gov.anypoint.mulesoft.com \
+          --output json \
+          common-core"
+          echo "command used: $COMMON_CORE_VERSION_COMMAND"
+          common_core_version=$($COMMON_CORE_VERSION_COMMAND | jq -r 'sort_by(.version) | map(.version) | last(.[])')
+          echo " "
+          echo "Common-Core version: $common_core_version"
+          echo " "
+          echo "ma_common_core_version=$common_core_version" >> $GITHUB_ENV
+          echo " "
 
       - name: Show data
         shell: bash
@@ -49,7 +97,6 @@ jobs:
             echo "Common Core"
             echo "**************************************"
             echo " "
-            common_core_version=$(cat common-core-pom/pom.xml)
             echo "Common Core Version"
             echo " "
             echo "$common_core_version"
@@ -62,73 +109,7 @@ jobs:
             parent_pom_version=$(cat common-parent-pom/pom.xml)
             echo "Common Parent POM:"
             echo " "
-            echo "$parent_pom_version"
-
-      - name: Parse Common Import poms
-        shell: bash
-        run: |
-          echo " "
-          echo "**************************************"
-          echo "Parse pom.xml"
-          echo "**************************************"
-          echo " "
-          echo "  Configuration for environment: $deployment_environment"
-          echo " "
-          echo "  Install XMLStarlet in Ubuntu"
-          sudo apt-get install xmlstarlet --fix-missing
-          echo " "
-          echo "  xmlstarlet --version"
-          xmlstarlet --version
-          echo " "
-
-          # serviceversion=$( xmlstarlet sel -N x=http://maven.apache.org/POM/4.0.0 -t -v "/x:project/x:version" pom.xml )
-
-          if [ ${{ runner.debug }} = 1 ]; then
-            echo "Debug mode is enabled. Running debug-specific bash commands..."
-            echo "Performing debug actions..."
-
-            echo "Fetch common-parent-pom and common-core versions"
-            echo " "
-            echo "**************************************"
-            echo "Common Core"
-            echo "**************************************"
-            echo " "
-            common_core_version=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" https://raw.githubusercontent.com/CoveredCA/common-core/refs/heads/main/pom.xml)
-            echo "Common Core Version"
-            echo " "
-            echo "$common_core_version"
-
-            echo " "
-            echo "**************************************"
-            echo "Common Parent Pom"
-            echo "**************************************"
-            echo " "
-            parent_pom_version=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" https://raw.githubusercontent.com/CoveredCA/common-parent-pom/refs/heads/main/pom.xml)
-            echo "Common Parent POM:"
-            echo " "
-            echo "$parent_pom_version"
-
-          else
-            echo "Debug mode is not enabled. Skipping debug-specific actions."
-          fi
-
-
-          echo "Fetch common-parent-pom and common-core versions"
-          echo " "
-          echo "**************************************"
-          echo "Common Parent Pom"
-          echo "**************************************"
-          echo " "
-          parent_pom_version=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" https://raw.githubusercontent.com/CoveredCA/common-parent-pom/refs/heads/main/pom.xml | xmlstarlet sel -N x=http://maven.apache.org/POM/4.0.0 -t -v "/x:project/x:version")
-          echo "Common Parent POM Version: $parent_pom_version"
-
-          echo " "
-          echo "**************************************"
-          echo "Common Core"
-          echo "**************************************"
-          echo " "
-          common_core_version=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" https://raw.githubusercontent.com/CoveredCA/common-core/refs/heads/main/pom.xml | xmlstarlet sel -N x=http://maven.apache.org/POM/4.0.0 -t -v "/x:project/x:version")
-          echo "Common Core Version: $common_core_version"
+            echo "$PARENT_POM_VERSION"
 
       - name: Get List of Repositories
         id: repo-list
