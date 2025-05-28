@@ -21,6 +21,48 @@ jobs:
           client-id: ${{ secrets.MULESOFT_GITHUBAPP_CLIENTID }}
           privatekey: ${{ secrets.MULESOFT_GITHUBAPP_PRIVATEKEY }}
 
+      - name: Checkout common-parent-pom repository
+        uses: actions/checkout@v4
+        with:
+          repository: CoveredCA/common-parent-pom
+          path: common-parent-pom
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            pom.xml
+
+      - name: Checkout common-core repository
+        uses: actions/checkout@v4
+        with:
+          repository: CoveredCA/common-core
+          path: common-core-pom
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            pom.xml
+
+      - name: Show data
+        shell: bash
+        run: |
+            echo "Fetch common-parent-pom and common-core versions"
+            echo " "
+            echo "**************************************"
+            echo "Common Core"
+            echo "**************************************"
+            echo " "
+            common_core_version=$(cat common-core-pom/pom.xml)
+            echo "Common Core Version"
+            echo " "
+            echo "$common_core_version"
+
+            echo " "
+            echo "**************************************"
+            echo "Common Parent Pom"
+            echo "**************************************"
+            echo " "
+            parent_pom_version=$(cat common-parent-pom/pom.xml)
+            echo "Common Parent POM:"
+            echo " "
+            echo "$parent_pom_version"
+
       - name: Parse Common Import poms
         shell: bash
         run: |
