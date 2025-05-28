@@ -40,6 +40,36 @@ jobs:
 
           # serviceversion=$( xmlstarlet sel -N x=http://maven.apache.org/POM/4.0.0 -t -v "/x:project/x:version" pom.xml )
 
+          if [ "$ACTIONS_STEP_DEBUG" = "true" ]; then
+            echo "Debug mode is enabled. Running debug-specific bash commands..."
+            echo "Performing debug actions..."
+
+            echo "Fetch common-parent-pom and common-core versions"
+            echo " "
+            echo "**************************************"
+            echo "Common Parent Pom"
+            echo "**************************************"
+            echo " "
+            parent_pom_version=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" https://raw.githubusercontent.com/CoveredCA/common-parent-pom/refs/heads/main/pom.xml)
+            echo "Common Parent POM:"
+            echo " "
+            echo "$parent_pom_version"
+
+            echo " "
+            echo "**************************************"
+            echo "Common Core"
+            echo "**************************************"
+            echo " "
+            common_core_version=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" https://raw.githubusercontent.com/CoveredCA/common-core/refs/heads/main/pom.xml)
+            echo "Common Core Version"
+            echo " "
+            echo "$common_core_version"
+
+          else
+            echo "Debug mode is not enabled. Skipping debug-specific actions."
+          fi
+
+
           echo "Fetch common-parent-pom and common-core versions"
           echo " "
           echo "**************************************"
