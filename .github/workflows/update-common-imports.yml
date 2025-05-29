@@ -124,6 +124,7 @@ jobs:
         id: repo-loop
         shell: bash
         run: |
+          echo -e " \n*****************************************\nAcquiring List of Repositories with tags:\n\t- mulesoft\n\t- app\n*****************************************\n " #TEST
           echo " "
           echo "*****************************************"
           echo "Acquiring List of Repositories with tags:"
@@ -226,7 +227,7 @@ jobs:
             [[ "$update_needed" = "true" ]] && echo "    Update Version Numbers"
             [[ "$update_needed" = "true" ]] && echo "*****************************************"
             [[ "$update_needed" = "true" ]] && echo " "
-            SERVICE_VERSION="1.0.45-snapshot" #TODO REMOVE ME
+            #SERVICE_VERSION="1.0.45-snapshot" #TODO REMOVE ME
             if [[ "$update_needed" = "true" ]]; then
               echo "Current Service Version: $SERVICE_VERSION"
 
@@ -251,11 +252,11 @@ jobs:
                     minor=0 # Reset minor version to 0
                   fi
                 fi
+                # Display the original and new version
+                echo "Original Service Version  -->  New Service Version"
+                echo "$NEW_SERVICE_VERSION  -->  $new_version"
                 $NEW_SERVICE_VERSION="$major.$minor.$patch-snapshot" # Reconstruct the new version string
               fi
-              # Display the original and new version
-              echo "Original Service Version  -->  New Service Version"
-              echo "$NEW_SERVICE_VERSION  -->  $new_version"
             fi
 
             echo "<++> LEFT OFF HERE"
