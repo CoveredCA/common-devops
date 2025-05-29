@@ -200,14 +200,15 @@ jobs:
             echo "**************************************"
             echo "    Run Version Comparisons"
             echo "**************************************"
-            # BUG <++> LEFT OFF HERE
-            # TODO NEED TO HAVE SOME CODE HERE TO HANDLE THE -SNAPSHOT FUNCTIONALITY OF THE SERVICE VERSION WHEN IT TRIES TO WRITE IT TO THE REPOSITORY
+            echo ""
+
             if [ "$SERVICE_COMMON_PARENT_POM_VERSION" != "$PARENT_POM_VERSION" ]; then
               echo "Parent Pom Version Needs to be updated"
               echo "\$SERVICE_COMMON_PARENT_POM_VERSION  -->  \$PARENT_POM_VERSION"
               echo "$SERVICE_COMMON_PARENT_POM_VERSION  -->  $PARENT_POM_VERSION"
               update_needed=true
             fi
+            echo ""
             if [ "$SERVICE_COMMON_CORE_VERSION" != "$COMMON_CORE_VERSION" ]; then
               echo "Common Core Version Needs to be updated"
               echo "\$SERVICE_COMMON_CORE_VERSION  -->  \$COMMON_CORE_VERSION"
@@ -227,8 +228,10 @@ jobs:
             [[ $update_needed = "true" ]] && echo "    Update Version Numbers"
             [[ $update_needed = "true" ]] && echo "*****************************************"
             [[ $update_needed = "true" ]] && echo " "
-
-            if [[ $update_needed = "true" ]]; then
+            # BUG <++> LEFT OFF HERE
+            # TODO NEED TO HAVE SOME CODE HERE TO HANDLE THE -SNAPSHOT FUNCTIONALITY OF THE SERVICE VERSION WHEN IT TRIES TO WRITE IT TO THE REPOSITORY
+            if [ $update_needed = "true" ]; then
+              echo "Service Version Needs to be updated"
               original_version=$SERVICE_VERSION # Original version string
 
               IFS=. read -r major minor patch <<< "$original_version" # Split the version into components
