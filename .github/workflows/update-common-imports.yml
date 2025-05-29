@@ -209,10 +209,11 @@ jobs:
                 NEW_SERVICE_VERSION="$major.$minor.$patch-snapshot"
                 echo "Original Service Version  -->  New Service Version"
                 echo "$SERVICE_VERSION  -->  $NEW_SERVICE_VERSION"
+                SERVICE_VERSION="$NEW_SERVICE_VERSION" # overwrite the service version so we only ever use one common variable
               fi
               echo " "
               echo "OUTPUT_SERVICE_JSON == $OUTPUT_SERVICE_JSON"
-              OUTPUT_SERVICE_JSON="$OUTPUT_SERVICE_JSON{\"service\":{\"name\":\""$repo"\",\"version\":{\"old\":\""$SERVICE_VERSION"\",\"new\":\""$NEW_SERVICE_VERSION"\"},\"parent_pom\":\""$SERVICE_COMMON_PARENT_POM_VERSION"\",\"common_core\":\""$SERVICE_COMMON_CORE_VERSION"\"}}"
+              OUTPUT_SERVICE_JSON="$OUTPUT_SERVICE_JSON{\"service\":{\"name\":\""$repo"\",\"version\":\""$SERVICE_VERSION"\"}}"
               echo " "
               echo "OUTPUT_SERVICE_JSON == $OUTPUT_SERVICE_JSON"
               echo " "
@@ -220,20 +221,8 @@ jobs:
             echo "<++> LEFT OFF HERE"
           done
           echo " "
-          echo "OUTPUT_SERVICE_JSON == $OUTPUT_SERVICE_JSON"
-          echo " "
           [[ ${OUTPUT_SERVICE_JSON: -1} == "," ]] && OUTPUT_SERVICE_JSON="${OUTPUT_SERVICE_JSON::-1}" # If trailing comma then delete
           OUTPUT_SERVICE_JSON="$OUTPUT_SERVICE_JSON]" # Loop completed, close off the json array
           echo " "
-          echo "OUTPUT_SERVICE_JSON == $OUTPUT_SERVICE_JSON"
+          echo "$OUTPUT_SERVICE_JSON" | jq '.'
           echo " "
-
-
-
-
-
-            # echo " "
-            # echo "***************************************"
-            # echo "    Send Healthcheck Request and get data"
-            # echo "***************************************"
-            # echo " "
