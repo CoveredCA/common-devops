@@ -127,7 +127,7 @@ jobs:
           echo " "
           echo -e "\n*****************************************\nAcquiring List of Repositories with tags:\n\t- mulesoft\n\t- app\n*****************************************\n "
           repos=$(gh repo list CoveredCA --topic mulesoft --topic app | awk '{print $1}' | awk -F/ '{print $2}')
-          OUTPUT_SERVICE_JSON='['
+          OUTPUT_SERVICE_JSON=''
           echo -e " \n***************************************\nBeginning Processing Loop\n***************************************\n "
           for repo in "${repos[@]}"; do
 
@@ -189,7 +189,6 @@ jobs:
             #SERVICE_VERSION="1.0.45-snapshot" #TODO REMOVE ME
             if [[ "$update_needed" = "true" ]]; then
               echo "Current Service Version: $SERVICE_VERSION"
-              [[ $OUTPUT_SERVICE_JSON != '[' ]] && OUTPUT_SERVICE_JSON="$OUTPUT_SERVICE_JSON," # If we're past first loop iteration, add comma for next json record
               if [[ "$SERVICE_VERSION" =~ "-snapshot" ]]; then
                 echo "The service version already contains -snapshot."
                 echo "No updating of service version required."
@@ -213,7 +212,7 @@ jobs:
               fi
               echo " "
               echo "OUTPUT_SERVICE_JSON == $OUTPUT_SERVICE_JSON"
-              OUTPUT_SERVICE_JSON="$OUTPUT_SERVICE_JSON{\"service\":{\"name\":\""$repo"\",\"version\":\""$SERVICE_VERSION"\"}}"
+              OUTPUT_SERVICE_JSON="$OUTPUT_SERVICE_JSON{\"service\":{\"name\":\""$repo"\",\"version\":\""$SERVICE_VERSION"\"}},"
               echo " "
               echo "OUTPUT_SERVICE_JSON == $OUTPUT_SERVICE_JSON"
               echo " "
@@ -222,7 +221,14 @@ jobs:
           done
           echo " "
           [[ ${OUTPUT_SERVICE_JSON: -1} == "," ]] && OUTPUT_SERVICE_JSON="${OUTPUT_SERVICE_JSON::-1}" # If trailing comma then delete
-          OUTPUT_SERVICE_JSON="$OUTPUT_SERVICE_JSON]" # Loop completed, close off the json array
+          OUTPUT_SERVICE_JSON="[$OUTPUT_SERVICE_JSON]" # Loop completed, wrap in json array
+          echo "OUTPUT_SERVICE_JSON=$OUTPUT_SERVICE_JSON" >> $GITHUB_ENV
           echo " "
           echo "$OUTPUT_SERVICE_JSON" | jq '.'
           echo " "
+
+      - name: Update Application Poms Loop
+        id: pom-update-loop
+        shell: bash
+        run: |
+          echo "$OUTPUT_SERVICE_JSON" | jq '.'
