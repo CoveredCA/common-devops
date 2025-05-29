@@ -172,12 +172,7 @@ jobs:
 
             host=https://"$repo"-dev.usg-w1.gov.cloudhub.io/api/health
 
-            [[ $RUNNER_DEBUG -eq 1 ]] && echo "DEBUG: \$client_id: $client_id"
-            [[ $RUNNER_DEBUG -eq 1 ]] && echo "DEBUG: \$clientid: $clientid"
-            [[ $RUNNER_DEBUG -eq 1 ]] && echo "DEBUG: \$client_secret: $client_secret"
-            [[ $RUNNER_DEBUG -eq 1 ]] && echo "DEBUG: \$clientsecret: $clientsecret"
-            [[ $RUNNER_DEBUG -eq 1 ]] && echo "DEBUG: \$host: $host"
-            [[ $RUNNER_DEBUG -eq 1 ]] && echo " "
+            [[ $RUNNER_DEBUG -eq 1 ]] && echo -e "DEBUG: \$client_id: $client_id\nDEBUG: \$clientid: $clientid\nDEBUG: \$client_secret: $client_secret\nDEBUG: \$clientsecret: $clientsecret\nDEBUG: \$host: $host\n"
 
             echo "*****************************************"
             echo "    Send Healthcheck Request and get data"
@@ -246,10 +241,10 @@ jobs:
                     minor=0 # Reset minor version to 0
                   fi
                 fi
+                $NEW_SERVICE_VERSION="$major.$minor.$patch-snapshot" # Reconstruct the new version string
                 # Display the original and new version
                 echo "Original Service Version  -->  New Service Version"
-                echo "$NEW_SERVICE_VERSION  -->  $new_version"
-                $NEW_SERVICE_VERSION="$major.$minor.$patch-snapshot" # Reconstruct the new version string
+                echo "$SERVICE_VERSION  -->  $NEW_SERVICE_VERSION"
               fi
             fi
 
