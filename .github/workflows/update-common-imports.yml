@@ -125,7 +125,7 @@ jobs:
         shell: bash
         run: |
           echo " "
-          echo -e "\n*****************************************\nAcquiring List of Repositories with tags:\n\t- mulesoft\n\t- app\n*****************************************\n " #TEST
+          echo -e "\n*****************************************\nAcquiring List of Repositories with tags:\n\t- mulesoft\n\t- app\n*****************************************\n "
           repos=$(gh repo list CoveredCA --topic mulesoft --topic app | awk '{print $1}' | awk -F/ '{print $2}')
           OUTPUT_SERVICE_JSON='['
           echo -e " \n***************************************\nBeginning Processing Loop\n***************************************\n "
@@ -212,7 +212,7 @@ jobs:
               fi
               echo " "
               echo "OUTPUT_SERVICE_JSON == $OUTPUT_SERVICE_JSON"
-              OUTPUT_SERVICE_JSON="$OUTPUT_SERVICE_JSON{\"service\":{\"name\":\"$repo"\",\"version\":{\"old\":\""$SERVICE_VERSION"\",\"new\":\""$NEW_SERVICE_VERSION"\"},\"parent_pom\":\""$SERVICE_COMMON_PARENT_POM_VERSION"\",\"common_core\":\""$SERVICE_COMMON_CORE_VERSION"\"}}"
+              OUTPUT_SERVICE_JSON="$OUTPUT_SERVICE_JSON{\"service\":{\"name\":\""$repo"\",\"version\":{\"old\":\""$SERVICE_VERSION"\",\"new\":\""$NEW_SERVICE_VERSION"\"},\"parent_pom\":\""$SERVICE_COMMON_PARENT_POM_VERSION"\",\"common_core\":\""$SERVICE_COMMON_CORE_VERSION"\"}}"
               echo " "
               echo "OUTPUT_SERVICE_JSON == $OUTPUT_SERVICE_JSON"
               echo " "
