@@ -226,32 +226,39 @@ jobs:
             [[ "$update_needed" = "true" ]] && echo "    Update Version Numbers"
             [[ "$update_needed" = "true" ]] && echo "*****************************************"
             [[ "$update_needed" = "true" ]] && echo " "
-            # BUG <++> LEFT OFF HERE
-            # TODO NEED TO HAVE SOME CODE HERE TO HANDLE THE -SNAPSHOT FUNCTIONALITY OF THE SERVICE VERSION WHEN IT TRIES TO WRITE IT TO THE REPOSITORY
+
             if [[ "$update_needed" = "true" ]]; then
-              echo "Service Version Needs to be updated"
-              original_version=$SERVICE_VERSION # Original version string
+              echo "Current Service Version: $SERVICE_VERSION"
 
-              IFS=. read -r major minor patch <<< "$original_version" # Split the version into components
+              if [[ $string =~ "-snapshot" ]]; then
+                echo "The service version already contains -snapshot."
+                echo "No updating of service version required."
+              else
+                echo "Service Version Needs to be updated"
+                original_version=$ # Original version string
 
-              patch=$((patch + 1)) # Increment the patch version
+                echo "Incrementing version number and adding '-snapshot'"
+                IFS=. read -r major minor patch <<< "$SERVICE_VERSION" # Split the version into components
 
-              if ((patch > 99)); then # Check if patch version exceeds 99
-                minor=$((minor + 1)) # Increment minor version
-                patch=0 # Reset patch version to 0
+                patch=$((patch + 1)) # Increment the patch version
 
-                if ((minor > 99)); then # Check if minor version exceeds 99
-                  major=$((major + 1)) # Increment major version
-                  minor=0 # Reset minor version to 0
+                if ((patch > 99)); then # Check if patch version exceeds 99
+                  minor=$((minor + 1)) # Increment minor version
+                  patch=0 # Reset patch version to 0
+
+                  if ((minor > 99)); then # Check if minor version exceeds 99
+                    major=$((major + 1)) # Increment major version
+                    minor=0 # Reset minor version to 0
+                  fi
                 fi
+                $NEW_SERVICE_VERSION="$major.$minor.$patch-snapshot" # Reconstruct the new version string
               fi
-
-              new_version="$major.$minor.$patch" # Reconstruct the new version string
-
               # Display the original and new version
               echo "Original Service Version  -->  New Service Version"
-              echo "$original_version  -->  $new_version"
+              echo "$NEW_SERVICE_VERSION  -->  $new_version"
             fi
+
+            echo "<++> LEFT OFF HERE"
 
             # # Fetch pom.xml content from the repository
             # pom_content=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" https://raw.githubusercontent.com/CoveredCA/$repo/refs/heads/main/pom.xml)
