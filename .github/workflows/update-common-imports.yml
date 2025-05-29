@@ -156,9 +156,9 @@ jobs:
             # clean_repo="cca_salesforce_sapi" # TODO REMOVE ME
             # repo="cca-salesforce-sapi" # TODO REMOVE ME
 
-            [[ $RUNNER_DEBUG -eq 1 ] ]&& echo "DEBUG: \$repo: $repo"
-            [[ $RUNNER_DEBUG -eq 1 ] ]&& echo "DEBUG: \$repo: $repo"
-            [[ $RUNNER_DEBUG -eq 1 ] ]&& echo "DEBUG: \$clean_repo: $clean_repo"
+            [[ $RUNNER_DEBUG -eq 1 ]] && echo "DEBUG: \$repo: $repo"
+            [[ $RUNNER_DEBUG -eq 1 ]] && echo "DEBUG: \$repo: $repo"
+            [[ $RUNNER_DEBUG -eq 1 ]] && echo "DEBUG: \$clean_repo: $clean_repo"
 
             echo " "
             echo "***************************************"
@@ -176,11 +176,11 @@ jobs:
 
             host=https://"$repo"-dev.usg-w1.gov.cloudhub.io/api/health
 
-            [[ $RUNNER_DEBUG -eq 1 ] ]&& echo "DEBUG: \$client_id: $client_id"
-            [[ $RUNNER_DEBUG -eq 1 ] ]&& echo "DEBUG: \$clientid: $clientid"
-            [[ $RUNNER_DEBUG -eq 1 ] ]&& echo "DEBUG: \$client_secret: $client_secret"
-            [[ $RUNNER_DEBUG -eq 1 ] ]&& echo "DEBUG: \$clientsecret: $clientsecret"
-            [[ $RUNNER_DEBUG -eq 1 ] ]&& echo "DEBUG: \$host: $host"
+            [[ $RUNNER_DEBUG -eq 1 ]] && echo "DEBUG: \$client_id: $client_id"
+            [[ $RUNNER_DEBUG -eq 1 ]] && echo "DEBUG: \$clientid: $clientid"
+            [[ $RUNNER_DEBUG -eq 1 ]] && echo "DEBUG: \$client_secret: $client_secret"
+            [[ $RUNNER_DEBUG -eq 1 ]] && echo "DEBUG: \$clientsecret: $clientsecret"
+            [[ $RUNNER_DEBUG -eq 1 ]] && echo "DEBUG: \$host: $host"
 
             echo " "
             echo "*****************************************"
@@ -189,7 +189,7 @@ jobs:
             echo " "
 
             payload=$(curl -s -H "Content-Type: application/json" -H "client_id: $clientid" -H "client_secret: $clientsecret" $host) || true
-            [[ $RUNNER_DEBUG -eq 1 ] ]&& echo "DEBUG: \$payload: $payload"
+            [[ $RUNNER_DEBUG -eq 1 ]] && echo "DEBUG: \$payload: $payload"
 
             SERVICE_COMMON_PARENT_POM_VERSION=$(echo $payload | jq -r '.commonParentPom.version') || true
             SERVICE_COMMON_CORE_VERSION=$(echo $payload | jq -r '.commonCore.version') || true
