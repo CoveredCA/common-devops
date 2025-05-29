@@ -124,46 +124,20 @@ jobs:
         id: repo-loop
         shell: bash
         run: |
-          echo -e " \n*****************************************\nAcquiring List of Repositories with tags:\n\t- mulesoft\n\t- app\n*****************************************\n " #TEST
           echo " "
-          echo "*****************************************"
-          echo "Acquiring List of Repositories with tags:"
-          echo "    - mulesoft"
-          echo "    - app"
-          echo "*****************************************"
-          echo " "
+          echo -e "\n*****************************************\nAcquiring List of Repositories with tags:\n\t- mulesoft\n\t- app\n*****************************************\n " #TEST
           repos=$(gh repo list CoveredCA --topic mulesoft --topic app | awk '{print $1}' | awk -F/ '{print $2}')
-
-          echo " "
-          echo "***************************************"
-          echo "Beginning Processing Loop"
-          echo "***************************************"
-          echo " "
-          # Loop through each repository
+          echo " \n***************************************\nBeginning Processing Loop\n***************************************\n "
           for repo in "${repos[@]}"; do
 
-            echo " "
-            echo "***************************************"
-            echo "    Processing repository: $repo"
-            echo "***************************************"
-            echo " "
-            echo "***************************************"
-            echo "    Clean Repository Name"
-            echo "***************************************"
-            echo " "
+            echo " \n***************************************\n\tProcessing repository: $repo\n***************************************\n "
+            echo "***************************************\n\tClean Repository Name\n***************************************\n "
             clean_repo=$(sed 's/-/_/g' <<< $repo)
             echo "\$clean_repo: $clean_repo"
             # clean_repo="cca_salesforce_sapi" # TODO REMOVE ME
             # repo="cca-salesforce-sapi" # TODO REMOVE ME
 
-            echo " "
-            echo "***************************************"
-            echo "    Get and Set Service Creds"
-            echo "        - clientid"
-            echo "        - clientsecret"
-            echo "        - host"
-            echo "***************************************"
-            echo " "
+            echo " \n***************************************\n\tGet and Set Service Creds\n\t\t- clientid\n\t\t- clientsecret\n\t\t- host\n***************************************\n "
             client_id=\${api_"$clean_repo"_dev_clientid}
             eval "clientid=\"$client_id\""
 
@@ -174,10 +148,7 @@ jobs:
 
             [[ $RUNNER_DEBUG -eq 1 ]] && echo -e "DEBUG: \$client_id: $client_id\nDEBUG: \$clientid: $clientid\nDEBUG: \$client_secret: $client_secret\nDEBUG: \$clientsecret: $clientsecret\nDEBUG: \$host: $host\n"
 
-            echo "*****************************************"
-            echo "    Send Healthcheck Request and get data"
-            echo "*****************************************"
-            echo " "
+            echo "*****************************************\n\tSend Healthcheck Request and get data\n*****************************************\n "
 
             payload=$(curl -s -H "Content-Type: application/json" -H "client_id: $clientid" -H "client_secret: $clientsecret" $host) || true
             [[ $RUNNER_DEBUG -eq 1 ]] && echo "DEBUG: \$payload: $payload"
@@ -190,11 +161,7 @@ jobs:
             echo "$SERVICE_COMMON_CORE_VERSION  <--  \$SERVICE_COMMON_CORE_VERSION"
             echo "$SERVICE_VERSION  <--  \$SERVICE_VERSION"
 
-            echo " "
-            echo "**************************************"
-            echo "    Run Version Comparisons"
-            echo "**************************************"
-            echo " "
+            echo " \n**************************************\n\tRun Version Comparisons\n**************************************\n "
 
             if [ "$SERVICE_COMMON_PARENT_POM_VERSION" != "$PARENT_POM_VERSION" ]; then
               echo "Parent Pom Version Needs to be updated"
@@ -217,11 +184,7 @@ jobs:
               update_needed=true #TODO REMOVE ME
             fi #TODO REMOVE ME
 
-            [[ "$update_needed" = "true" ]] && echo " "
-            [[ "$update_needed" = "true" ]] && echo "*****************************************"
-            [[ "$update_needed" = "true" ]] && echo "    Update Version Numbers"
-            [[ "$update_needed" = "true" ]] && echo "*****************************************"
-            [[ "$update_needed" = "true" ]] && echo " "
+            [[ "$update_needed" = "true" ]] && echo " \n*****************************************\n\tUpdate Version Numbers\n*****************************************\n "
             #SERVICE_VERSION="1.0.45-snapshot" #TODO REMOVE ME
             if [[ "$update_needed" = "true" ]]; then
               echo "Current Service Version: $SERVICE_VERSION"
