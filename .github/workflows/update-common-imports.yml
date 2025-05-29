@@ -279,5 +279,5 @@ jobs:
             fi
 
             cd ..
-            rm -rf "$repo"
+            rm -rf "$service"
           done
