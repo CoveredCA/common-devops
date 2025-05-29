@@ -127,6 +127,7 @@ jobs:
           echo " "
           echo -e "\n*****************************************\nAcquiring List of Repositories with tags:\n\t- mulesoft\n\t- app\n*****************************************\n " #TEST
           repos=$(gh repo list CoveredCA --topic mulesoft --topic app | awk '{print $1}' | awk -F/ '{print $2}')
+          OUTPUT_SERVICE_JSON='['
           echo " \n***************************************\nBeginning Processing Loop\n***************************************\n "
           for repo in "${repos[@]}"; do
 
@@ -188,6 +189,7 @@ jobs:
             #SERVICE_VERSION="1.0.45-snapshot" #TODO REMOVE ME
             if [[ "$update_needed" = "true" ]]; then
               echo "Current Service Version: $SERVICE_VERSION"
+              [[ $OUTPUT_SERVICE_JSON != '[' ]] && OUTPUT_SERVICE_JSON="$OUTPUT_SERVICE_JSON," # If we're past first loop iteration, add comma for next json record
               if [[ "$SERVICE_VERSION" =~ "-snapshot" ]]; then
                 echo "The service version already contains -snapshot."
                 echo "No updating of service version required."
@@ -208,26 +210,26 @@ jobs:
                 echo "Original Service Version  -->  New Service Version"
                 echo "$SERVICE_VERSION  -->  $NEW_SERVICE_VERSION"
               fi
+              echo " "
+              echo "OUTPUT_SERVICE_JSON == $OUTPUT_SERVICE_JSON"
+              OUTPUT_SERVICE_JSON="$OUTPUT_SERVICE_JSON{\"service\":{\"name\":\"$repo"\",\"version\":{\"old\":\""$SERVICE_VERSION"\",\"new\":\""$NEW_SERVICE_VERSION"\"},\"parent_pom\":\""$SERVICE_COMMON_PARENT_POM_VERSION"\",\"common_core\":\""$SERVICE_COMMON_CORE_VERSION"\"}}"
+              echo " "
+              echo "OUTPUT_SERVICE_JSON == $OUTPUT_SERVICE_JSON"
+              echo " "
             fi
-
             echo "<++> LEFT OFF HERE"
-
-            # # Fetch pom.xml content from the repository
-            # pom_content=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" https://raw.githubusercontent.com/CoveredCA/$repo/refs/heads/main/pom.xml)
-
-            # # Extract versions from the repository's pom.xml
-            # app_version=$(echo "$pom_content" | xmlstarlet sel -N x=http://maven.apache.org/POM/4.0.0 -t -v "/x:project/x:version")
-            # parent_pom_version_app=$(echo "$pom_content" | xmlstarlet sel -N x=http://maven.apache.org/POM/4.0.0 -t -v "/x:project/x:parent/x:version")
-            # common_core_version_app=$(echo "$pom_content" | xmlstarlet sel -N x=http://maven.apache.org/POM/4.0.0 -t -v "/x:project/x:dependencies/x:dependency[x:artifactId='common-core']/x:version")
-
-            # echo "Application Version: $app_version"
-            # echo "Application Parent POM Version: $parent_pom_version_app"
-            # echo "Application Common Core Version: $common_core_version_app"
           done
+          echo " "
+          echo "OUTPUT_SERVICE_JSON == $OUTPUT_SERVICE_JSON"
+          echo " "
+          [[ ${OUTPUT_SERVICE_JSON: -1} == "," ]] && OUTPUT_SERVICE_JSON="${OUTPUT_SERVICE_JSON::-1}" # If trailing comma then delete
+          OUTPUT_SERVICE_JSON="$OUTPUT_SERVICE_JSON]" # Loop completed, close off the json array
+          echo " "
+          echo "OUTPUT_SERVICE_JSON == $OUTPUT_SERVICE_JSON"
+          echo " "
 
-          # echo "Matched repositories:"
-          # echo "$matched_repos"
-          # echo "::set-output name=repos::$matched_repos"
+
+
 
 
             # echo " "
