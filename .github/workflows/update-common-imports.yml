@@ -156,8 +156,6 @@ jobs:
             # clean_repo="cca_salesforce_sapi" # TODO REMOVE ME
             # repo="cca-salesforce-sapi" # TODO REMOVE ME
 
-            [[ $RUNNER_DEBUG -eq 1 ]] && echo "DEBUG: \$repo: $repo"
-            [[ $RUNNER_DEBUG -eq 1 ]] && echo "DEBUG: \$repo: $repo"
             [[ $RUNNER_DEBUG -eq 1 ]] && echo "DEBUG: \$clean_repo: $clean_repo"
 
             echo " "
@@ -206,54 +204,52 @@ jobs:
             # TODO NEED TO HAVE SOME CODE HERE TO HANDLE THE -SNAPSHOT FUNCTIONALITY OF THE SERVICE VERSION WHEN IT TRIES TO WRITE IT TO THE REPOSITORY
             if [ "$SERVICE_COMMON_PARENT_POM_VERSION" != "$PARENT_POM_VERSION" ]; then
               echo "Parent Pom Version Needs to be updated"
-              echo "Service Parent Pom: $SERVICE_COMMON_PARENT_POM_VERSION  -->  $PARENT_POM_VERSION :Common Parent Pom"
+              echo "\$SERVICE_COMMON_PARENT_POM_VERSION  -->  \$PARENT_POM_VERSION"
+              echo "$SERVICE_COMMON_PARENT_POM_VERSION  -->  $PARENT_POM_VERSION"
               update_needed=true
             fi
             if [ "$SERVICE_COMMON_CORE_VERSION" != "$COMMON_CORE_VERSION" ]; then
               echo "Common Core Version Needs to be updated"
-              echo "Service Common Core: $SERVICE_COMMON_CORE_VERSION"
-              echo "Common Core: $COMMON_CORE_VERSION"
+              echo "\$SERVICE_COMMON_CORE_VERSION  -->  \$COMMON_CORE_VERSION"
+              echo "$SERVICE_COMMON_CORE_VERSION  -->  $COMMON_CORE_VERSION"
               update_needed=true
             fi
             SERVICE_COMMON_CORE_VERSION="1.0.0" #TODO REMOVE ME
-            if [ "$SERVICE_COMMON_CORE_VERSION" != "$COMMON_CORE_VERSION" ]; then
-              echo "Common Core Version Needs to be updated"
-              echo "Service Common Core: $SERVICE_COMMON_CORE_VERSION"
-              echo "Common Core: $COMMON_CORE_VERSION"
-              update_needed=true
-            fi
-            if [ $update_needed ]; then
-              # Original version string
-              original_version=$SERVICE_VERSION
+            if [ "$SERVICE_COMMON_CORE_VERSION" != "$COMMON_CORE_VERSION" ]; then #TODO REMOVE ME
+              echo "Common Core Version Needs to be updated" #TODO REMOVE ME
+              echo "\$SERVICE_COMMON_CORE_VERSION  -->  \$COMMON_CORE_VERSION" #TODO REMOVE ME
+              echo "$SERVICE_COMMON_CORE_VERSION  -->  $COMMON_CORE_VERSION" #TODO REMOVE ME
+              update_needed=true #TODO REMOVE ME
+            fi #TODO REMOVE ME
 
-              # Split the version into components
-              IFS=. read -r major minor patch <<< "$original_version"
+            [[ $update_needed = "true" ]] && echo " "
+            [[ $update_needed = "true" ]] && echo "*****************************************"
+            [[ $update_needed = "true" ]] && echo "    Update Version Numbers"
+            [[ $update_needed = "true" ]] && echo "*****************************************"
+            [[ $update_needed = "true" ]] && echo " "
 
-              # Increment the patch version
-              patch=$((patch + 1))
+            if [[ $update_needed = "true" ]]; then
+              original_version=$SERVICE_VERSION # Original version string
 
-              # Check if patch version exceeds 99
-              if ((patch > 99)); then
-                # Increment minor version
-                minor=$((minor + 1))
-                # Reset patch version to 0
-                patch=0
+              IFS=. read -r major minor patch <<< "$original_version" # Split the version into components
 
-                # Check if minor version exceeds 99
-                if ((minor > 99)); then
-                  # Increment major version
-                  major=$((major + 1))
-                  # Reset minor version to 0
-                  minor=0
+              patch=$((patch + 1)) # Increment the patch version
+
+              if ((patch > 99)); then # Check if patch version exceeds 99
+                minor=$((minor + 1)) # Increment minor version
+                patch=0 # Reset patch version to 0
+
+                if ((minor > 99)); then # Check if minor version exceeds 99
+                  major=$((major + 1)) # Increment major version
+                  minor=0 # Reset minor version to 0
                 fi
               fi
 
-              # Reconstruct the new version string
-              new_version="$major.$minor.$patch"
+              new_version="$major.$minor.$patch" # Reconstruct the new version string
 
               # Display the original and new version
-              echo "Original Service Version: $original_version"
-              echo "New Service Version: $new_version"
+              echo "Original Service Version  -->  New Service Version"
+              echo "$original_version  -->  $new_version"
             fi
 
             # # Fetch pom.xml content from the repository
