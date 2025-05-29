@@ -155,7 +155,7 @@ jobs:
 
           echo " "
           echo "***************************************"
-          echo "Begging Processing Loop"
+          echo "Beginning Processing Loop"
           echo "***************************************"
           echo " "
           # Loop through each repository
@@ -163,20 +163,17 @@ jobs:
 
             echo " "
             echo "***************************************"
-            echo "Processing repository: $repo"
+            echo "    Processing repository: $repo"
             echo "***************************************"
-            echo " "
-
             echo " "
             echo "***************************************"
             echo "    Clean Repository Name"
             echo "***************************************"
             echo " "
             clean_repo=$(sed 's/-/_/g' <<< $repo)
+            echo "\$clean_repo: $clean_repo"
             # clean_repo="cca_salesforce_sapi" # TODO REMOVE ME
             # repo="cca-salesforce-sapi" # TODO REMOVE ME
-
-            [[ $RUNNER_DEBUG -eq 1 ]] && echo "DEBUG: \$clean_repo: $clean_repo"
 
             echo " "
             echo "***************************************"
@@ -199,8 +196,8 @@ jobs:
             [[ $RUNNER_DEBUG -eq 1 ]] && echo "DEBUG: \$client_secret: $client_secret"
             [[ $RUNNER_DEBUG -eq 1 ]] && echo "DEBUG: \$clientsecret: $clientsecret"
             [[ $RUNNER_DEBUG -eq 1 ]] && echo "DEBUG: \$host: $host"
+            [[ $RUNNER_DEBUG -eq 1 ]] && echo " "
 
-            echo " "
             echo "*****************************************"
             echo "    Send Healthcheck Request and get data"
             echo "*****************************************"
@@ -217,10 +214,11 @@ jobs:
             echo "$SERVICE_COMMON_CORE_VERSION  <--  \$SERVICE_COMMON_CORE_VERSION"
             echo "$SERVICE_VERSION  <--  \$SERVICE_VERSION"
 
+            echo " "
             echo "**************************************"
             echo "    Run Version Comparisons"
             echo "**************************************"
-            echo ""
+            echo " "
 
             if [ "$SERVICE_COMMON_PARENT_POM_VERSION" != "$PARENT_POM_VERSION" ]; then
               echo "Parent Pom Version Needs to be updated"
@@ -243,14 +241,14 @@ jobs:
               update_needed=true #TODO REMOVE ME
             fi #TODO REMOVE ME
 
-            [[ $update_needed = "true" ]] && echo " "
-            [[ $update_needed = "true" ]] && echo "*****************************************"
-            [[ $update_needed = "true" ]] && echo "    Update Version Numbers"
-            [[ $update_needed = "true" ]] && echo "*****************************************"
-            [[ $update_needed = "true" ]] && echo " "
+            [[ "$update_needed" = "true" ]] && echo " "
+            [[ "$update_needed" = "true" ]] && echo "*****************************************"
+            [[ "$update_needed" = "true" ]] && echo "    Update Version Numbers"
+            [[ "$update_needed" = "true" ]] && echo "*****************************************"
+            [[ "$update_needed" = "true" ]] && echo " "
             # BUG <++> LEFT OFF HERE
             # TODO NEED TO HAVE SOME CODE HERE TO HANDLE THE -SNAPSHOT FUNCTIONALITY OF THE SERVICE VERSION WHEN IT TRIES TO WRITE IT TO THE REPOSITORY
-            if [ $update_needed = "true" ]; then
+            if [[ "$update_needed" = "true" ]]; then
               echo "Service Version Needs to be updated"
               original_version=$SERVICE_VERSION # Original version string
 
