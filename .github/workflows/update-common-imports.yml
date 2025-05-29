@@ -134,8 +134,11 @@ jobs:
             echo "Processing repository: $repo"
 
             clean_repo=$(sed 's/-/_/g' <<< $repo)
-            clean_repo="cca_salesforce_sapi" # TODO REMOVE ME
-            repo="cca-salesforce-sapi" # TODO REMOVE ME
+            # clean_repo="cca_salesforce_sapi" # TODO REMOVE ME
+            # repo="cca-salesforce-sapi" # TODO REMOVE ME
+
+            [ ${{ runner.debug }} ] && echo "\$repo: $repo"
+            [ ${{ runner.debug }} ] && echo "\$clean_repo: $clean_repo"
 
             client_id=\${api_"$clean_repo"_dev_clientid}
             eval "clientid=\"$client_id\""
@@ -151,6 +154,7 @@ jobs:
             SERVICE_VERSION=$(echo $payload | jq -r '.service.version') || true
             echo $SERVICE_COMMON_PARENT_POM_VERSION
             echo $SERVICE_COMMON_CORE_VERSION
+            # TODO NEED TO HAVE SOME CODE HERE TO HANDLE THE -SNAPSHOT FUNCTIONALITY OF THE SERVICE VERSION WHEN IT TRIES TO WRITE IT TO THE REPOSITORY
             echo $SERVICE_VERSION
 
             echo "**************************************"
@@ -169,7 +173,7 @@ jobs:
               echo "Common Core: $COMMON_CORE_VERSION"
               update_needed=true
             fi
-              SERVICE_COMMON_CORE_VERSION="1.0.0" #TODO REMOVE ME
+            SERVICE_COMMON_CORE_VERSION="1.0.0" #TODO REMOVE ME
             if [ "$SERVICE_COMMON_CORE_VERSION" != "$COMMON_CORE_VERSION" ]; then
               echo "Common Core Version Needs to be updated"
               echo "Service Common Core: $SERVICE_COMMON_CORE_VERSION"
