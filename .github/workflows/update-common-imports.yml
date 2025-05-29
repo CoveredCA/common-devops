@@ -212,12 +212,11 @@ jobs:
               fi
               echo " "
               echo "OUTPUT_SERVICE_JSON == $OUTPUT_SERVICE_JSON"
-              OUTPUT_SERVICE_JSON="$OUTPUT_SERVICE_JSON{\"service\":{\"name\":\""$repo"\",\"version\":\""$SERVICE_VERSION"\"}},"
+              OUTPUT_SERVICE_JSON="$OUTPUT_SERVICE_JSON{\"service\":{\"name\":\""$repo"\",\"version\":{\"old\":\""$SERVICE_VERSION"\",\"new\":\""$NEW_SERVICE_VERSION"\"},\"parent_pom\":\""$SERVICE_COMMON_PARENT_POM_VERSION"\",\"common_core\":\""$SERVICE_COMMON_CORE_VERSION"\"}},"
               echo " "
               echo "OUTPUT_SERVICE_JSON == $OUTPUT_SERVICE_JSON"
               echo " "
             fi
-            echo "<++> LEFT OFF HERE"
           done
           echo " "
           [[ ${OUTPUT_SERVICE_JSON: -1} == "," ]] && OUTPUT_SERVICE_JSON="${OUTPUT_SERVICE_JSON::-1}" # If trailing comma then delete
@@ -231,4 +230,54 @@ jobs:
         id: pom-update-loop
         shell: bash
         run: |
+          echo -e " \n*****************************************\nServices To Update\n*****************************************\n "
           echo "$OUTPUT_SERVICE_JSON" | jq '.'
+
+          echo -e " \n*****************************************\nStarting Service Update Loop\n*****************************************\n "
+          services=$(echo "$OUTPUT_SERVICE_JSON" | jq -c '.[]')
+
+          echo "Setting Github Automation Credentials"
+          echo "user.name: ${{ github.actor }}"
+          echo "user.email: ${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com"
+          git config --global user.name "${{ github.actor }}"
+          git config --global user.email "${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com"
+
+          for service in "$services"; do
+            SERVICE_NAME=$(echo "$service" | jq -r '.service.name')
+            OLD_SERVICE_VERSION=$(echo "$service" | jq -r '.service.version.old')
+            NEW_SERVICE_VERSION=$(echo "$service" | jq -r '.service.version.new')
+            SERVICE_COMMON_PARENT_POM_VERSION=$(echo "$service" | jq -r '.service.parent_pom')
+            SERVICE_COMMON_CORE_VERSION=$(echo "$service" | jq -r '.service.common_core')
+
+            gh repo clone "CoveredCA/$repo"
+            cd "$repo"
+
+            if [ -f "pom.xml" ]; then
+              echo "Found pom.xml, making changes..."
+
+              xmlstarlet ed -N x=http://maven.apache.org/POM/4.0.0 -u "/x:project/x:parent/x:version" -v "$COMMON_PARENT_POM_VERSION" pom.xml > tmp.xml && mv tmp.xml pom.xml
+              xmlstarlet ed -N x=http://maven.apache.org/POM/4.0.0 -u "/x:project/x:version" -v "$NEW_SERVICE_VERSION" pom.xml > tmp.xml && mv tmp.xml pom.xml
+              xmlstarlet ed -N x=http://maven.apache.org/POM/4.0.0 -u "/x:project/x:dependencies/x:dependency[x:artifactId='common-core']/x:version" -v "$COMMON_CORE_VERSION" pom.xml > tmp.xml && mv tmp.xml pom.xml
+
+              git add pom.xml
+              git commit -m "🤖 Auto-Updater: Update $SERVICE_NAME to $NEW_SERVICE_VERSION
+              Old Service Version  -->  New Service Version
+              $OLD_SERVICE_VERSION  -->  $NEW_SERVICE_VERSION
+              Reasoning:
+              Service Parent Pom  --> Latest Parent Pom
+              $SERVICE_COMMON_PARENT_POM_VERSION  -->  $PARENT_POM_VERSION
+              Service Common Core  --> Latest Common Core
+              $SERVICE_COMMON_CORE_VERSION  -->  $COMMON_CORE_VERSION
+              "
+              git push --force origin main
+
+
+
+            else
+              echo "Pom file not found in repository root, skipping to next repository"
+              continue
+            fi
+
+            cd ..
+            rm -rf "$repo"
+          done
