@@ -230,23 +230,17 @@ jobs:
             #SERVICE_VERSION="1.0.45-snapshot" #TODO REMOVE ME
             if [[ "$update_needed" = "true" ]]; then
               echo "Current Service Version: $SERVICE_VERSION"
-
               if [[ $SERVICE_VERSION =~ "-snapshot" ]]; then
                 echo "The service version already contains -snapshot."
                 echo "No updating of service version required."
               else
                 echo "Service Version Needs to be updated"
-                original_version=$ # Original version string
-
                 echo "Incrementing version number and adding '-snapshot'"
                 IFS=. read -r major minor patch <<< "$SERVICE_VERSION" # Split the version into components
-
                 patch=$((patch + 1)) # Increment the patch version
-
                 if ((patch > 99)); then # Check if patch version exceeds 99
                   minor=$((minor + 1)) # Increment minor version
                   patch=0 # Reset patch version to 0
-
                   if ((minor > 99)); then # Check if minor version exceeds 99
                     major=$((major + 1)) # Increment major version
                     minor=0 # Reset minor version to 0
