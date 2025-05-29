@@ -156,6 +156,7 @@ jobs:
             # clean_repo="cca_salesforce_sapi" # TODO REMOVE ME
             # repo="cca-salesforce-sapi" # TODO REMOVE ME
 
+            [ ${{ runner.debug }} ] && echo "DEBUG: \$repo: $repo"
             [ ${{ runner.debug }} -eq 1 ] && echo "DEBUG: \$repo: $repo"
             [ ${{ runner.debug }} -eq 1 ] && echo "DEBUG: \$clean_repo: $clean_repo"
 
@@ -207,11 +208,10 @@ jobs:
             # TODO NEED TO HAVE SOME CODE HERE TO HANDLE THE -SNAPSHOT FUNCTIONALITY OF THE SERVICE VERSION WHEN IT TRIES TO WRITE IT TO THE REPOSITORY
             if [ "$SERVICE_COMMON_PARENT_POM_VERSION" != "$PARENT_POM_VERSION" ]; then
               echo "Parent Pom Version Needs to be updated"
-              echo "Service Parent Pom: $SERVICE_COMMON_PARENT_POM_VERSION"
-              echo "Common Parent Pom: $PARENT_POM_VERSION"
+              echo "Service Parent Pom: $SERVICE_COMMON_PARENT_POM_VERSION  -->  $PARENT_POM_VERSION :Common Parent Pom"
               update_needed=true
-              fi
-              if [ "$SERVICE_COMMON_CORE_VERSION" != "$COMMON_CORE_VERSION" ]; then
+            fi
+            if [ "$SERVICE_COMMON_CORE_VERSION" != "$COMMON_CORE_VERSION" ]; then
               echo "Common Core Version Needs to be updated"
               echo "Service Common Core: $SERVICE_COMMON_CORE_VERSION"
               echo "Common Core: $COMMON_CORE_VERSION"
