@@ -249,8 +249,8 @@ jobs:
             SERVICE_COMMON_PARENT_POM_VERSION=$(echo "$service" | jq -r '.service.parent_pom')
             SERVICE_COMMON_CORE_VERSION=$(echo "$service" | jq -r '.service.common_core')
 
-            gh repo clone "CoveredCA/$repo"
-            cd "$repo"
+            gh repo clone "CoveredCA/$service"
+            cd "$service"
 
             if [ -f "pom.xml" ]; then
               echo "Found pom.xml, making changes..."
