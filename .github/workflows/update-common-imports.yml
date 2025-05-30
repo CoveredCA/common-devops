@@ -124,73 +124,43 @@ jobs:
       - name: Repository Loop
         id: repo-loop
         shell: bash
+        env:
+          GITHUB_TOKEN: ${{ env.github_automationbot_token }}
         run: |
           echo " "
           echo -e "\n*****************************************\nAcquiring List of Repositories with tags:\n\t- mulesoft\n\t- app\n*****************************************\n "
           repos=$(gh repo list CoveredCA --topic mulesoft --topic app | awk '{print $1}' | awk -F/ '{print $2}')
-          OUTPUT_SERVICE_JSON=''
+          echo "$repos"
+          echo -e "\n*****************************************\nSetting Github Automation Credentials\n*****************************************\n "
+          echo "user.name: ${{ github.actor }}"
+          echo "user.email: ${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com"
+          git config --global user.name "${{ github.actor }}"
+          git config --global user.email "${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com"
           echo -e " \n***************************************\nBeginning Processing Loop\n***************************************\n "
-          for repo in "${repos[@]}"; do
+          for SERVICE_NAME in "${repos[@]}"; do
 
-            echo -e " \n***************************************\n\tProcessing repository: $repo\n***************************************\n "
-            echo -e "***************************************\n\tClean Repository Name\n***************************************\n "
-            clean_repo=$(sed 's/-/_/g' <<< $repo)
-            echo "\$clean_repo: $clean_repo"
+            echo -e " \n*****************************************\nClone the Repo\n*****************************************\n "
+            git clone --filter=blob:none --depth 1 --branch main https://x-access-token:${{env.GH_TOKEN}}@github.com/CoveredCA/$SERVICE_NAME.git
+            echo -e " \n*****************************************\nRepo cloned, list files\n*****************************************\n "
+            ls -la
+            cd "$SERVICE_NAME"
+            echo -e " \n*****************************************\nIn Repo Dir, list files\n*****************************************\n "
+            pwd
+            ls -la
+            echo -e " \n*****************************************\nGrab Versions of Current App Dependencies\n*****************************************\n "
 
-            echo -e " \n***************************************\n\tGet and Set Service Creds\n\t\t- clientid\n\t\t- clientsecret\n\t\t- host\n***************************************\n "
-            client_id=\${api_"$clean_repo"_dev_clientid}
-            eval "clientid=\"$client_id\""
+            SERVICE_VERSION=$(xmlstarlet sel -N x=http://maven.apache.org/POM/4.0.0 -t -v "/x:project/x:version" pom.xml)
+            SERVICE_COMMON_PARENT_POM_VERSION=$(xmlstarlet sel -N x=http://maven.apache.org/POM/4.0.0 -t -v "/x:project/x:parent/x:version" pom.xml)
+            SERVICE_COMMON_CORE_VERSION=$(xmlstarlet sel -N x=http://maven.apache.org/POM/4.0.0 -t -v "/x:project/x:dependencies/x:dependency[x:artifactId='common-core']/x:version" pom.xml)
 
-            client_secret=\${api_"$clean_repo"_dev_clientsecret}
-            eval "clientsecret=\"$client_secret\""
-
-            host=https://"$repo"-dev.usg-w1.gov.cloudhub.io/api/health
-
-            [[ $RUNNER_DEBUG -eq 1 ]] && echo -e "DEBUG: \$client_id: $client_id\nDEBUG: \$clientid: $clientid\nDEBUG: \$client_secret: $client_secret\nDEBUG: \$clientsecret: $clientsecret\nDEBUG: \$host: $host\n"
-
-            echo -e "*****************************************\n\tSend Healthcheck Request and get data\n*****************************************\n "
-
-            payload=$(curl -s -H "Content-Type: application/json" -H "client_id: $clientid" -H "client_secret: $clientsecret" $host) || true
-            [[ $RUNNER_DEBUG -eq 1 ]] && echo "DEBUG: \$payload: $payload"
-
-            SERVICE_COMMON_PARENT_POM_VERSION=$(echo $payload | jq -r '.commonParentPom.version') || true
-            SERVICE_COMMON_CORE_VERSION=$(echo $payload | jq -r '.commonCore.version') || true
-            SERVICE_VERSION=$(echo $payload | jq -r '.service.version') || true
-
-            echo "$SERVICE_COMMON_PARENT_POM_VERSION  <--  \$SERVICE_COMMON_PARENT_POM_VERSION"
-            echo "$SERVICE_COMMON_CORE_VERSION  <--  \$SERVICE_COMMON_CORE_VERSION"
-            echo "$SERVICE_VERSION  <--  \$SERVICE_VERSION"
-
-            echo -e " \n**************************************\n\tRun Version Comparisons\n**************************************\n "
-
-            if [ "$SERVICE_COMMON_PARENT_POM_VERSION" != "$PARENT_POM_VERSION" ]; then
-              echo "Parent Pom Version Needs to be updated"
-              echo "\$SERVICE_COMMON_PARENT_POM_VERSION  -->  \$PARENT_POM_VERSION"
-              echo "$SERVICE_COMMON_PARENT_POM_VERSION  -->  $PARENT_POM_VERSION"
-              update_needed=true
-            fi
-            echo " "
-            if [ "$SERVICE_COMMON_CORE_VERSION" != "$COMMON_CORE_VERSION" ]; then
-              echo "Common Core Version Needs to be updated"
-              echo "\$SERVICE_COMMON_CORE_VERSION  -->  \$COMMON_CORE_VERSION"
-              echo "$SERVICE_COMMON_CORE_VERSION  -->  $COMMON_CORE_VERSION"
-              update_needed=true
-            fi
-            SERVICE_COMMON_CORE_VERSION="1.0.0" #TODO REMOVE ME
-            if [ "$SERVICE_COMMON_CORE_VERSION" != "$COMMON_CORE_VERSION" ]; then #TODO REMOVE ME
-              echo "Common Core Version Needs to be updated" #TODO REMOVE ME
-              echo "\$SERVICE_COMMON_CORE_VERSION  -->  \$COMMON_CORE_VERSION" #TODO REMOVE ME
-              echo "$SERVICE_COMMON_CORE_VERSION  -->  $COMMON_CORE_VERSION" #TODO REMOVE ME
-              update_needed=true #TODO REMOVE ME
-            fi #TODO REMOVE ME
-
-            [[ "$update_needed" = "true" ]] && echo -e " \n*****************************************\n\tUpdate Version Numbers\n*****************************************\n "
+            echo -e " \n*****************************************\nTest if Updates are Needed\n*****************************************\n "
+            [[ "$SERVICE_COMMON_PARENT_POM_VERSION" != "$PARENT_POM_VERSION" || "$SERVICE_COMMON_CORE_VERSION" != "$COMMON_CORE_VERSION" ]] && update_needed=true
+            [[ "$update_needed" = "true" ]] && echo -e " \n*****************************************\n\tUpdate is Needed\n*****************************************\n "
             if [[ "$update_needed" = "true" ]]; then
               echo "Current Service Version: $SERVICE_VERSION"
               OLD_SERVICE_VERSION="$SERVICE_VERSION"
               if [[ "$SERVICE_VERSION" =~ "-snapshot" ]]; then
-                echo "The service version already contains -snapshot."
-                echo "No updating of service version required."
+                echo -e "The service version already contains -snapshot.\nNo updating of service version required."
               else
                 echo "Service Version Needs to be updated"
                 echo "Incrementing version number and adding '-snapshot'"
@@ -207,66 +177,11 @@ jobs:
                 NEW_SERVICE_VERSION="$major.$minor.$patch-snapshot"
                 echo "Original Service Version  -->  New Service Version"
                 echo "$OLD_SERVICE_VERSION  -->  $NEW_SERVICE_VERSION"
-                SERVICE_VERSION="$NEW_SERVICE_VERSION" # overwrite the service version so we only ever use one common variable
               fi
-              echo " "
-              echo "OUTPUT_SERVICE_JSON == $OUTPUT_SERVICE_JSON"
-              OUTPUT_SERVICE_JSON="$OUTPUT_SERVICE_JSON{\"service\":{\"name\":\""$repo"\",\"version\":{\"old\":\""$OLD_SERVICE_VERSION"\",\"new\":\""$SERVICE_VERSION"\"},\"parent_pom\":\""$SERVICE_COMMON_PARENT_POM_VERSION"\",\"common_core\":\""$SERVICE_COMMON_CORE_VERSION"\"}},"
-              echo " "
-              echo "OUTPUT_SERVICE_JSON == $OUTPUT_SERVICE_JSON"
-              echo " "
             fi
-          done
-          echo " "
-          [[ ${OUTPUT_SERVICE_JSON: -1} == "," ]] && OUTPUT_SERVICE_JSON="${OUTPUT_SERVICE_JSON::-1}" # If trailing comma then delete
-          OUTPUT_SERVICE_JSON="[$OUTPUT_SERVICE_JSON]" # Loop completed, wrap in json array
-          echo "OUTPUT_SERVICE_JSON=$OUTPUT_SERVICE_JSON" >> $GITHUB_ENV
-          echo " "
-          echo "$OUTPUT_SERVICE_JSON" | jq '.'
-          echo " "
-
-      - name: Update Application Poms Loop
-        id: pom-update-loop
-        shell: bash
-        env:
-          GITHUB_TOKEN: ${{ env.github_automationbot_token }}
-        run: |
-          [[ $RUNNER_DEBUG -eq 1 ]] && echo -e " \ngh --version\n "
-          [[ $RUNNER_DEBUG -eq 1 ]] && gh --version
-          [[ $RUNNER_DEBUG -eq 1 ]] && echo -e " \ngh auth status\n "
-          [[ $RUNNER_DEBUG -eq 1 ]] && gh auth status
-          echo -e " \n*****************************************\nServices To Update\n*****************************************\n "
-          echo "$OUTPUT_SERVICE_JSON" | jq '.'
-
-          echo -e " \n*****************************************\nStarting Service Update Loop\n*****************************************\n "
-          services=$(echo "$OUTPUT_SERVICE_JSON" | jq -c '.[]')
-
-          echo "Setting Github Automation Credentials"
-          echo "user.name: ${{ github.actor }}"
-          echo "user.email: ${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com"
-          git config --global user.name "${{ github.actor }}"
-          git config --global user.email "${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com"
-
-          for service in "$services"; do
-            SERVICE_NAME=$(echo "$service" | jq -r '.service.name')
-            OLD_SERVICE_VERSION=$(echo "$service" | jq -r '.service.version.old')
-            NEW_SERVICE_VERSION=$(echo "$service" | jq -r '.service.version.new')
-            SERVICE_COMMON_PARENT_POM_VERSION=$(echo "$service" | jq -r '.service.parent_pom')
-            SERVICE_COMMON_CORE_VERSION=$(echo "$service" | jq -r '.service.common_core')
-
-            # git clone https://x-access-token:${{env.GH_TOKEN}}@github.com/CoveredCA/$SERVICE_NAME.git
-
-            git clone --filter=blob:none --depth 1 --branch main https://x-access-token:${{env.GH_TOKEN}}@github.com/CoveredCA/$SERVICE_NAME.git # TEST THIS NEXT
-
-            echo -e " \n*****************************************\nRepo cloned, list files\n*****************************************\n "
-            ls -la
-            cd "$SERVICE_NAME"
-            echo -e " \n*****************************************\nIn Repo Dir, list files\n*****************************************\n "
-            pwd
-            ls -la
-
-            if [ -f "pom.xml" ]; then
-              echo "Found pom.xml, making changes..."
+            echo -e " \n*****************************************\nUpdate Pom.xml if Present\n*****************************************\n "
+            if [[ -f "pom.xml" && "$update_needed" = "true" ]]; then
+              echo -e " \n*****************************************\nFound pom.xml, making changes...\n*****************************************\n "
 
               xmlstarlet ed -L -N x=http://maven.apache.org/POM/4.0.0 -u "/x:project/x:parent/x:version" -v "$PARENT_POM_VERSION" pom.xml
               xmlstarlet ed -L -N x=http://maven.apache.org/POM/4.0.0 -u "/x:project/x:version" -v "$NEW_SERVICE_VERSION" pom.xml
@@ -283,14 +198,17 @@ jobs:
               $SERVICE_COMMON_CORE_VERSION  -->  $COMMON_CORE_VERSION
               "
               git push --force origin main
-
-
-
             else
-              echo "Pom file not found in repository root, skipping to next repository"
-              continue
+              echo "Pom file not found in repository root, skipping to next repository" && continue
             fi
-
-            cd ..
-            rm -rf "$SERVICE_NAME"
+            cd .. && rm -rf "$SERVICE_NAME"
           done
+
+            # TODO ########################################################################################################################
+            # TODO Figure out the code to just shallow clone each valid repo with the topics
+            # TODO use xmlstarlet to SELECT the values of the dependency versions and test if an update is necessary as a straight overwrite 
+            # TODO      will trigger minute changes that will not work for my strategy of using git porcelain check on if changes were made due to the reformatting
+            # TODO if changes necessary then update their parent pom and common core versions using existing code and strategy then increment the app version since updating was necessary
+            # TODO 
+            # TODO 
+            # TODO ########################################################################################################################
