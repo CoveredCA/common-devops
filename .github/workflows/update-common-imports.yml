@@ -7,6 +7,7 @@ env:
   CONFIGURATIONS_REPOSITORY: common-configurations
   GLOBAL_CONFIGURATION: _global.yml
   SECRETS_AZURE_KEYVAULT: CoveredCA-KV-Mulesoft
+  GH_TOKEN: ${{github.token}}
 
 jobs:
   updateImports:
@@ -189,13 +190,14 @@ jobs:
             #SERVICE_VERSION="1.0.45-snapshot" #TODO REMOVE ME
             if [[ "$update_needed" = "true" ]]; then
               echo "Current Service Version: $SERVICE_VERSION"
+              OLD_SERVICE_VERSION="$SERVICE_VERSION"
               if [[ "$SERVICE_VERSION" =~ "-snapshot" ]]; then
                 echo "The service version already contains -snapshot."
                 echo "No updating of service version required."
               else
                 echo "Service Version Needs to be updated"
                 echo "Incrementing version number and adding '-snapshot'"
-                IFS=. read -r major minor patch <<< "$SERVICE_VERSION"
+                IFS=. read -r major minor patch <<< "$OLD_SERVICE_VERSION"
                 patch=$((patch + 1))
                 if ((patch > 99)); then
                   minor=$((minor + 1))
@@ -207,12 +209,12 @@ jobs:
                 fi
                 NEW_SERVICE_VERSION="$major.$minor.$patch-snapshot"
                 echo "Original Service Version  -->  New Service Version"
-                echo "$SERVICE_VERSION  -->  $NEW_SERVICE_VERSION"
+                echo "$OLD_SERVICE_VERSION  -->  $NEW_SERVICE_VERSION"
                 SERVICE_VERSION="$NEW_SERVICE_VERSION" # overwrite the service version so we only ever use one common variable
               fi
               echo " "
               echo "OUTPUT_SERVICE_JSON == $OUTPUT_SERVICE_JSON"
-              OUTPUT_SERVICE_JSON="$OUTPUT_SERVICE_JSON{\"service\":{\"name\":\""$repo"\",\"version\":{\"old\":\""$SERVICE_VERSION"\",\"new\":\""$NEW_SERVICE_VERSION"\"},\"parent_pom\":\""$SERVICE_COMMON_PARENT_POM_VERSION"\",\"common_core\":\""$SERVICE_COMMON_CORE_VERSION"\"}},"
+              OUTPUT_SERVICE_JSON="$OUTPUT_SERVICE_JSON{\"service\":{\"name\":\""$repo"\",\"version\":{\"old\":\""$OLD_SERVICE_VERSION"\",\"new\":\""SERVICE_VERSION"\"},\"parent_pom\":\""$SERVICE_COMMON_PARENT_POM_VERSION"\",\"common_core\":\""$SERVICE_COMMON_CORE_VERSION"\"}},"
               echo " "
               echo "OUTPUT_SERVICE_JSON == $OUTPUT_SERVICE_JSON"
               echo " "
