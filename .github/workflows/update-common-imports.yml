@@ -241,11 +241,11 @@ jobs:
           echo -e " \n*****************************************\nStarting Service Update Loop\n*****************************************\n "
           services=$(echo "$OUTPUT_SERVICE_JSON" | jq -c '.[]')
 
-          # echo "Setting Github Automation Credentials"
-          # echo "user.name: ${{ github.actor }}"
-          # echo "user.email: ${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com"
-          # git config --global user.name "${{ github.actor }}"
-          # git config --global user.email "${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com"
+          echo "Setting Github Automation Credentials"
+          echo "user.name: ${{ github.actor }}"
+          echo "user.email: ${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com"
+          git config --global user.name "${{ github.actor }}"
+          git config --global user.email "${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com"
 
           for service in "$services"; do
             SERVICE_NAME=$(echo "$service" | jq -r '.service.name')
@@ -254,16 +254,12 @@ jobs:
             SERVICE_COMMON_PARENT_POM_VERSION=$(echo "$service" | jq -r '.service.parent_pom')
             SERVICE_COMMON_CORE_VERSION=$(echo "$service" | jq -r '.service.common_core')
 
-            git clone https://x-access-token:${{env.GH_TOKEN}}@github.com/CoveredCA/$SERVICE_NAME.git
+            # git clone https://x-access-token:${{env.GH_TOKEN}}@github.com/CoveredCA/$SERVICE_NAME.git
 
-            # git clone --filter=blob:none --no-checkout --depth 1 --branch main https://x-access-token:${{env.GH_TOKEN}}@github.com/CoveredCA/$SERVICE_NAME.git # TEST THIS NEXT
-            # git sparse-checkout init --cone # TEST THIS NEXT
-            # git sparse-checkout set pom.xml # TEST THIS NEXT
-            # git checkout main # TEST THIS NEXT
-
-            # Configure committer identity (for CI) # TEST ARE THESE NEEEDED?
-            # git config user.name "GitHub Actions" # TEST ARE THESE NEEEDED?
-            # git config user.email "actions@github.com" # TEST ARE THESE NEEEDED?
+            git clone --filter=blob:none --no-checkout --depth 1 --branch main https://x-access-token:${{env.GH_TOKEN}}@github.com/CoveredCA/$SERVICE_NAME.git # TEST THIS NEXT
+            git sparse-checkout init --cone # TEST THIS NEXT
+            git sparse-checkout set pom.xml # TEST THIS NEXT
+            git checkout main # TEST THIS NEXT
 
             echo -e " \n*****************************************\nRepo cloned, list files\n*****************************************\n "
             ls -la
