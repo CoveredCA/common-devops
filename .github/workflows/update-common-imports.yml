@@ -234,10 +234,10 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ env.github_automationbot_token }}
         run: |
-          echo " \ngh --version\n " # TODO REMOVE ME
-          gh --version # TODO REMOVE ME
-          echo " \ngh auth status\n " # TODO REMOVE ME
-          gh auth status # TODO REMOVE ME
+          [[ $RUNNER_DEBUG -eq 1 ]] && echo -e " \ngh --version\n "
+          [[ $RUNNER_DEBUG -eq 1 ]] && gh --version
+          [[ $RUNNER_DEBUG -eq 1 ]] && echo -e " \ngh auth status\n "
+          [[ $RUNNER_DEBUG -eq 1 ]] && gh auth status
           echo -e " \n*****************************************\nServices To Update\n*****************************************\n "
           echo "$OUTPUT_SERVICE_JSON" | jq '.'
 
@@ -249,10 +249,7 @@ jobs:
           # echo "user.email: ${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com"
           # git config --global user.name "${{ github.actor }}"
           # git config --global user.email "${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com"
-          echo " \ngh --version\n " # TODO REMOVE ME
-          gh --version # TODO REMOVE ME
-          echo " \ngh auth status\n " # TODO REMOVE ME
-          gh auth status # TODO REMOVE ME
+
           for service in "$services"; do
             SERVICE_NAME=$(echo "$service" | jq -r '.service.name')
             OLD_SERVICE_VERSION=$(echo "$service" | jq -r '.service.version.old')
@@ -260,8 +257,12 @@ jobs:
             SERVICE_COMMON_PARENT_POM_VERSION=$(echo "$service" | jq -r '.service.parent_pom')
             SERVICE_COMMON_CORE_VERSION=$(echo "$service" | jq -r '.service.common_core')
 
-            gh repo clone "CoveredCA/$service"
+            # gh repo clone "CoveredCA/$service"
+            git clone "https://github.com/CoveredCA/$service.git"
+            ls -la #TODO REMOVE ME
             cd "$service"
+            pwd #TODO REMOVE ME
+            ls -la #TODO REMOVE ME
 
             if [ -f "pom.xml" ]; then
               echo "Found pom.xml, making changes..."
