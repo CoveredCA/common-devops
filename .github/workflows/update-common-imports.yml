@@ -275,9 +275,9 @@ jobs:
             if [ -f "pom.xml" ]; then
               echo "Found pom.xml, making changes..."
 
-              xmlstarlet ed -N x=http://maven.apache.org/POM/4.0.0 -L -u "/x:project/x:parent/x:version" -v "$COMMON_PARENT_POM_VERSION" pom.xml
-              xmlstarlet ed -N x=http://maven.apache.org/POM/4.0.0 -L -u "/x:project/x:version" -v "$NEW_SERVICE_VERSION" pom.xml
-              xmlstarlet ed -N x=http://maven.apache.org/POM/4.0.0 -L -u "/x:project/x:dependencies/x:dependency[x:artifactId='common-core']/x:version" -v "$COMMON_CORE_VERSION" pom.xml
+              xmlstarlet ed -L -N x=http://maven.apache.org/POM/4.0.0 -u "/x:project/x:parent/x:version" -v "$COMMON_PARENT_POM_VERSION" pom.xml
+              xmlstarlet ed -L -N x=http://maven.apache.org/POM/4.0.0 -u "/x:project/x:version" -v "$NEW_SERVICE_VERSION" pom.xml
+              xmlstarlet ed -L -N x=http://maven.apache.org/POM/4.0.0 -u "/x:project/x:dependencies/x:dependency[x:artifactId='common-core']/x:version" -v "$COMMON_CORE_VERSION" pom.xml
 
               git add pom.xml
               git commit -m "🤖 Auto-Updater: Update $SERVICE_NAME to $NEW_SERVICE_VERSION
