@@ -258,9 +258,9 @@ jobs:
             SERVICE_COMMON_CORE_VERSION=$(echo "$service" | jq -r '.service.common_core')
 
             # gh repo clone "CoveredCA/$service"
-            git clone "https://github.com/CoveredCA/$service.git"
+            git clone "https://github.com/CoveredCA/$SERVICE_NAME.git"
             ls -la #TODO REMOVE ME
-            cd "$service"
+            cd "$SERVICE_NAME"
             pwd #TODO REMOVE ME
             ls -la #TODO REMOVE ME
 
@@ -291,5 +291,5 @@ jobs:
             fi
 
             cd ..
-            rm -rf "$service"
+            rm -rf "$SERVICE_NAME"
           done
