@@ -268,7 +268,7 @@ jobs:
             if [ -f "pom.xml" ]; then
               echo "Found pom.xml, making changes..."
 
-              xmlstarlet ed -L -N x=http://maven.apache.org/POM/4.0.0 -u "/x:project/x:parent/x:version" -v "$COMMON_PARENT_POM_VERSION" pom.xml
+              xmlstarlet ed -L -N x=http://maven.apache.org/POM/4.0.0 -u "/x:project/x:parent/x:version" -v "$PARENT_POM_VERSION" pom.xml
               xmlstarlet ed -L -N x=http://maven.apache.org/POM/4.0.0 -u "/x:project/x:version" -v "$NEW_SERVICE_VERSION" pom.xml
               xmlstarlet ed -L -N x=http://maven.apache.org/POM/4.0.0 -u "/x:project/x:dependencies/x:dependency[x:artifactId='common-core']/x:version" -v "$COMMON_CORE_VERSION" pom.xml
 
