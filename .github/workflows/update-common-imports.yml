@@ -140,7 +140,7 @@ jobs:
           for SERVICE_NAME in "${repos[@]}"; do
 
             echo -e " \n*****************************************\nClone the Repo\n*****************************************\n "
-            git clone --filter=blob:none --depth 1 --branch main https://x-access-token:${{env.GH_TOKEN}}@github.com/CoveredCA/$SERVICE_NAME.git
+            git clone --filter=blob:none --depth 1 --branch main "https://x-access-token:${{env.GH_TOKEN}}@github.com/CoveredCA/$SERVICE_NAME.git"
             echo -e " \n*****************************************\nRepo cloned, list files\n*****************************************\n "
             ls -la
             cd "$SERVICE_NAME"
