@@ -137,8 +137,8 @@ jobs:
           git config --global user.name "${{ github.actor }}"
           git config --global user.email "${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com"
           echo -e " \n***************************************\nBeginning Processing Loop\n***************************************\n "
-          for SERVICE_NAME in "${repos[@]}"; do
-
+          for repo in "${repos[@]}"; do
+            SERVICE_NAME="$repo"
             echo -e " \n*****************************************\nClone the Repo\n*****************************************\n "
             git clone --filter=blob:none --depth 1 --branch main "https://x-access-token:${{env.GH_TOKEN}}@github.com/CoveredCA/$SERVICE_NAME.git"
             echo -e " \n*****************************************\nRepo cloned, list files\n*****************************************\n "
