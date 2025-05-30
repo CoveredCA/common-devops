@@ -29,15 +29,15 @@ jobs:
           keyvault-key: ${{ env.SECRETS_AZURE_KEYVAULT}}
           azure-credentials: ${{ secrets.AZURE_CREDENTIALS }}
 
-      # - name: Install XML Parser
-      #   shell: bash
-      #   run: |
-      #     echo "  Install XMLStarlet in Ubuntu"
-      #     sudo apt-get install xmlstarlet --fix-missing
-      #     echo " "
-      #     echo "  xmlstarlet --version"
-      #     xmlstarlet --version
-      #     echo " "
+      - name: Install XML Parser
+        shell: bash
+        run: |
+          echo "  Install XMLStarlet in Ubuntu"
+          sudo apt-get install xmlstarlet --fix-missing
+          echo " "
+          echo "  xmlstarlet --version"
+          xmlstarlet --version
+          echo " "
 
       # - name: Get configuration files
       #   uses: CoveredCA/common-devops/packages/get-file@main
@@ -51,18 +51,6 @@ jobs:
 
       # - name: Install Java environment for Mulesoft Applications
       #   uses: CoveredCA/common-devops/packages/install-java@main
-
-      - name: Install JDK
-        uses: actions/setup-java@v4
-        with:
-          java-version: ${{ env.jdk_version }}
-          distribution: ${{ env.jdk_distribution }}
-          check-latest: true
-
-      - name: Install Maven
-        uses: stCarolas/setup-maven@v5
-        with:
-          maven-version: ${{ env.maven_version }}
 
       - name: Acquire Common-Parent-Pom Latest Version
         shell: bash
@@ -85,6 +73,18 @@ jobs:
           echo "PARENT_POM_VERSION=$PARENT_POM_VERSION" >> $GITHUB_ENV
           echo " "
           #============================================================#
+
+      - name: Install JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.jdk_version }}
+          distribution: ${{ env.jdk_distribution }}
+          check-latest: true
+
+      - name: Install Maven
+        uses: stCarolas/setup-maven@v5
+        with:
+          maven-version: ${{ env.maven_version }}
 
       - name: Install NodeJs
         uses: actions/setup-node@v4
