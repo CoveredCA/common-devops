@@ -39,6 +39,16 @@ jobs:
           xmlstarlet --version
           echo " "
 
+      - name: Get configuration files
+        uses: CoveredCA/common-devops/packages/get-file@main
+        with:
+          file: "$GLOBAL_CONFIGURATION"
+
+      - name: Import variables from _global.yml
+        uses: zlatko-ms/envarfiles@main
+        with:
+          paths: ${{ env.GLOBAL_CONFIGURATION }}
+
       - name: Install Java environment for Mulesoft Applications
         uses: CoveredCA/common-devops/packages/install-java@main
 
