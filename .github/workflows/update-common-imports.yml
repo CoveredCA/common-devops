@@ -229,6 +229,8 @@ jobs:
       - name: Update Application Poms Loop
         id: pom-update-loop
         shell: bash
+        env:
+          GITHUB_TOKEN: ${{ env.github_automationbot_token }}
         run: |
           echo -e " \n*****************************************\nServices To Update\n*****************************************\n "
           echo "$OUTPUT_SERVICE_JSON" | jq '.'
@@ -236,11 +238,11 @@ jobs:
           echo -e " \n*****************************************\nStarting Service Update Loop\n*****************************************\n "
           services=$(echo "$OUTPUT_SERVICE_JSON" | jq -c '.[]')
 
-          echo "Setting Github Automation Credentials"
-          echo "user.name: ${{ github.actor }}"
-          echo "user.email: ${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com"
-          git config --global user.name "${{ github.actor }}"
-          git config --global user.email "${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com"
+          # echo "Setting Github Automation Credentials"
+          # echo "user.name: ${{ github.actor }}"
+          # echo "user.email: ${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com"
+          # git config --global user.name "${{ github.actor }}"
+          # git config --global user.email "${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com"
 
           for service in "$services"; do
             SERVICE_NAME=$(echo "$service" | jq -r '.service.name')
