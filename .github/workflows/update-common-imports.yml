@@ -50,8 +50,8 @@ jobs:
         with:
           paths: ${{ env.GLOBAL_CONFIGURATION }}
 
-      # - name: Install Java environment for Mulesoft Applications
-      #   uses: CoveredCA/common-devops/packages/install-java@main
+      - name: Install Java environment for Mulesoft Applications
+        uses: CoveredCA/common-devops/packages/install-java@main
 
       - name: Acquire Common-Parent-Pom Latest Version
         shell: bash
@@ -75,17 +75,17 @@ jobs:
           echo " "
           #============================================================#
 
-      - name: Install JDK
-        uses: actions/setup-java@v4
-        with:
-          java-version: ${{ env.jdk_version }}
-          distribution: ${{ env.jdk_distribution }}
-          check-latest: true
+      # - name: Install JDK
+      #   uses: actions/setup-java@v4
+      #   with:
+      #     java-version: ${{ env.jdk_version }}
+      #     distribution: ${{ env.jdk_distribution }}
+      #     check-latest: true
 
-      - name: Install Maven
-        uses: stCarolas/setup-maven@v5
-        with:
-          maven-version: ${{ env.maven_version }}
+      # - name: Install Maven
+      #   uses: stCarolas/setup-maven@v5
+      #   with:
+      #     maven-version: ${{ env.maven_version }}
 
       - name: Install NodeJs
         uses: actions/setup-node@v4
@@ -284,10 +284,12 @@ jobs:
 
             # git clone --filter=blob:none --no-checkout --depth 1 --branch main https://x-access-token:${{env.GH_TOKEN}}@github.com/CoveredCA/$SERVICE_NAME.git # TEST THIS NEXT
             # git sparse-checkout init --cone # TEST THIS NEXT
-            # git sparse-checkout set path/to/file.txt # TEST THIS NEXT
+            # git sparse-checkout set pom.xml # TEST THIS NEXT
             # git checkout main # TEST THIS NEXT
 
-
+            # Configure committer identity (for CI) # TEST ARE THESE NEEEDED?
+            # git config user.name "GitHub Actions" # TEST ARE THESE NEEEDED?
+            # git config user.email "actions@github.com" # TEST ARE THESE NEEEDED?
 
             echo -e " \n*****************************************\nRepo cloned, list files\n*****************************************\n "
             ls -la
