@@ -214,7 +214,7 @@ jobs:
               fi
               echo " "
               echo "OUTPUT_SERVICE_JSON == $OUTPUT_SERVICE_JSON"
-              OUTPUT_SERVICE_JSON="$OUTPUT_SERVICE_JSON{\"service\":{\"name\":\""$repo"\",\"version\":{\"old\":\""$OLD_SERVICE_VERSION"\",\"new\":\""SERVICE_VERSION"\"},\"parent_pom\":\""$SERVICE_COMMON_PARENT_POM_VERSION"\",\"common_core\":\""$SERVICE_COMMON_CORE_VERSION"\"}},"
+              OUTPUT_SERVICE_JSON="$OUTPUT_SERVICE_JSON{\"service\":{\"name\":\""$repo"\",\"version\":{\"old\":\""$OLD_SERVICE_VERSION"\",\"new\":\""$SERVICE_VERSION"\"},\"parent_pom\":\""$SERVICE_COMMON_PARENT_POM_VERSION"\",\"common_core\":\""$SERVICE_COMMON_CORE_VERSION"\"}},"
               echo " "
               echo "OUTPUT_SERVICE_JSON == $OUTPUT_SERVICE_JSON"
               echo " "
