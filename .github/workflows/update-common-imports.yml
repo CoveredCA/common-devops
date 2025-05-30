@@ -244,11 +244,11 @@ jobs:
           echo -e " \n*****************************************\nStarting Service Update Loop\n*****************************************\n "
           services=$(echo "$OUTPUT_SERVICE_JSON" | jq -c '.[]')
 
-          # echo "Setting Github Automation Credentials"
-          # echo "user.name: ${{ github.actor }}"
-          # echo "user.email: ${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com"
-          # git config --global user.name "${{ github.actor }}"
-          # git config --global user.email "${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com"
+          echo "Setting Github Automation Credentials"
+          echo "user.name: ${{ github.actor }}"
+          echo "user.email: ${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com"
+          git config --global user.name "${{ github.actor }}"
+          git config --global user.email "${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com"
 
           for service in "$services"; do
             SERVICE_NAME=$(echo "$service" | jq -r '.service.name')
@@ -259,6 +259,7 @@ jobs:
 
             # gh repo clone "CoveredCA/$service"
             git clone "https://github.com/CoveredCA/$SERVICE_NAME.git"
+            echo "repo cloned"
             ls -la #TODO REMOVE ME
             cd "$SERVICE_NAME"
             pwd #TODO REMOVE ME
