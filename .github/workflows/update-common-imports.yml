@@ -38,20 +38,6 @@ jobs:
           echo "  xmlstarlet --version"
           xmlstarlet --version
           echo " "
-          ls # TODO REMOVE ME
-
-      - name: Get configuration files
-        uses: CoveredCA/common-devops/packages/get-file@main
-        with:
-          file: "$GLOBAL_CONFIGURATION"
-
-      - name: Import variables from _global.yml
-        uses: zlatko-ms/envarfiles@main
-        with:
-          paths: ${{ env.GLOBAL_CONFIGURATION }}
-
-      - name: Install Java environment for Mulesoft Applications
-        uses: CoveredCA/common-devops/packages/install-java@main
 
       - name: Acquire Common-Parent-Pom Latest Version
         shell: bash
@@ -74,18 +60,6 @@ jobs:
           echo "PARENT_POM_VERSION=$PARENT_POM_VERSION" >> $GITHUB_ENV
           echo " "
           #============================================================#
-
-      # - name: Install JDK
-      #   uses: actions/setup-java@v4
-      #   with:
-      #     java-version: ${{ env.jdk_version }}
-      #     distribution: ${{ env.jdk_distribution }}
-      #     check-latest: true
-
-      # - name: Install Maven
-      #   uses: stCarolas/setup-maven@v5
-      #   with:
-      #     maven-version: ${{ env.maven_version }}
 
       - name: Install NodeJs
         uses: actions/setup-node@v4
@@ -301,13 +275,9 @@ jobs:
             if [ -f "pom.xml" ]; then
               echo "Found pom.xml, making changes..."
 
-              mvn versions:update-parent -DparentVersion=$COMMON_PARENT_POM_VERSION -DgenerateBackupPoms=false
-              mvn versions:set -DnewVersion=$NEW_SERVICE_VERSION -DgenerateBackupPoms=false
-              mvn versions:use-dep-version -Dincludes=83ce023f-20c2-40a9-abdd-efdab38b2bcf:common-core -DdepVersion=$COMMON_CORE_VERSION -DforceVersion=true -DgenerateBackupPoms=false
-
-              # xmlstarlet ed -N x=http://maven.apache.org/POM/4.0.0 -u "/x:project/x:parent/x:version" -v "$COMMON_PARENT_POM_VERSION" pom.xml > tmp.xml && mv tmp.xml pom.xml
-              # xmlstarlet ed -N x=http://maven.apache.org/POM/4.0.0 -u "/x:project/x:version" -v "$NEW_SERVICE_VERSION" pom.xml > tmp.xml && mv tmp.xml pom.xml
-              # xmlstarlet ed -N x=http://maven.apache.org/POM/4.0.0 -u "/x:project/x:dependencies/x:dependency[x:artifactId='common-core']/x:version" -v "$COMMON_CORE_VERSION" pom.xml > tmp.xml && mv tmp.xml pom.xml
+              xmlstarlet ed -N x=http://maven.apache.org/POM/4.0.0 -L -u "/x:project/x:parent/x:version" -v "$COMMON_PARENT_POM_VERSION" pom.xml
+              xmlstarlet ed -N x=http://maven.apache.org/POM/4.0.0 -L -u "/x:project/x:version" -v "$NEW_SERVICE_VERSION" pom.xml
+              xmlstarlet ed -N x=http://maven.apache.org/POM/4.0.0 -L -u "/x:project/x:dependencies/x:dependency[x:artifactId='common-core']/x:version" -v "$COMMON_CORE_VERSION" pom.xml
 
               git add pom.xml
               git commit -m "🤖 Auto-Updater: Update $SERVICE_NAME to $NEW_SERVICE_VERSION
