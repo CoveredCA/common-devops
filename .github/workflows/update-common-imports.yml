@@ -257,8 +257,9 @@ jobs:
             SERVICE_COMMON_PARENT_POM_VERSION=$(echo "$service" | jq -r '.service.parent_pom')
             SERVICE_COMMON_CORE_VERSION=$(echo "$service" | jq -r '.service.common_core')
 
-            gh repo clone "CoveredCA/$SERVICE_NAME"
+            # gh repo clone "CoveredCA/$SERVICE_NAME"
             # git clone "https://github.com/CoveredCA/$SERVICE_NAME.git"
+            git clone https://x-access-token:${{env.GH_TOKEN}}@github.com/CoveredCA/$SERVICE_NAME.git
             echo "repo cloned"
             ls -la #TODO REMOVE ME
             cd "$SERVICE_NAME"
