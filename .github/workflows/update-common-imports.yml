@@ -98,6 +98,7 @@ jobs:
             fi
             NEW_COMMON_CORE_VERSION="$major.$minor.$patch"
             echo -e "Original Service Version  -->  New Service Version\n$COMMON_CORE_VERSION  -->  $NEW_COMMON_CORE_VERSION"
+            COMMON_CORE_VERSION=$NEW_COMMON_CORE_VERSION
           fi
           echo " "
           echo "Common-Core version: $COMMON_CORE_VERSION"
