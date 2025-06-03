@@ -68,18 +68,18 @@ jobs:
         run: |
           echo " "
           echo -e "\n*****************************************\nSetting Github Automation Credentials\n*****************************************\n "
-          [[ $RUNNER_DEBUG -eq 1 ]] && echo "user.name: ${{ github.actor }}"
-          [[ $RUNNER_DEBUG -eq 1 ]] && echo "user.email: ${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com"
+          echo "user.name: ${{ github.actor }}"
+          echo "user.email: ${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com"
           git config --global user.name "${{ github.actor }}"
           git config --global user.email "${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com"
           echo -e " \n*****************************************\nClone the Repo\n*****************************************\n "
           git clone --filter=blob:none --depth 1 --branch main "https://x-access-token:${{env.GH_TOKEN}}@github.com/CoveredCA/common-core.git"
-          [[ $RUNNER_DEBUG -eq 1 ]] && echo -e " \n*****************************************\nRepo cloned, list files\n*****************************************\n "
-          [[ $RUNNER_DEBUG -eq 1 ]] && ls -la &&
+          echo -e " \n*****************************************\nRepo cloned, list files\n*****************************************\n "
+          ls -la &&
           cd "common-core"
 
-          [[ $RUNNER_DEBUG -eq 1 ]] && echo -e " \n*****************************************\nIn Repo Dir, list files\n*****************************************\n "
-          [[ $RUNNER_DEBUG -eq 1 ]] && pwd && ls -la
+          echo -e " \n*****************************************\nIn Repo Dir, list files\n*****************************************\n "
+          pwd && ls -la
           echo -e " \n*****************************************\nGrab Version of Common Core\n*****************************************\n "
           COMMON_CORE_VERSION=$(xmlstarlet sel -N x=http://maven.apache.org/POM/4.0.0 -t -v "/x:project/x:version" pom.xml)
           echo " "
@@ -124,7 +124,6 @@ jobs:
             echo -e "\nSERVICE_NAME: $SERVICE_NAME\nSERVICE_VERSION: $SERVICE_VERSION\nSERVICE_COMMON_PARENT_POM_VERSION: $SERVICE_COMMON_PARENT_POM_VERSION\nSERVICE_COMMON_CORE_VERSION: $SERVICE_COMMON_CORE_VERSION\n"
 
             echo -e " \n*****************************************\nTest if Updates are Needed\n*****************************************\n "
-            update_needed=false
             echo '[[ "$SERVICE_COMMON_PARENT_POM_VERSION" != "$PARENT_POM_VERSION" || "$SERVICE_COMMON_CORE_VERSION" != "$COMMON_CORE_VERSION" ]] && update_needed=true'
             [[ "$SERVICE_COMMON_PARENT_POM_VERSION" != "$PARENT_POM_VERSION" || "$SERVICE_COMMON_CORE_VERSION" != "$COMMON_CORE_VERSION" ]] && update_needed=true
             [[ "$update_needed" = "true" ]] && echo -e " \n*****************************************\n\tUpdate is Needed\n*****************************************\n "
