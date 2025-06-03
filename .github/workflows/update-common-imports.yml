@@ -61,46 +61,74 @@ jobs:
           echo " "
           #============================================================#
 
-      - name: Install NodeJs
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
-      - name: Install Anypoint CLI
-        shell: bash
-        run: |
-          echo " "
-          echo "***************************************"
-          echo "Install Anypoint CLI"
-          echo "***************************************"
-          echo " "
-          echo "Install anypoint-cli-v4..."
-          npm install -g anypoint-cli-v4
-          echo "anypoint-cli-v4 --version: "
-          anypoint-cli-v4 --version
-          echo " "
-
       - name: Acquire Common-Core Latest Version
         shell: bash
+        env:
+          GITHUB_TOKEN: ${{ env.github_automationbot_token }}
         run: |
-          echo " "
-          echo "***************************************"
-          echo "Acquiring Common-Core latest version"
-          echo "***************************************"
-          COMMON_CORE_VERSION_COMMAND="anypoint-cli-v4 exchange:asset:list \
-          --client_id $cicd_connectedapp_clientid \
-          --client_secret $cicd_connectedapp_secret \
-          --organizationId 83ce023f-20c2-40a9-abdd-efdab38b2bcf \
-          --host gov.anypoint.mulesoft.com \
-          --output json \
-          common-core"
-          echo "command used: $COMMON_CORE_VERSION_COMMAND"
-          COMMON_CORE_VERSION=$($COMMON_CORE_VERSION_COMMAND | jq -r 'sort_by(.version) | map(.version) | last(.[])')
+          echo -e "\n*****************************************\nSetting Github Automation Credentials\n*****************************************\n "
+          echo "user.name: ${{ github.actor }}"
+          echo "user.email: ${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com"
+          git config --global user.name "${{ github.actor }}"
+          git config --global user.email "${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com"
+          echo -e " \n*****************************************\nClone the Repo\n*****************************************\n "
+          git clone --filter=blob:none --depth 1 --branch main "https://x-access-token:${{env.GH_TOKEN}}@github.com/CoveredCA/common-core.git"
+          echo -e " \n*****************************************\nRepo cloned, list files\n*****************************************\n "
+          ls -la
+          cd common-core
+          echo -e " \n*****************************************\nIn Repo Dir, list files\n*****************************************\n "
+          pwd
+          ls -la
+          echo -e " \n*****************************************\nGrab Version of Common Core\n*****************************************\n "
+          COMMON_CORE_VERSION=$(xmlstarlet sel -N x=http://maven.apache.org/POM/4.0.0 -t -v "/x:project/x:version" pom.xml)
           echo " "
           echo "Common-Core version: $COMMON_CORE_VERSION"
           echo " "
           echo "COMMON_CORE_VERSION=$COMMON_CORE_VERSION" >> $GITHUB_ENV
           echo " "
+
+
+
+      # - name: Install NodeJs
+      #   uses: actions/setup-node@v4
+      #   with:
+      #     node-version: 20
+
+      # - name: Install Anypoint CLI
+      #   shell: bash
+      #   run: |
+      #     echo " "
+      #     echo "***************************************"
+      #     echo "Install Anypoint CLI"
+      #     echo "***************************************"
+      #     echo " "
+      #     echo "Install anypoint-cli-v4..."
+      #     npm install -g anypoint-cli-v4
+      #     echo "anypoint-cli-v4 --version: "
+      #     anypoint-cli-v4 --version
+      #     echo " "
+
+      # - name: Acquire Common-Core Latest Version
+      #   shell: bash
+      #   run: |
+      #     echo " "
+      #     echo "***************************************"
+      #     echo "Acquiring Common-Core latest version"
+      #     echo "***************************************"
+      #     COMMON_CORE_VERSION_COMMAND="anypoint-cli-v4 exchange:asset:list \
+      #     --client_id $cicd_connectedapp_clientid \
+      #     --client_secret $cicd_connectedapp_secret \
+      #     --organizationId 83ce023f-20c2-40a9-abdd-efdab38b2bcf \
+      #     --host gov.anypoint.mulesoft.com \
+      #     --output json \
+      #     common-core"
+      #     echo "command used: $COMMON_CORE_VERSION_COMMAND"
+      #     COMMON_CORE_VERSION=$($COMMON_CORE_VERSION_COMMAND | jq -r 'sort_by(.version) | map(.version) | last(.[])')
+      #     echo " "
+      #     echo "Common-Core version: $COMMON_CORE_VERSION"
+      #     echo " "
+      #     echo "COMMON_CORE_VERSION=$COMMON_CORE_VERSION" >> $GITHUB_ENV
+      #     echo " "
 
       - name: Show Latest Common Imports Versions
         shell: bash
@@ -137,18 +165,20 @@ jobs:
           git config --global user.name "${{ github.actor }}"
           git config --global user.email "${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com"
           echo -e " \n***************************************\nBeginning Processing Loop\n***************************************\n "
+
           for repo in $(gh repo list CoveredCA --json name --topic mulesoft --topic app | jq -r '.[].name'); do
             SERVICE_NAME="$repo"
+
             echo -e " \n*****************************************\nClone the Repo\n*****************************************\n "
             git clone --filter=blob:none --depth 1 --branch main "https://x-access-token:${{env.GH_TOKEN}}@github.com/CoveredCA/$SERVICE_NAME.git"
-            echo -e " \n*****************************************\nRepo cloned, list files\n*****************************************\n "
-            ls -la
-            cd "$SERVICE_NAME"
-            echo -e " \n*****************************************\nIn Repo Dir, list files\n*****************************************\n "
-            pwd
-            ls -la
-            echo -e " \n*****************************************\nGrab Versions of Current App Dependencies\n*****************************************\n "
 
+            echo -e " \n*****************************************\nRepo cloned, list files\n*****************************************\n "
+            ls -la && cd "$SERVICE_NAME"
+
+            echo -e " \n*****************************************\nIn Repo Dir, list files\n*****************************************\n "
+            pwd && ls -la
+
+            echo -e " \n*****************************************\nGrab Versions of Current App Dependencies\n*****************************************\n "
             SERVICE_VERSION=$(xmlstarlet sel -N x=http://maven.apache.org/POM/4.0.0 -t -v "/x:project/x:version" pom.xml)
             SERVICE_COMMON_PARENT_POM_VERSION=$(xmlstarlet sel -N x=http://maven.apache.org/POM/4.0.0 -t -v "/x:project/x:parent/x:version" pom.xml)
             SERVICE_COMMON_CORE_VERSION=$(xmlstarlet sel -N x=http://maven.apache.org/POM/4.0.0 -t -v "/x:project/x:dependencies/x:dependency[x:artifactId='common-core']/x:version" pom.xml)
@@ -156,6 +186,7 @@ jobs:
             echo -e " \n*****************************************\nTest if Updates are Needed\n*****************************************\n "
             [[ "$SERVICE_COMMON_PARENT_POM_VERSION" != "$PARENT_POM_VERSION" || "$SERVICE_COMMON_CORE_VERSION" != "$COMMON_CORE_VERSION" ]] && update_needed=true
             [[ "$update_needed" = "true" ]] && echo -e " \n*****************************************\n\tUpdate is Needed\n*****************************************\n "
+
             if [[ "$update_needed" = "true" ]]; then
               echo "Current Service Version: $SERVICE_VERSION"
               OLD_SERVICE_VERSION="$SERVICE_VERSION"
@@ -187,6 +218,10 @@ jobs:
               xmlstarlet ed -L -N x=http://maven.apache.org/POM/4.0.0 -u "/x:project/x:version" -v "$NEW_SERVICE_VERSION" pom.xml
               xmlstarlet ed -L -N x=http://maven.apache.org/POM/4.0.0 -u "/x:project/x:dependencies/x:dependency[x:artifactId='common-core']/x:version" -v "$COMMON_CORE_VERSION" pom.xml
 
+              echo -e " \n*****************************************\nChange Summary:\n*****************************************\n "
+              echo -e "Update $SERVICE_NAME to $NEW_SERVICE_VERSION\nOld Service Version  -->  New Service Version\n$OLD_SERVICE_VERSION  -->  $NEW_SERVICE_VERSION\nReasoning:\nService Parent Pom  --> Latest Parent Pom\n$SERVICE_COMMON_PARENT_POM_VERSION  -->  $PARENT_POM_VERSION\nService Common Core  --> Latest Common Core\n$SERVICE_COMMON_CORE_VERSION  -->  $COMMON_CORE_VERSION\n"
+              echo -e " \n*****************************************\nCommitting Change To Repository\n*****************************************\n "
+
               git add pom.xml
               git commit -m "🤖 Auto-Updater: Update $SERVICE_NAME to $NEW_SERVICE_VERSION
               Old Service Version  -->  New Service Version
@@ -203,12 +238,3 @@ jobs:
             fi
             cd .. && rm -rf "$SERVICE_NAME"
           done
-
-            # TODO ########################################################################################################################
-            # TODO Figure out the code to just shallow clone each valid repo with the topics
-            # TODO use xmlstarlet to SELECT the values of the dependency versions and test if an update is necessary as a straight overwrite 
-            # TODO      will trigger minute changes that will not work for my strategy of using git porcelain check on if changes were made due to the reformatting
-            # TODO if changes necessary then update their parent pom and common core versions using existing code and strategy then increment the app version since updating was necessary
-            # TODO 
-            # TODO 
-            # TODO ########################################################################################################################
