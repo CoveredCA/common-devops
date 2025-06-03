@@ -73,11 +73,11 @@ jobs:
           git config --global user.name "${{ github.actor }}"
           git config --global user.email "${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com"
           echo -e " \n*****************************************\nClone the Repo\n*****************************************\n "
-          git clone --filter=blob:none --depth 1 --branch main "https://x-access-token:${{env.GH_TOKEN}}@github.com/CoveredCA/common-core.git"
+          SERVICE_NAME=common-core
+          git clone --filter=blob:none --depth 1 --branch main "https://x-access-token:${{env.GH_TOKEN}}@github.com/CoveredCA/$SERVICE_NAME.git"
           echo -e " \n*****************************************\nRepo cloned, list files\n*****************************************\n "
           ls -la &&
-          cd "common-core"
-
+          cd "$SERVICE_NAME"
           echo -e " \n*****************************************\nIn Repo Dir, list files\n*****************************************\n "
           pwd && ls -la
           echo -e " \n*****************************************\nGrab Version of Common Core\n*****************************************\n "
@@ -87,6 +87,7 @@ jobs:
           echo " "
           echo "COMMON_CORE_VERSION=$COMMON_CORE_VERSION" >> $GITHUB_ENV
           echo " "
+          cd .. && rm -rf "$SERVICE_NAME"
 
       - name: Repository Loop
         shell: bash
@@ -153,31 +154,35 @@ jobs:
                 echo "$OLD_SERVICE_VERSION  -->  $NEW_SERVICE_VERSION"
               fi
             fi
-            echo -e " \n*****************************************\nUpdate Pom.xml if Present\n*****************************************\n "
-            if [[ -f "pom.xml" && "$update_needed" = "true" ]]; then
-              echo -e " \n*****************************************\nFound pom.xml, making changes...\n*****************************************\n "
+            if [["$update_needed" = "true" ]]; then
+              echo -e " \n*****************************************\nUpdate Pom.xml if Present\n*****************************************\n "
+              if [[ -f "pom.xml" ]]; then
+                echo -e " \n*****************************************\nFound pom.xml, making changes...\n*****************************************\n "
 
-              xmlstarlet ed -L -N x=http://maven.apache.org/POM/4.0.0 -u "/x:project/x:parent/x:version" -v "$PARENT_POM_VERSION" pom.xml
-              xmlstarlet ed -L -N x=http://maven.apache.org/POM/4.0.0 -u "/x:project/x:version" -v "$NEW_SERVICE_VERSION" pom.xml
-              xmlstarlet ed -L -N x=http://maven.apache.org/POM/4.0.0 -u "/x:project/x:dependencies/x:dependency[x:artifactId='common-core']/x:version" -v "$COMMON_CORE_VERSION" pom.xml
+                xmlstarlet ed -L -N x=http://maven.apache.org/POM/4.0.0 -u "/x:project/x:parent/x:version" -v "$PARENT_POM_VERSION" pom.xml
+                xmlstarlet ed -L -N x=http://maven.apache.org/POM/4.0.0 -u "/x:project/x:version" -v "$NEW_SERVICE_VERSION" pom.xml
+                xmlstarlet ed -L -N x=http://maven.apache.org/POM/4.0.0 -u "/x:project/x:dependencies/x:dependency[x:artifactId='common-core']/x:version" -v "$COMMON_CORE_VERSION" pom.xml
 
-              echo -e " \n*****************************************\nChange Summary:\n*****************************************\n "
-              echo -e "Update $SERVICE_NAME to $NEW_SERVICE_VERSION\nOld Service Version  -->  New Service Version\n$OLD_SERVICE_VERSION  -->  $NEW_SERVICE_VERSION\nReasoning:\nService Parent Pom  --> Latest Parent Pom\n$SERVICE_COMMON_PARENT_POM_VERSION  -->  $PARENT_POM_VERSION\nService Common Core  --> Latest Common Core\n$SERVICE_COMMON_CORE_VERSION  -->  $COMMON_CORE_VERSION\n"
-              echo -e " \n*****************************************\nCommitting Change To Repository\n*****************************************\n "
+                echo -e " \n*****************************************\nChange Summary:\n*****************************************\n "
+                echo -e "Update $SERVICE_NAME to $NEW_SERVICE_VERSION\nOld Service Version  -->  New Service Version\n$OLD_SERVICE_VERSION  -->  $NEW_SERVICE_VERSION\nReasoning:\nService Parent Pom  --> Latest Parent Pom\n$SERVICE_COMMON_PARENT_POM_VERSION  -->  $PARENT_POM_VERSION\nService Common Core  --> Latest Common Core\n$SERVICE_COMMON_CORE_VERSION  -->  $COMMON_CORE_VERSION\n"
+                echo -e " \n*****************************************\nCommitting Change To Repository\n*****************************************\n "
 
-              git add pom.xml
-              git commit -m "🤖 Auto-Updater: Update $SERVICE_NAME to $NEW_SERVICE_VERSION
-              Old Service Version  -->  New Service Version
-              $OLD_SERVICE_VERSION  -->  $NEW_SERVICE_VERSION
-              Reasoning:
-              Service Parent Pom  --> Latest Parent Pom
-              $SERVICE_COMMON_PARENT_POM_VERSION  -->  $PARENT_POM_VERSION
-              Service Common Core  --> Latest Common Core
-              $SERVICE_COMMON_CORE_VERSION  -->  $COMMON_CORE_VERSION
-              "
-              git push --force origin main
+                git add pom.xml
+                git commit -m "🤖 Auto-Updater: Update $SERVICE_NAME to $NEW_SERVICE_VERSION
+                Old Service Version  -->  New Service Version
+                $OLD_SERVICE_VERSION  -->  $NEW_SERVICE_VERSION
+                Reasoning:
+                Service Parent Pom  --> Latest Parent Pom
+                $SERVICE_COMMON_PARENT_POM_VERSION  -->  $PARENT_POM_VERSION
+                Service Common Core  --> Latest Common Core
+                $SERVICE_COMMON_CORE_VERSION  -->  $COMMON_CORE_VERSION
+                "
+                git push --force origin main
+              else
+                echo "Pom file not found in repository root, skipping to next repository"
+              fi
             else
-              echo "Pom file not found in repository root, skipping to next repository" && continue
+              echo -e " \n*****************************************\nUpdate Not Needed Continuing On\n*****************************************\n "
             fi
             cd .. && rm -rf "$SERVICE_NAME"
             echo "********************************************************************************************************************************************************************"
