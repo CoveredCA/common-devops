@@ -66,19 +66,20 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ env.github_automationbot_token }}
         run: |
+          echo " "
           echo -e "\n*****************************************\nSetting Github Automation Credentials\n*****************************************\n "
-          echo "user.name: ${{ github.actor }}"
-          echo "user.email: ${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com"
+          [[ $RUNNER_DEBUG -eq 1 ]] && echo "user.name: ${{ github.actor }}"
+          [[ $RUNNER_DEBUG -eq 1 ]] && echo "user.email: ${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com"
           git config --global user.name "${{ github.actor }}"
           git config --global user.email "${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com"
           echo -e " \n*****************************************\nClone the Repo\n*****************************************\n "
           git clone --filter=blob:none --depth 1 --branch main "https://x-access-token:${{env.GH_TOKEN}}@github.com/CoveredCA/common-core.git"
-          echo -e " \n*****************************************\nRepo cloned, list files\n*****************************************\n "
-          ls -la
-          cd common-core
-          echo -e " \n*****************************************\nIn Repo Dir, list files\n*****************************************\n "
-          pwd
-          ls -la
+          [[ $RUNNER_DEBUG -eq 1 ]] && echo -e " \n*****************************************\nRepo cloned, list files\n*****************************************\n "
+          [[ $RUNNER_DEBUG -eq 1 ]] && ls -la &&
+          cd "$SERVICE_NAME"
+
+          [[ $RUNNER_DEBUG -eq 1 ]] && echo -e " \n*****************************************\nIn Repo Dir, list files\n*****************************************\n "
+          [[ $RUNNER_DEBUG -eq 1 ]] && pwd && ls -la
           echo -e " \n*****************************************\nGrab Version of Common Core\n*****************************************\n "
           COMMON_CORE_VERSION=$(xmlstarlet sel -N x=http://maven.apache.org/POM/4.0.0 -t -v "/x:project/x:version" pom.xml)
           echo " "
@@ -97,8 +98,8 @@ jobs:
           repos=$(gh repo list CoveredCA --topic mulesoft --topic app | awk '{print $1}' | awk -F/ '{print $2}')
           echo "$repos"
           echo -e "\n*****************************************\nSetting Github Automation Credentials\n*****************************************\n "
-          echo "user.name: ${{ github.actor }}"
-          echo "user.email: ${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com"
+          [[ $RUNNER_DEBUG -eq 1 ]] && echo "user.name: ${{ github.actor }}"
+          [[ $RUNNER_DEBUG -eq 1 ]] && echo "user.email: ${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com"
           git config --global user.name "${{ github.actor }}"
           git config --global user.email "${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com"
           echo -e " \n***************************************\nBeginning Processing Loop\n***************************************\n "
@@ -110,7 +111,8 @@ jobs:
             git clone --filter=blob:none --depth 1 --branch main "https://x-access-token:${{env.GH_TOKEN}}@github.com/CoveredCA/$SERVICE_NAME.git"
 
             [[ $RUNNER_DEBUG -eq 1 ]] && echo -e " \n*****************************************\nRepo cloned, list files\n*****************************************\n "
-            [[ $RUNNER_DEBUG -eq 1 ]] && ls -la && cd "$SERVICE_NAME"
+            [[ $RUNNER_DEBUG -eq 1 ]] && ls -la
+            cd "$SERVICE_NAME"
 
             [[ $RUNNER_DEBUG -eq 1 ]] && echo -e " \n*****************************************\nIn Repo Dir, list files\n*****************************************\n "
             [[ $RUNNER_DEBUG -eq 1 ]] && pwd && ls -la
