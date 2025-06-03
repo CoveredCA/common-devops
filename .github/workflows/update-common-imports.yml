@@ -76,7 +76,7 @@ jobs:
           git clone --filter=blob:none --depth 1 --branch main "https://x-access-token:${{env.GH_TOKEN}}@github.com/CoveredCA/common-core.git"
           [[ $RUNNER_DEBUG -eq 1 ]] && echo -e " \n*****************************************\nRepo cloned, list files\n*****************************************\n "
           [[ $RUNNER_DEBUG -eq 1 ]] && ls -la &&
-          cd "$SERVICE_NAME"
+          cd common-core
 
           [[ $RUNNER_DEBUG -eq 1 ]] && echo -e " \n*****************************************\nIn Repo Dir, list files\n*****************************************\n "
           [[ $RUNNER_DEBUG -eq 1 ]] && pwd && ls -la
