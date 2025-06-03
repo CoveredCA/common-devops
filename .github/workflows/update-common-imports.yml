@@ -124,6 +124,7 @@ jobs:
             echo -e "\nSERVICE_NAME: $SERVICE_NAME\nSERVICE_VERSION: $SERVICE_VERSION\nSERVICE_COMMON_PARENT_POM_VERSION: $SERVICE_COMMON_PARENT_POM_VERSION\nSERVICE_COMMON_CORE_VERSION: $SERVICE_COMMON_CORE_VERSION\n"
 
             echo -e " \n*****************************************\nTest if Updates are Needed\n*****************************************\n "
+            update_needed=false
             echo '[[ "$SERVICE_COMMON_PARENT_POM_VERSION" != "$PARENT_POM_VERSION" || "$SERVICE_COMMON_CORE_VERSION" != "$COMMON_CORE_VERSION" ]] && update_needed=true'
             [[ "$SERVICE_COMMON_PARENT_POM_VERSION" != "$PARENT_POM_VERSION" || "$SERVICE_COMMON_CORE_VERSION" != "$COMMON_CORE_VERSION" ]] && update_needed=true
             [[ "$update_needed" = "true" ]] && echo -e " \n*****************************************\n\tUpdate is Needed\n*****************************************\n "
