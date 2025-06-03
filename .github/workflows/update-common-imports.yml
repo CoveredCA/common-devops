@@ -154,7 +154,7 @@ jobs:
                 echo "$OLD_SERVICE_VERSION  -->  $NEW_SERVICE_VERSION"
               fi
             fi
-            if [["$update_needed" = "true" ]]; then
+            if [[ "$update_needed" = "true" ]]; then
               echo -e " \n*****************************************\nUpdate Pom.xml if Present\n*****************************************\n "
               if [[ -f "pom.xml" ]]; then
                 echo -e " \n*****************************************\nFound pom.xml, making changes...\n*****************************************\n "
