@@ -87,70 +87,7 @@ jobs:
           echo "COMMON_CORE_VERSION=$COMMON_CORE_VERSION" >> $GITHUB_ENV
           echo " "
 
-
-
-      # - name: Install NodeJs
-      #   uses: actions/setup-node@v4
-      #   with:
-      #     node-version: 20
-
-      # - name: Install Anypoint CLI
-      #   shell: bash
-      #   run: |
-      #     echo " "
-      #     echo "***************************************"
-      #     echo "Install Anypoint CLI"
-      #     echo "***************************************"
-      #     echo " "
-      #     echo "Install anypoint-cli-v4..."
-      #     npm install -g anypoint-cli-v4
-      #     echo "anypoint-cli-v4 --version: "
-      #     anypoint-cli-v4 --version
-      #     echo " "
-
-      # - name: Acquire Common-Core Latest Version
-      #   shell: bash
-      #   run: |
-      #     echo " "
-      #     echo "***************************************"
-      #     echo "Acquiring Common-Core latest version"
-      #     echo "***************************************"
-      #     COMMON_CORE_VERSION_COMMAND="anypoint-cli-v4 exchange:asset:list \
-      #     --client_id $cicd_connectedapp_clientid \
-      #     --client_secret $cicd_connectedapp_secret \
-      #     --organizationId 83ce023f-20c2-40a9-abdd-efdab38b2bcf \
-      #     --host gov.anypoint.mulesoft.com \
-      #     --output json \
-      #     common-core"
-      #     echo "command used: $COMMON_CORE_VERSION_COMMAND"
-      #     COMMON_CORE_VERSION=$($COMMON_CORE_VERSION_COMMAND | jq -r 'sort_by(.version) | map(.version) | last(.[])')
-      #     echo " "
-      #     echo "Common-Core version: $COMMON_CORE_VERSION"
-      #     echo " "
-      #     echo "COMMON_CORE_VERSION=$COMMON_CORE_VERSION" >> $GITHUB_ENV
-      #     echo " "
-
-      - name: Show Latest Common Imports Versions
-        shell: bash
-        run: |
-            echo "Fetch common-parent-pom and common-core versions"
-            echo " "
-            echo "**************************************"
-            echo "Common Core"
-            echo "**************************************"
-            echo " "
-            echo "Common Core Version: $COMMON_CORE_VERSION"
-            echo " "
-            echo " "
-            echo "**************************************"
-            echo "Common Parent Pom"
-            echo "**************************************"
-            echo " "
-            echo "Common Parent POM: $PARENT_POM_VERSION"
-            echo " "
-
       - name: Repository Loop
-        id: repo-loop
         shell: bash
         env:
           GITHUB_TOKEN: ${{ env.github_automationbot_token }}
@@ -172,18 +109,20 @@ jobs:
             echo -e " \n*****************************************\nClone the Repo\n*****************************************\n "
             git clone --filter=blob:none --depth 1 --branch main "https://x-access-token:${{env.GH_TOKEN}}@github.com/CoveredCA/$SERVICE_NAME.git"
 
-            echo -e " \n*****************************************\nRepo cloned, list files\n*****************************************\n "
-            ls -la && cd "$SERVICE_NAME"
+            [[ $RUNNER_DEBUG -eq 1 ]] && echo -e " \n*****************************************\nRepo cloned, list files\n*****************************************\n "
+            [[ $RUNNER_DEBUG -eq 1 ]] && ls -la && cd "$SERVICE_NAME"
 
-            echo -e " \n*****************************************\nIn Repo Dir, list files\n*****************************************\n "
-            pwd && ls -la
+            [[ $RUNNER_DEBUG -eq 1 ]] && echo -e " \n*****************************************\nIn Repo Dir, list files\n*****************************************\n "
+            [[ $RUNNER_DEBUG -eq 1 ]] && pwd && ls -la
 
             echo -e " \n*****************************************\nGrab Versions of Current App Dependencies\n*****************************************\n "
             SERVICE_VERSION=$(xmlstarlet sel -N x=http://maven.apache.org/POM/4.0.0 -t -v "/x:project/x:version" pom.xml)
             SERVICE_COMMON_PARENT_POM_VERSION=$(xmlstarlet sel -N x=http://maven.apache.org/POM/4.0.0 -t -v "/x:project/x:parent/x:version" pom.xml)
             SERVICE_COMMON_CORE_VERSION=$(xmlstarlet sel -N x=http://maven.apache.org/POM/4.0.0 -t -v "/x:project/x:dependencies/x:dependency[x:artifactId='common-core']/x:version" pom.xml)
+            echo -e "\nSERVICE_NAME: $SERVICE_NAME\nSERVICE_VERSION: $SERVICE_VERSION\nSERVICE_COMMON_PARENT_POM_VERSION: $SERVICE_COMMON_PARENT_POM_VERSION\nSERVICE_COMMON_CORE_VERSION: $SERVICE_COMMON_CORE_VERSION\n"
 
             echo -e " \n*****************************************\nTest if Updates are Needed\n*****************************************\n "
+            echo '[[ "$SERVICE_COMMON_PARENT_POM_VERSION" != "$PARENT_POM_VERSION" || "$SERVICE_COMMON_CORE_VERSION" != "$COMMON_CORE_VERSION" ]] && update_needed=true'
             [[ "$SERVICE_COMMON_PARENT_POM_VERSION" != "$PARENT_POM_VERSION" || "$SERVICE_COMMON_CORE_VERSION" != "$COMMON_CORE_VERSION" ]] && update_needed=true
             [[ "$update_needed" = "true" ]] && echo -e " \n*****************************************\n\tUpdate is Needed\n*****************************************\n "
 
@@ -192,6 +131,7 @@ jobs:
               OLD_SERVICE_VERSION="$SERVICE_VERSION"
               if [[ "$SERVICE_VERSION" =~ "-snapshot" ]]; then
                 echo -e "The service version already contains -snapshot.\nNo updating of service version required."
+                NEW_SERVICE_VERSION="$SERVICE_VERSION"
               else
                 echo "Service Version Needs to be updated"
                 echo "Incrementing version number and adding '-snapshot'"
@@ -237,4 +177,5 @@ jobs:
               echo "Pom file not found in repository root, skipping to next repository" && continue
             fi
             cd .. && rm -rf "$SERVICE_NAME"
+            echo "********************************************************************************************************************************************************************"
           done
