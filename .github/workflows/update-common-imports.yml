@@ -82,6 +82,23 @@ jobs:
           pwd && ls -la
           echo -e " \n*****************************************\nGrab Version of Common Core\n*****************************************\n "
           COMMON_CORE_VERSION=$(xmlstarlet sel -N x=http://maven.apache.org/POM/4.0.0 -t -v "/x:project/x:version" pom.xml)
+
+          if [[ "$COMMON_CORE_VERSION" =~ "-snapshot" ]]; then
+            echo -e " \n*****************************************\nDecrementing Common Core Due To '-snapshot' Version Present\n*****************************************\n "
+            OLD_COMMON_CORE_VERSION="$(sed 's/-snapshot//g' <<< $COMMON_CORE_VERSION)"
+            IFS=. read -r major minor patch <<< "$OLD_COMMON_CORE_VERSION"
+            patch=$((patch - 1))
+            if ((patch < 0)); then
+              minor=$((minor - 1))
+              patch=99
+              if ((minor < 0)); then
+                major=$((major - 1))
+                minor=99
+              fi
+            fi
+            NEW_COMMON_CORE_VERSION="$major.$minor.$patch"
+            echo -e "Original Service Version  -->  New Service Version\n$COMMON_CORE_VERSION  -->  $NEW_COMMON_CORE_VERSION"
+          fi
           echo " "
           echo "Common-Core version: $COMMON_CORE_VERSION"
           echo " "
@@ -121,7 +138,12 @@ jobs:
             echo -e " \n*****************************************\nGrab Versions of Current App Dependencies\n*****************************************\n "
             SERVICE_VERSION=$(xmlstarlet sel -N x=http://maven.apache.org/POM/4.0.0 -t -v "/x:project/x:version" pom.xml)
             SERVICE_COMMON_PARENT_POM_VERSION=$(xmlstarlet sel -N x=http://maven.apache.org/POM/4.0.0 -t -v "/x:project/x:parent/x:version" pom.xml)
-            SERVICE_COMMON_CORE_VERSION=$(xmlstarlet sel -N x=http://maven.apache.org/POM/4.0.0 -t -v "/x:project/x:dependencies/x:dependency[x:artifactId='common-core']/x:version" pom.xml)
+            if [[ "$SERVICE_NAME" = "common-core" ]]; then
+              # If it's common-core then it doesnt have a dependency of itself so then we set it equal to itself to essentially ignore during the check
+              SERVICE_COMMON_CORE_VERSION=$COMMON_CORE_VERSION
+            else
+              SERVICE_COMMON_CORE_VERSION=$(xmlstarlet sel -N x=http://maven.apache.org/POM/4.0.0 -t -v "/x:project/x:dependencies/x:dependency[x:artifactId='common-core']/x:version" pom.xml)
+            fi
             echo -e "\nSERVICE_NAME: $SERVICE_NAME\nSERVICE_VERSION: $SERVICE_VERSION\nSERVICE_COMMON_PARENT_POM_VERSION: $SERVICE_COMMON_PARENT_POM_VERSION\nSERVICE_COMMON_CORE_VERSION: $SERVICE_COMMON_CORE_VERSION\n"
 
             echo -e " \n*****************************************\nTest if Updates are Needed\n*****************************************\n "
@@ -161,7 +183,7 @@ jobs:
 
                 xmlstarlet ed -L -N x=http://maven.apache.org/POM/4.0.0 -u "/x:project/x:parent/x:version" -v "$PARENT_POM_VERSION" pom.xml
                 xmlstarlet ed -L -N x=http://maven.apache.org/POM/4.0.0 -u "/x:project/x:version" -v "$NEW_SERVICE_VERSION" pom.xml
-                xmlstarlet ed -L -N x=http://maven.apache.org/POM/4.0.0 -u "/x:project/x:dependencies/x:dependency[x:artifactId='common-core']/x:version" -v "$COMMON_CORE_VERSION" pom.xml
+                [[ "$SERVICE_NAME" != "common-core" ]] && xmlstarlet ed -L -N x=http://maven.apache.org/POM/4.0.0 -u "/x:project/x:dependencies/x:dependency[x:artifactId='common-core']/x:version" -v "$COMMON_CORE_VERSION" pom.xml
 
                 echo -e " \n*****************************************\nChange Summary:\n*****************************************\n "
                 echo -e "Update $SERVICE_NAME to $NEW_SERVICE_VERSION\nOld Service Version  -->  New Service Version\n$OLD_SERVICE_VERSION  -->  $NEW_SERVICE_VERSION\nReasoning:\nService Parent Pom  --> Latest Parent Pom\n$SERVICE_COMMON_PARENT_POM_VERSION  -->  $PARENT_POM_VERSION\nService Common Core  --> Latest Common Core\n$SERVICE_COMMON_CORE_VERSION  -->  $COMMON_CORE_VERSION\n"
