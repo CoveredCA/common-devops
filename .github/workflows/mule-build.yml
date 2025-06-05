@@ -13,13 +13,11 @@ env:
   MESSAGE_SERVICE_TRIGGER_DEPLOYMENT: The build job triggered the deployment
 
 jobs:
-
   build:
     name: Build
     runs-on: ubuntu-latest
 
     steps:
-
       - name: Get token from Github App
         id: app-token
         uses: CoveredCA/common-devops/packages/app-token@main
@@ -36,25 +34,6 @@ jobs:
 
       - name: Get service configuration
         uses: CoveredCA/common-devops/packages/configuration-service@main
-
-      - name: Verify if the github tag exists
-        if: "!contains(env.service_version, 'snapshot')"
-        shell: bash
-        run: |
-          echo " "
-          echo "***********************************************"
-          echo "Verify if github tag exists "
-          echo "***********************************************"
-          echo " "
-
-          tag_exist=$(git tag $service_version)
-          if [ "$tag_exist" != "" ] ; then
-            echo "  Error, the tag already exists in Github; bump up the application version in the POM file"
-            exit 1
-          else
-            echo "  Create tag $service_version for the respository"
-          fi
-          echo " "
 
       - name: Install Java environment for Mulesoft Applications
         uses: CoveredCA/common-devops/packages/install-java@main
@@ -105,11 +84,30 @@ jobs:
         with:
           badge-label: Unit test
           badge-suffix: ut
-          path-report: 'target/surefire-reports/*.xml'
-          path-directoryreports: 'target/surefire-reports/*'
+          path-report: "target/surefire-reports/*.xml"
+          path-directoryreports: "target/surefire-reports/*"
 
       - name: Summary - Code Coverage
         uses: CoveredCA/common-devops/packages/summary-codecoverage@main
+
+      - name: Verify if the github tag exists
+        if: "!contains(env.service_version, 'snapshot')"
+        shell: bash
+        run: |
+          echo " "
+          echo "***********************************************"
+          echo "Verify if github tag exists "
+          echo "***********************************************"
+          echo " "
+
+          tag_exist=$(git tag $service_version)
+          if [ "$tag_exist" != "" ] ; then
+            echo "  Error, the tag already exists in Github; bump up the application version in the POM file"
+            exit 1
+          else
+            echo "  Create tag $service_version for the respository"
+          fi
+          echo " "
 
       #########################################################
       # Next actions only if application is not a snapshot
@@ -153,8 +151,8 @@ jobs:
         if: "!contains(env.service_version, 'snapshot')"
         with:
           label: Build job
-          status: '${{ github.run_number }}'
-          color: '535597'
+          status: "${{ github.run_number }}"
+          color: "535597"
           file: ${{ env.service_name }}-wf.svg
           folder: ${{ env.service_name }}
 
@@ -163,8 +161,8 @@ jobs:
         if: "hashFiles('target/*.jar') != '' && !contains(env.service_version, 'snapshot')"
         with:
           label: Release
-          status: '${{ env.service_version }}'
-          color: '535597'
+          status: "${{ env.service_version }}"
+          color: "535597"
           file: ${{ env.service_name }}-re.svg
           folder: ${{ env.service_name }}
 
@@ -217,6 +215,6 @@ jobs:
           message: "<b>JOB:</b> 🛠 Build<br><b>APP:</b> ${{ env.service_name }}<br><b>VERSION:</b> ${{ env.service_version }}<br><b>OUTCOME:</b> ✅<br><b>ACTION ITEMS:</b> Update your apps to the latest version: ${{ env.service_version }}"
           html: 1 # Set to 1 to enable HTML parsing or leave empty
           priority: 0 # Set the priority value or leave empty
-          sound: 'bugle' # Specify the sound name or leave empty
+          sound: "bugle" # Specify the sound name or leave empty
           url: "https://www.github.com/CoveredCA/${{ env.service_name }}/actions/runs/${{ github.run_id }}" # Add the URL or leave empty
           url_title: "Go To GitHub Actions Log" # Add the URL title or leave empty
