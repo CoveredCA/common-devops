@@ -35,6 +35,25 @@ jobs:
       - name: Get service configuration
         uses: CoveredCA/common-devops/packages/configuration-service@main
 
+      - name: Verify if the github tag exists
+        if: "!contains(env.service_version, 'snapshot')"
+        shell: bash
+        run: |
+          echo " "
+          echo "***********************************************"
+          echo "Verify if github tag exists "
+          echo "***********************************************"
+          echo " "
+
+          tag_exist=$(git tag $service_version)
+          if [ "$tag_exist" != "" ] ; then
+            echo "  Error, the tag already exists in Github; bump up the application version in the POM file"
+            exit 1
+          else
+            echo "  Create tag $service_version for the respository"
+          fi
+          echo " "
+
       - name: Install Java environment for Mulesoft Applications
         uses: CoveredCA/common-devops/packages/install-java@main
 
@@ -89,25 +108,6 @@ jobs:
 
       - name: Summary - Code Coverage
         uses: CoveredCA/common-devops/packages/summary-codecoverage@main
-
-      - name: Verify if the github tag exists
-        if: "!contains(env.service_version, 'snapshot')"
-        shell: bash
-        run: |
-          echo " "
-          echo "***********************************************"
-          echo "Verify if github tag exists "
-          echo "***********************************************"
-          echo " "
-
-          tag_exist=$(git tag $service_version)
-          if [ "$tag_exist" != "" ] ; then
-            echo "  Error, the tag already exists in Github; bump up the application version in the POM file"
-            exit 1
-          else
-            echo "  Create tag $service_version for the respository"
-          fi
-          echo " "
 
       #########################################################
       # Next actions only if application is not a snapshot
