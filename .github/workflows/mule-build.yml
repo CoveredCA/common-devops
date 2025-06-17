@@ -40,19 +40,12 @@ jobs:
         shell: bash
         run: |
           echo " "
-          echo "***********************************************"
-          echo "Verify if github tag exists "
-          echo "***********************************************"
-          echo " "
+          msg="Verify if github tag exists " && echo -e "***********************************************\n$msg\n***********************************************\n"
 
           tag_exist=$(git tag $service_version)
-          if [ "$tag_exist" != "" ] ; then
-            echo "  Error, the tag already exists in Github; bump up the application version in the POM file"
-            exit 1
-          else
-            echo "  Create tag $service_version for the respository"
-          fi
-          echo " "
+
+          [ "$tag_exist" != "" ] && echo -e "\tError, the tag already exists in Github; bump up the application version in the POM file" && exit 1
+          [ "$tag_exist" = "" ] && echo -e "\tTag $service_version for the respository does not yet exist"
 
       - name: Install Java environment for Mulesoft Applications
         uses: CoveredCA/common-devops/packages/install-java@main
@@ -60,16 +53,12 @@ jobs:
       - name: Setup Anypoint Exchange directories
         run: |
           echo " "
-          echo "***********************************************"
-          echo "Setup Anypoint Exchange directories"
-          echo "***********************************************"
-          echo " "
-          echo "  Configuring the directory for Anypoint Exchange documentation"
+          msg="Setup Anypoint Exchange directories" && echo -e "***********************************************\n$msg\n***********************************************\n"
+          echo -e "\tConfiguring the directory for Anypoint Exchange documentation"
           if [ -d "exchange-docs" ]; then
-            echo "    Directory exchange-docs exists and will not be overriden with README.md"
+            echo -e "\tDirectory exchange-docs exists and will not be overriden with README.md"
           else
-            echo "    Creating directory 'exchange-doc' with home.md from README.md"
-            mkdir -p exchange-docs
+            echo -e "\tCreating directory 'exchange-doc' with home.md from README.md"
             mkdir -p exchange-docs/docs
             cp -Rfpv README.md exchange-docs/home.md
             cp -Rfpv docs/*.* exchange-docs/docs
@@ -84,19 +73,11 @@ jobs:
         shell: bash
         run: |
           echo " "
-          echo "***********************************************"
-          echo "Run test cases and package"
-          echo "***********************************************"
-          echo " "
+          msg="Run test cases and package" && echo -e "***********************************************\n$msg\n***********************************************\n"
           skiptests=" "
-          if [[ "${{ env.configuration_skiptests }}" == "true" ]]; then
-            skiptests="-DskipTests"
-            echo "  Tests will be skipped"
-          else
-            echo "  The application will be tested"
-          fi
+          [[ "${{ env.configuration_skiptests }}" == "true" ]] && skiptests="-DskipTests" && echo -e "\tTests will be skipped"
+          [[ "${{ env.configuration_skiptests }}" != "true" ]] && echo -e "\tThe application will be tested"
           mvn --batch-mode $skiptests package $configuration_test_properties
-          echo " "
 
       - name: Summary - Test
         uses: CoveredCA/common-devops/packages/summary-junit@main
@@ -117,24 +98,16 @@ jobs:
         if: "!contains(env.service_version, 'snapshot')"
         run: |
           echo " "
-          echo "***********************************************"
-          echo "Deploy to Anypoint Exchange"
-          echo "***********************************************"
-          echo " "
+          msg="Deploy to Anypoint Exchange" && echo -e "***********************************************\n$msg\n***********************************************\n"
           mvn --batch-mode deploy -DskipTests
-          echo " "
 
       - name: Tag repository with service version
         if: "!contains(env.service_version, 'snapshot')"
         shell: bash
         run: |
           echo " "
-          echo "***********************************************"
-          echo "Tag repository with service version "
-          echo "***********************************************"
-          echo " "
+          msg="Tag repository with service version" && echo -e "***********************************************\n$msg\n***********************************************\n"
           git push origin $service_version
-          echo " "
 
       - name: Create a release
         uses: ncipollo/release-action@v1
@@ -174,24 +147,18 @@ jobs:
         shell: bash
         run: |
           echo " "
-          echo "***********************************************"
-          echo "Create Deployment Issue "
-          echo "***********************************************"
-          echo " "
-          echo "  List of environments for deployment: $configuration_environments"
+          msg="Create Deployment Issue" && echo -e "***********************************************\n$msg\n***********************************************\n"
+          echo -e "\tList of environments for deployment: $configuration_environments"
 
           first_environment="${configuration_environments%% *}"
-          if [[ $first_environment == "" ]]; then
-            echo "  The artifact is not configured to be deployed"
-          else
-            echo "  Environment to deploy the application: $first_environment"
-            gh -R "${{ github.repository }}" issue create \
-            -t "Deployment $first_environment ${{ env.service_name }} ${{ env.service_version }}" \
-            -a "${{ github.triggering_actor }}" \
-            -b "${{ env.MESSAGE_SERVICE_TRIGGER_DEPLOYMENT }}" \
-            -l "deployment" \
-            -p "${{ env.deployment_project }}"
-          fi
+          [[ $first_environment == "" ]] && echo -e "\tThe artifact is not configured to be deployed"
+          [[ $first_environment != "" ]] && echo -e "\tEnvironment to deploy the application: $first_environment" && \
+          gh -R "${{ github.repository }}" issue create \
+          -t "Deployment $first_environment ${{ env.service_name }} ${{ env.service_version }}" \
+          -a "${{ github.triggering_actor }}" \
+          -b "${{ env.MESSAGE_SERVICE_TRIGGER_DEPLOYMENT }}" \
+          -l "deployment" \
+          -p "${{ env.deployment_project }}"
 
       - name: Count Lines of Code (cloc)
         uses: djdefi/cloc-action@6
