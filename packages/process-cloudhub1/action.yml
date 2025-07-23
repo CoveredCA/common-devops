@@ -41,8 +41,7 @@ runs:
         echo "***************************************"
         echo " "
         echo "Install anypoint-cli-v4..."
-        # npm install -g anypoint-cli-v4 # HOTFIX this is related to https://github.com/CoveredCA/Mulesoft-Admin/issues/97
-        npm install -g anypoint-cli-v4@1.6.6
+        npm install -g anypoint-cli-v4
         echo "anypoint-cli-v4 --version: "
         anypoint-cli-v4 --version
         echo " "
