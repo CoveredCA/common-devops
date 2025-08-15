@@ -23,7 +23,7 @@ runs:
       with:
         name: munit-application-coverage-report
         path: target/site/munit/coverage/*
-        
+
     - name: Summary - Add code coverage
       id: summary-codecoverage
       if: ${{ hashFiles('target/site/munit/coverage/summary.html') != '' }}
@@ -33,7 +33,7 @@ runs:
         echo "*****************************************************"
         echo "Code coverage - Get the summary report if exists"
         echo "*****************************************************"
-        echo " "            
+        echo " "
 
         summary_report=target/site/munit/coverage/summary.html
 
@@ -44,7 +44,7 @@ runs:
           line=0
           trigger=0
           while IFS= read -r p; do
-          
+
             if [[ "$p" == *"<div class=\"col-md-8 col-md-offset-2\">"* ]]; then
               echo "Summary starts at line: $line"
               ((line=line+1))
@@ -70,7 +70,7 @@ runs:
           temporal=$(sed -e 's/<\/a[^>]*>//g' <<<"$temporal")
           temporal=$(sed -e 's/<a[^>]*>//g' <<<"$temporal")
 
-          # Add job summary 
+          # Add job summary
           echo "<div>" >> $GITHUB_STEP_SUMMARY
           echo "$temporal" >> $GITHUB_STEP_SUMMARY
           echo "</div>" >> $GITHUB_STEP_SUMMARY
@@ -83,7 +83,7 @@ runs:
           # echo "COVERAGE_PROCESS='False'" >> $GITHUB_ENV
           echo "CODE_COVERAGE_EXECUTION=false" >> $GITHUB_OUTPUT
         fi
-        echo " "            
+        echo " "
 
     - name: Set the code coverage results as environment variable
       if: steps.summary-codecoverage.outputs.CODE_COVERAGE_EXECUTION == 'true'
@@ -94,7 +94,7 @@ runs:
         echo "******************************************************"
         echo "Code coverage - export the summary report as env var"
         echo "******************************************************"
-        echo " "  
+        echo " "
 
         content=`cat target/site/munit/coverage/munit-coverage.json`
         # the following lines are only required for multi line json
@@ -102,7 +102,7 @@ runs:
         content="${content//$'\n'/'%0A'}"
         content="${content//$'\r'/'%0D'}"
         # end of optional handling for multi line json
-        echo "::set-output name=packageJson::$content"
+        echo "packageJson"=$content" >> $GITHUB_OUTPUT
         echo " "
 
     - name: Set badge color and code coverage as integer
@@ -114,7 +114,7 @@ runs:
         echo "Code coverage - Set badge color and status"
         echo "*****************************************************"
         echo " "
-        
+
         coverage_float=${{ fromJSON(steps.json_var.outputs.packageJson).coverage }}
         coverage=${coverage_float%.*}
         minimum=${{ fromJSON(steps.json_var.outputs.packageJson).requiredApplicationCoverage }}
@@ -129,7 +129,7 @@ runs:
           echo "BADGE_COLOR=800000" >> $GITHUB_ENV
           echo "  Code coverage is less than minimum"
         fi
-        echo " "      
+        echo " "
 
     - name: Badge for skipped tests
       if: ${{ hashFiles('target/site/munit/coverage/summary.html') == '' }}
