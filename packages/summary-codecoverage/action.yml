@@ -84,6 +84,12 @@ runs:
           echo "CODE_COVERAGE_EXECUTION=false" >> $GITHUB_OUTPUT
         fi
         echo " "
+        pwd
+        echo " "
+        ls -l
+        echo " "
+        ls target/site/munit/coverage
+
 
     - name: Set the code coverage results as environment variable
       if: steps.summary-codecoverage.outputs.CODE_COVERAGE_EXECUTION == 'true'
