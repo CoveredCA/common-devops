@@ -83,13 +83,6 @@ runs:
           # echo "COVERAGE_PROCESS='False'" >> $GITHUB_ENV
           echo "CODE_COVERAGE_EXECUTION=false" >> $GITHUB_OUTPUT
         fi
-        echo " "
-        pwd
-        echo " "
-        ls -l
-        echo " "
-        ls target/site/munit/coverage
-
 
     # - name: Set the code coverage results as environment variable
     #   if: steps.summary-codecoverage.outputs.CODE_COVERAGE_EXECUTION == 'true'
@@ -124,8 +117,9 @@ runs:
         echo "*****************************************************"
         echo " "
 
-        coverage=$(jq -r '.coverage' munit-coverage.json)
-        minimum=$(jq -r '.requiredApplicationCoverage' munit-coverage.json)
+        report_file="target/site/munit/coverage/munit-coverage.json"
+        coverage=$(jq -r '.coverage' $report_file)
+        minimum=$(jq -r '.requiredApplicationCoverage' $report_file)
 
         # coverage_float=${{ fromJSON(steps.json_var.outputs.packageJson).coverage }}
         # coverage=${coverage_float%.*}
