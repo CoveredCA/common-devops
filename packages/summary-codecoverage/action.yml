@@ -102,8 +102,8 @@ runs:
         # content="${content//$'\n'/'%0A'}"
         # content="${content//$'\r'/'%0D'}"
         # # end of optional handling for multi line json
-        cat target/site/munit/coverage/munit-coverage.json`
-        sed -i -e 's/%/%25/g' -e ':a' -e 'N' -e '$!ba' -e 's/\n/%0A/g' -e 's/\r/%0D/g' target/site/munit/coverage/munit-coverage.jsona
+        cat target/site/munit/coverage/munit-coverage.json
+        sed -i -e 's/%/%25/g' -e ':a' -e 'N' -e '$!ba' -e 's/\n/%0A/g' -e 's/\r/%0D/g' target/site/munit/coverage/munit-coverage.json
         content=$(cat target/site/munit/coverage/munit-coverage.json)
         echo "packageJson=$content" >> $GITHUB_OUTPUT
         echo " "
