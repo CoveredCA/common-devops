@@ -114,6 +114,35 @@ runs:
         echo "Code coverage - Set badge color and status"
         echo "*****************************************************"
         echo " "
+        echo "*****************************************************"
+        echo " "
+        echo " "
+        echo 'echo ${{steps.json_var.outputs.packageJson}}''
+        echo " "
+        echo ${{steps.json_var.outputs.packageJson}}
+        echo " "
+        echo "*****************************************************"
+        echo 'echo ${{ fromJSON(steps.json_var.outputs.packageJson) }}'
+        echo " "
+        echo ${{ fromJSON(steps.json_var.outputs.packageJson) }}
+        echo " "
+        echo "*****************************************************"
+        echo 'echo ${{ fromJSON(steps.json_var.outputs.packageJson).coverage }}'
+        echo " "
+        echo ${{ fromJSON(steps.json_var.outputs.packageJson).coverage }}
+        echo " "
+        echo "*****************************************************"
+        echo 'coverage_float=${{ fromJSON(steps.json_var.outputs.packageJson).coverage }}'
+        echo " "
+        coverage_float=${{ fromJSON(steps.json_var.outputs.packageJson).coverage }}
+        echo " "
+        echo "*****************************************************"
+        echo 'echo ${coverage_float%.*}'
+        echo " "
+        echo "${coverage_float%.*}"
+        echo " "
+        echo " "
+        echo "*****************************************************"
 
         coverage_float=${{ fromJSON(steps.json_var.outputs.packageJson).coverage }}
         coverage=${coverage_float%.*}
