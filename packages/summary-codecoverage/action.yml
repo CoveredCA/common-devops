@@ -91,28 +91,28 @@ runs:
         ls target/site/munit/coverage
 
 
-    - name: Set the code coverage results as environment variable
-      if: steps.summary-codecoverage.outputs.CODE_COVERAGE_EXECUTION == 'true'
-      id: json_var
-      shell: bash
-      run: |
-        echo " "
-        echo "******************************************************"
-        echo "Code coverage - export the summary report as env var"
-        echo "******************************************************"
-        echo " "
+    # - name: Set the code coverage results as environment variable
+    #   if: steps.summary-codecoverage.outputs.CODE_COVERAGE_EXECUTION == 'true'
+    #   id: json_var
+    #   shell: bash
+    #   run: |
+    #     echo " "
+    #     echo "******************************************************"
+    #     echo "Code coverage - export the summary report as env var"
+    #     echo "******************************************************"
+    #     echo " "
 
-        content=`cat target/site/munit/coverage/munit-coverage.json`
-        # the following lines are only required for multi line json
-        # content="${content//'%'/'%25'}"
-        # content="${content//$'\n'/'%0A'}"
-        # content="${content//$'\r'/'%0D'}"
-        # end of optional handling for multi line json
-        # sed -i -e 's/%/%25/g' -e ':a' -e 'N' -e '$!ba' -e 's/\n/%0A/g' -e 's/\r/%0D/g' target/site/munit/coverage/munit-coverage.json
-        cat target/site/munit/coverage/munit-coverage.json
-        echo "packageJson=$content" >> $GITHUB_OUTPUT
-        echo " "
-        echo "*****************************************************"
+    #     content=`cat target/site/munit/coverage/munit-coverage.json`
+    #     # the following lines are only required for multi line json
+    #     # content="${content//'%'/'%25'}"
+    #     # content="${content//$'\n'/'%0A'}"
+    #     # content="${content//$'\r'/'%0D'}"
+    #     # end of optional handling for multi line json
+    #     # sed -i -e 's/%/%25/g' -e ':a' -e 'N' -e '$!ba' -e 's/\n/%0A/g' -e 's/\r/%0D/g' target/site/munit/coverage/munit-coverage.json
+    #     cat target/site/munit/coverage/munit-coverage.json
+    #     echo "packageJson=$content" >> $GITHUB_OUTPUT
+    #     echo " "
+    #     echo "*****************************************************"
 
     - name: Set badge color and code coverage as integer
       if: steps.summary-codecoverage.outputs.CODE_COVERAGE_EXECUTION == 'true'
@@ -124,9 +124,12 @@ runs:
         echo "*****************************************************"
         echo " "
 
-        coverage_float=${{ fromJSON(steps.json_var.outputs.packageJson).coverage }}
-        coverage=${coverage_float%.*}
-        minimum=${{ fromJSON(steps.json_var.outputs.packageJson).requiredApplicationCoverage }}
+        coverage=$(jq -r '.coverage' munit-coverage.json)
+        minimum=$(jq -r '.requiredApplicationCoverage' munit-coverage.json)
+
+        # coverage_float=${{ fromJSON(steps.json_var.outputs.packageJson).coverage }}
+        # coverage=${coverage_float%.*}
+        # minimum=${{ fromJSON(steps.json_var.outputs.packageJson).requiredApplicationCoverage }}
         echo "Application coverage: $coverage"
         echo "Minimum: $minimum"
         echo "BADGE_STATUS=$coverage of $minimum %" >> $GITHUB_ENV
