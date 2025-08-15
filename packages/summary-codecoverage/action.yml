@@ -104,49 +104,15 @@ runs:
 
         content=`cat target/site/munit/coverage/munit-coverage.json`
         # the following lines are only required for multi line json
-        content="${content//'%'/'%25'}"
-        content="${content//$'\n'/'%0A'}"
-        content="${content//$'\r'/'%0D'}"
+        # content="${content//'%'/'%25'}"
+        # content="${content//$'\n'/'%0A'}"
+        # content="${content//$'\r'/'%0D'}"
         # end of optional handling for multi line json
         # sed -i -e 's/%/%25/g' -e ':a' -e 'N' -e '$!ba' -e 's/\n/%0A/g' -e 's/\r/%0D/g' target/site/munit/coverage/munit-coverage.json
         cat target/site/munit/coverage/munit-coverage.json
-        # content=$(cat target/site/munit/coverage/munit-coverage.json)
         echo "packageJson=$content" >> $GITHUB_OUTPUT
         echo " "
         echo "*****************************************************"
-        echo " "
-        echo " "
-        echo 'echo $content'
-        echo " "
-        echo "$content"
-        echo " "
-        echo "*****************************************************"
-        # echo 'echo ${{steps.json_var.outputs.packageJson}}''
-        # echo " "
-        # echo "${{steps.json_var.outputs.packageJson}}"
-        # echo " "
-        # echo "*****************************************************"
-        # echo 'echo ${{ fromJSON(steps.json_var.outputs.packageJson) }}'
-        # echo " "
-        # echo "${{ fromJSON(steps.json_var.outputs.packageJson) }}"
-        # echo " "
-        # echo "*****************************************************"
-        # echo 'echo ${{ fromJSON(steps.json_var.outputs.packageJson).coverage }}'
-        # echo " "
-        # echo "${{ fromJSON(steps.json_var.outputs.packageJson).coverage }}"
-        # echo " "
-        # echo "*****************************************************"
-        # echo 'coverage_float=${{ fromJSON(steps.json_var.outputs.packageJson).coverage }}'
-        # echo " "
-        # coverage_float=${{ fromJSON(steps.json_var.outputs.packageJson).coverage }}
-        # echo " "
-        # echo "*****************************************************"
-        # echo 'echo ${coverage_float%.*}'
-        # echo " "
-        # echo "${coverage_float%.*}"
-        # echo " "
-        # echo " "
-        # echo "*****************************************************"
 
     - name: Set badge color and code coverage as integer
       if: steps.summary-codecoverage.outputs.CODE_COVERAGE_EXECUTION == 'true'
