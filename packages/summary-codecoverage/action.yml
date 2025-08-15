@@ -104,16 +104,6 @@ runs:
         # end of optional handling for multi line json
         echo "packageJson=$content" >> $GITHUB_OUTPUT
         echo " "
-
-    - name: Set badge color and code coverage as integer
-      if: steps.summary-codecoverage.outputs.CODE_COVERAGE_EXECUTION == 'true'
-      shell: bash
-      run: |
-        echo " "
-        echo "*****************************************************"
-        echo "Code coverage - Set badge color and status"
-        echo "*****************************************************"
-        echo " "
         echo "*****************************************************"
         echo " "
         echo " "
@@ -143,6 +133,16 @@ runs:
         echo " "
         echo " "
         echo "*****************************************************"
+
+    - name: Set badge color and code coverage as integer
+      if: steps.summary-codecoverage.outputs.CODE_COVERAGE_EXECUTION == 'true'
+      shell: bash
+      run: |
+        echo " "
+        echo "*****************************************************"
+        echo "Code coverage - Set badge color and status"
+        echo "*****************************************************"
+        echo " "
 
         coverage_float=${{ fromJSON(steps.json_var.outputs.packageJson).coverage }}
         coverage=${coverage_float%.*}
