@@ -35,6 +35,11 @@ jobs:
       - name: Get service configuration
         uses: CoveredCA/common-devops/packages/configuration-service@main
 
+      - name: Run detect-secrets
+        uses: secret-scanner/action@0.0.2
+        with:
+          detect_secret_additional_args: "--all-files"
+
       - name: Verify if the github tag exists
         if: "!contains(env.service_version, 'snapshot')"
         shell: bash
