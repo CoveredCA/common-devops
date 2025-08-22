@@ -32,11 +32,12 @@ jobs:
           keyvault-key: ${{ env.SECRETS_AZURE_KEYVAULT }}
           azure-credentials: ${{ secrets.AZURE_CREDENTIALS }}
 
+      - name: Run detect-secrets
+        uses: secret-scanner/action@0.0.2
+
       - name: Get service configuration
         uses: CoveredCA/common-devops/packages/configuration-service@main
 
-      - name: Run detect-secrets
-        uses: secret-scanner/action@0.0.2
         with:
           detect_secret_additional_args: "--all-files"
 
