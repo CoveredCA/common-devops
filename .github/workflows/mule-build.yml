@@ -80,7 +80,7 @@ jobs:
           skiptests=" "
           [[ "${{ env.configuration_skiptests }}" == "true" ]] && skiptests="-DskipTests" && echo -e "\tTests will be skipped"
           [[ "${{ env.configuration_skiptests }}" != "true" ]] && echo -e "\tThe application will be tested"
-          mvn --batch-mode $skiptests package $configuration_test_properties
+          mvn --batch-mode $skiptests package $configuration_test_properties -Dmule.security.model=fips140-2 -Dorg.bouncycastle.fips.approved_only=true -Dmule.keystore.type=FIPS
 
       - name: Summary - Test
         uses: CoveredCA/common-devops/packages/summary-junit@main
