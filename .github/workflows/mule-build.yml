@@ -69,7 +69,7 @@ jobs:
           echo " "
 
       - name: Compile code
-        run: mvn --batch-mode compile -Dmule.security.model=fips140-2 -Dorg.bouncycastle.fips.approved_only=true -Dmule.keystore.type=FIPS
+        run: mvn --batch-mode compile
 
       - name: Run test cases and package
         id: run-test-cases
