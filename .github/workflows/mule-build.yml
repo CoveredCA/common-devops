@@ -114,7 +114,7 @@ jobs:
         run: |
           echo " "
           msg="Deploy to Anypoint Exchange" && echo -e "***********************************************\n$msg\n***********************************************\n"
-          [[ $RUNNER_DEBUG -eq 1 ]] && mvn --batch-mode deploy -X -DskipTests \
+          [[ $RUNNER_DEBUG -eq 1 ]] && mvn --batch-mode deploy -X -e -DskipTests \
           -Dmule.security.model=fips140-2 \
           -Dorg.bouncycastle.fips.approved_only=true \
           -Dmule.keystore.type=FIPS \
