@@ -115,7 +115,7 @@ jobs:
         run: |
           echo " "
           msg="Deploy to Anypoint Exchange" && echo -e "***********************************************\n$msg\n***********************************************\n"
-          mvn --batch-mode deploy -DskipTests \
+          mvn --batch-mode deploy -DskipTests
 
       - name: Tag repository with service version
         if: "!contains(env.service_version, 'snapshot')"
