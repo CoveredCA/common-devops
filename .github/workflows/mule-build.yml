@@ -77,11 +77,6 @@ jobs:
           curl -S https://repo1.maven.org/maven2/org/bouncycastle/bc-fips/1.0.2.4/bc-fips-1.0.2.4.jar     > /opt/lib/bc-fips-1.0.2.4.jar
           curl -S https://repo1.maven.org/maven2/org/bouncycastle/bcpkix-fips/1.0.7/bcpkix-fips-1.0.7.jar > /opt/lib/bcpkix-fips-1.0.7.jar
           curl -S https://repo1.maven.org/maven2/org/bouncycastle/bctls-fips/1.0.19/bctls-fips-1.0.19.jar > /opt/lib/bctls-fips-1.0.19.jar
-          #TODO Remove the below they are just for verifying output
-          ls -la /opt/lib
-          id
-          echo $USER
-          groups $USER
 
       - name: Run test cases and package
         id: run-test-cases
@@ -98,6 +93,7 @@ jobs:
           -Dmule.keystore.type=FIPS \
           -Dmunit.addFipsProviders=true \
           -Dmunit.addBootDependencies=/opt/lib
+
       - name: Summary - Test
         uses: CoveredCA/common-devops/packages/summary-junit@main
         with:
@@ -118,7 +114,22 @@ jobs:
         run: |
           echo " "
           msg="Deploy to Anypoint Exchange" && echo -e "***********************************************\n$msg\n***********************************************\n"
-          mvn --batch-mode deploy -DskipTests
+          [[ $RUNNER_DEBUG -eq 1 ]] && mvn --batch-mode deploy -X -DskipTests \
+          -Dmule.security.model=fips140-2 \
+          -Dorg.bouncycastle.fips.approved_only=true \
+          -Dmule.keystore.type=FIPS \
+          -Dmunit.addFipsProviders=true \
+          -Dmunit.addBootDependencies=/opt/lib
+
+          [[ -z $RUNNER_DEBUG ]] && mvn --batch-mode deploy -DskipTests \
+          -Dmule.security.model=fips140-2 \
+          -Dorg.bouncycastle.fips.approved_only=true \
+          -Dmule.keystore.type=FIPS \
+          -Dmunit.addFipsProviders=true \
+          -Dmunit.addBootDependencies=/opt/lib
+
+          # FIXME this is the only line that was here before the testing
+          #mvn --batch-mode deploy -DskipTests \
 
       - name: Tag repository with service version
         if: "!contains(env.service_version, 'snapshot')"
