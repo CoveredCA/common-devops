@@ -87,6 +87,7 @@ jobs:
           skiptests=" "
           [[ "${{ env.configuration_skiptests }}" == "true" ]] && skiptests="-DskipTests" && echo -e "\tTests will be skipped"
           [[ "${{ env.configuration_skiptests }}" != "true" ]] && echo -e "\tThe application will be tested"
+          # These additional options for the maven command are needed for FIPS compliance see: https://github.com/CoveredCA/common-core/issues/51
           mvn --batch-mode $skiptests package $configuration_test_properties \
           -Dmule.security.model=fips140-2 \
           -Dorg.bouncycastle.fips.approved_only=true \
@@ -114,12 +115,7 @@ jobs:
         run: |
           echo " "
           msg="Deploy to Anypoint Exchange" && echo -e "***********************************************\n$msg\n***********************************************\n"
-          [[ $RUNNER_DEBUG -eq 1 ]] && mvn --batch-mode deploy -X -e -DskipTests
-
-          [[ -z $RUNNER_DEBUG ]] && mvn --batch-mode deploy -DskipTests
-
-          # FIXME this is the only line that was here before the testing
-          #mvn --batch-mode deploy -DskipTests \
+          mvn --batch-mode deploy -DskipTests \
 
       - name: Tag repository with service version
         if: "!contains(env.service_version, 'snapshot')"
