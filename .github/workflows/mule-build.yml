@@ -115,13 +115,9 @@ jobs:
         run: |
           echo " "
           msg="Deploy to Anypoint Exchange" && echo -e "***********************************************\n$msg\n***********************************************\n"
-
-          debug_flags=''
-          echo "runner.debug == ${{ runner.debug }}"
-          ${{ runner.debug }} && debug_flags='-eX'
-          echo "debug_flags == $debug_flags"
-
-          mvn --batch-mode deploy -DskipTests $debug_flags
+          [[ $RUNNER_DEBUG -eq 1 ]] && mvn --batch-mode deploy -X -e -DskipTests
+          [[ -z $RUNNER_DEBUG ]] && mvn --batch-mode deploy -DskipTests
+          # mvn --batch-mode deploy -DskipTests
 
       - name: Tag repository with service version
         if: "!contains(env.service_version, 'snapshot')"
