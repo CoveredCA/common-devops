@@ -7,7 +7,7 @@ inputs:
     description: Name of the organization the project is in
   project-number:
     required: false
-    default: 5
+    default: "5"
     description: The number of the project from the project web url
   application-name:
     required: true
