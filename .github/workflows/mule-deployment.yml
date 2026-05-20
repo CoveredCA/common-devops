@@ -51,6 +51,11 @@ jobs:
           application-name: ${{ env.service_name }}
           version: ${{ env.deployment_version }}
 
+      - name: Print computed artifact name
+        run: |
+          echo "Artifact:"
+          echo "${{ env.service_artifact }}-${{ env.deployment_version }}-${{ env.configuration_apptype }}.jar"
+
       - name: Get jar file
         uses: dsaltares/fetch-gh-release-asset@master
         with:
