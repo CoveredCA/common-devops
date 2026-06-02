@@ -245,12 +245,6 @@ runs:
           fi
         fi
         echo " "
-        # TODO REMOVE THE lines below, they are for debugging purposes
-        echo "operation: $operation"
-        echo "STATUS: $STATUS"
-        echo "UPDATE_STATUS: $UPDATE_STATUS"
-        echo "iteration: $iteration"
-        echo "GITHUB_OUTPUT: $GITHUB_OUTPUT"
 
     - name: Run pushover notify
       id: Pushover
