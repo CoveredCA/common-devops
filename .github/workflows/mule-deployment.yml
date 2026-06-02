@@ -140,6 +140,8 @@ jobs:
           echo "***********************************************"
           echo " "
           echo "  Current environment: $deployment_environment, from: $configuration_environments"
+          echo "  Deployment status -> steps.deployment-ch1.outputs.outcome=${{ steps.deployment-ch1.outputs }}"
+          echo "  Deployment status -> steps.deployment-ch1.outputs.outcome=${{ steps.deployment-ch1.outcome }}"
           echo "  Deployment status -> steps.deployment-ch1.outputs.outcome=${{ steps.deployment-ch1.outputs.outcome }}"
           echo " "
 
