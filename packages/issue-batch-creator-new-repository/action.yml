@@ -16,7 +16,7 @@ runs:
   using: "composite"
   steps:
     - name: Checkout The Repository for Template Data Files
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
       with:
         sparse-checkout-cone-mode: false
         sparse-checkout: |

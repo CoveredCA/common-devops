@@ -37,7 +37,7 @@ jobs:
         with:
           paths: ${{ env.GLOBAL_CONFIGURATION }}
       - name: Get the source code for build environment
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
 

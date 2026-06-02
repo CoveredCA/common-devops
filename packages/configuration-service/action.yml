@@ -52,13 +52,13 @@ runs:
 
     - name: Get the source code for build environment
       if: ${{ env.deployment_environment == 'build' }}
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
       with:
         fetch-depth: 0
 
     - name: Get the source code for deployment 
       if: ${{ env.deployment_environment != 'build' }}
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
       with:
         ref: '${{env.deployment_version}}'
 

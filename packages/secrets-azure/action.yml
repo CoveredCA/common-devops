@@ -27,7 +27,7 @@ runs:
         echo " "
 
     - name: Authentication with Azure
-      uses: azure/login@v2
+      uses: azure/login@v3
       with:
         creds: ${{ inputs.azure-credentials }}
         

@@ -26,7 +26,7 @@ runs:
 
     - name: Create a GitHub App installation access token
       id: app-token
-      uses: peter-murray/workflow-application-token-action@v3
+      uses: peter-murray/workflow-application-token-action@v4
       with:
         application_id: ${{ inputs.client-id }}
         application_private_key: ${{ inputs.privatekey }}
