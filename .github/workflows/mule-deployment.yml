@@ -51,6 +51,21 @@ jobs:
           application-name: ${{ env.service_name }}
           version: ${{ env.deployment_version }}
 
+# TODO REMOVE THE BELOW STEP DEBUGGING ONLY
+      - name: Debug show jar files
+        id: debug-show-jar-files
+        if: always()
+        shell: bash
+        run: |
+          echo " "
+          echo "***************************************"
+          echo "Debug show jar files"
+          echo "***************************************"
+          echo " "
+          echo -e "${{ github.repository }}"
+          echo -e "tags/${{ env.deployment_version }}"
+          echo -e "${{ env.service_artifact }}-${{ env.deployment_version }}-${{ env.configuration_apptype }}.jar"
+
       - name: Get jar file
         uses: dsaltares/fetch-gh-release-asset@master
         with:
