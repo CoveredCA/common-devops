@@ -127,6 +127,22 @@ jobs:
           msg="Tag repository with service version" && echo -e "***********************************************\n$msg\n***********************************************\n"
           git push origin $service_version
 
+# TODO REMOVE THE BELOW STEP DEBUGGING ONLY
+      - name: Debug show jar files
+        id: debug-show-jar-files
+        if: always()
+        shell: bash
+        run: |
+          echo " "
+          echo "***************************************"
+          echo "Debug show jar files"
+          echo "***************************************"
+          echo " "
+          echo -e "${{ github.repository }}"
+          echo -e "tags/${{ env.deployment_version }}"
+          echo -e "${{ env.service_artifact }}-${{ env.deployment_version }}-${{ env.configuration_apptype }}.jar"
+          ls -l
+
       - name: Create a release
         uses: ncipollo/release-action@v1
         if: "hashFiles('target/*.jar') != '' && !contains(env.service_version, 'snapshot')"

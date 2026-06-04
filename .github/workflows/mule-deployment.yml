@@ -65,6 +65,7 @@ jobs:
           echo -e "${{ github.repository }}"
           echo -e "tags/${{ env.deployment_version }}"
           echo -e "${{ env.service_artifact }}-${{ env.deployment_version }}-${{ env.configuration_apptype }}.jar"
+          ls -l
 
       - name: Get jar file
         uses: dsaltares/fetch-gh-release-asset@master
