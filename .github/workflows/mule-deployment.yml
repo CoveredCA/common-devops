@@ -114,16 +114,6 @@ jobs:
         if: "env.configuration_deployment_customlogger == 'true'"
         uses: CoveredCA/common-devops/packages/process-customlog@main
 
-      - name: BAT Testing
-        id: bat
-        uses: CoveredCA/common-devops/packages/process-bat@main
-        with:
-          deployment-env: ${{ env.deployment_environment }}
-          pushover_user: ${{ secrets.PUSHOVER_USER_KEY }} # Necessary for Pushover-Notify
-          pushover_token: ${{ secrets.PUSHOVER_TOKEN }} # Necessary for Pushover-Notify
-          application_name: ${{ env.service_name }} # Necessary for Pushover-Notify
-          version: ${{ env.deployment_version }} # Necessary for Pushover-Notify
-
       #################################################################
       # Issue Management: create, close, add comments
       #################################################################

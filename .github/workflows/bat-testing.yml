@@ -18,8 +18,8 @@ env:
 
 jobs:
 
-  CloudHub:
-    name: CloudHub
+  Bat-Testing:
+    name: BAT-Testing
     runs-on: ubuntu-latest
 
     steps:
