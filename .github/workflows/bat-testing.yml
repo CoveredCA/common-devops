@@ -1,0 +1,52 @@
+##########################################################################
+# Mulesoft CICD Pipeline - Deploy Mulesoft Application
+##########################################################################
+
+name: BAT-testing
+on:
+  workflow_call:
+
+env:
+  CONFIGURATIONS_REPOSITORY: common-configurations
+  GLOBAL_CONFIGURATION: _global.yml
+  SECRETS_AZURE_KEYVAULT: CoveredCA-KV-Mulesoft
+
+  MESSAGE_SERVICE_NOT_DEPLOYED: "The service couldn't be deployed"
+  MESSAGE_SERVICE_BAT_SUCCESS: "The BAT tests run successfully"
+  MESSAGE_SERVICE_NO_BAT: "There aren't any BAT tests"
+  MESSAGE_SERVICE_BAT_FAILURE: "BAT testing with failures"
+
+jobs:
+
+  CloudHub:
+    name: CloudHub
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Get token from Github App
+        id: app-token
+        uses: CoveredCA/common-devops/packages/app-token@main
+        with:
+          client-id: ${{ secrets.MULESOFT_GITHUBAPP_CLIENTID }}
+          privatekey: ${{ secrets.MULESOFT_GITHUBAPP_PRIVATEKEY }}
+
+      - name: Get secrets from Azure Key Vault
+        id: secrets
+        uses: CoveredCA/common-devops/packages/secrets-azure@main
+        with:
+          keyvault-key: ${{ env.SECRETS_AZURE_KEYVAULT }}
+          azure-credentials: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Get service configuration
+        uses: CoveredCA/common-devops/packages/configuration-service@main
+
+      - name: BAT Testing
+        id: bat
+        uses: CoveredCA/common-devops/packages/process-bat@main
+        with:
+          deployment-env: ${{ env.deployment_environment }}
+          pushover_user: ${{ secrets.PUSHOVER_USER_KEY }} # Necessary for Pushover-Notify
+          pushover_token: ${{ secrets.PUSHOVER_TOKEN }} # Necessary for Pushover-Notify
+          application_name: ${{ env.service_name }} # Necessary for Pushover-Notify
+          version: ${{ env.deployment_version }} # Necessary for Pushover-Notify
