@@ -1,0 +1,53 @@
+name: 📖️ Documentation
+description: File an issue regarding documentation
+title: "📖️[Doc]: "
+# labels: ["bug"]
+type: "documentation"
+projects: ["CoveredCA/4"]
+# assignees:
+#   - <GH USERNAME>
+body:
+  - type: markdown
+    attributes:
+      value: |
+        > Thanks for taking the time to help us improve our documentation!
+
+  - type: dropdown
+    id: type-of-change
+    attributes:
+      label: What type of documentation change?
+      description: Let us know what type of change to the repo documentation this issues is regarding
+      options:
+        - There is missing documentation where there should be something
+        - There's a typo
+        - Something is incorrect
+        - Suggestion on documentation improvement
+        - Something should be removed
+        - Other
+      multiple: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Describe The Change
+      description: Please provide a clear and concise description of what the requested change is?
+      placeholder: |
+        There is a typo on like 144 of the README for cca-demo-sapi:
+
+        Current: "The template requires..."
+        Proposed Change: "The template requires..."
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: agreements
+    attributes:
+      label: Agreements
+      description: By submitting this issue, you agree that you have provided and performed the following
+      options:
+        - label: I have provided the necessary information about my request
+          required: true
+        - label: I understand that my issue may be closed if I don't fulfill my promises.
+          required: true
+        - label: I has added this issue to a milestone in this repository
+          required: true

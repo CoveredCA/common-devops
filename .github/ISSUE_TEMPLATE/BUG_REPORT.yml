@@ -1,0 +1,138 @@
+name: 🐛️ Bug Report
+description: File a bug report
+title: "🐛️[Bug]: "
+# labels: ["bug"]
+type: "bug"
+projects: ["CoveredCA/4"]
+# assignees:
+#   -
+body:
+  - type: markdown
+    attributes:
+      value: |
+        > Thanks for taking the time to fill out this bug report!
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: Please provide a clear and concise description of what the bug is and what did you expect to happen?
+      placeholder: "A bug happened!"
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant log output
+      description: Please copy and paste any relevant log output. This will be automatically formatted into code, so no need for backticks.
+      render: shell-script
+      placeholder: ERROR 2024-09-06 11:40:37,431 an error occurred
+    validations:
+      required: false
+
+  - type: textarea
+    id: troubleshooting
+    attributes:
+      label: Troubleshooting Attempts and Research
+      description: Please provide concise and organized detail of what troubleshooting and research you have already performed on this issue in order to better inform other developers.
+      placeholder: |
+        1. I ran the application with hardcoded values to ensure it wasn't a mistake of variable replacement
+        2. I ran the application with VPN on and off with the same resolution
+        3. I tested with a minimally reproducable example and achieved the same results
+        4. ...
+    validations:
+      required: true
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Issue Severity
+      description: |
+        What do you estimate the severity of this issue to be?
+        - 🔴Tier 1: This is on fire and there are wide spread impacts and this needs resolution NOW
+        - 🟠Tier 2: This is important to fix soon as it is impacting other services or halting work
+        - 🟡Tier 3: This isn't necessarily impacting anything urgent right now but it should get looked at soon
+        - 🟢Tier 4: This is more of an annoyance or low priority, not urgent though.
+      options:
+        - 🔴Tier 1
+        - 🟠Tier 2
+        - 🟡Tier 3
+        - 🟢Tier 4
+      default: 3
+    validations:
+      required: true
+
+  - type: dropdown
+    id: environment
+    attributes:
+      label: Environment
+      description: What if any specific Anypoint Platform environment(s) is this bug is happening on
+      options:
+        - LOCAL
+        - DEV
+        - PRD
+        - OTHER
+      default: 0
+      multiple: true
+
+  - type: checkboxes
+    id: agreements
+    attributes:
+      label: Agreements
+      description: By submitting this issue, you agree that you have provided and performed the following
+      options:
+        - label: I have provided all the necessary information about my bug report
+          required: true
+        - label: I have provided visual information about my bug report in the form of screenshots in the required text boxes
+          required: true
+        - label: I am using the latest version of the `common-core` and `common-parent-pom` repositories and reproduced my issue with the latest versions or i have specified a reason why i am not
+          required: true
+        - label: I has added this issue to a milestone in this repository
+          required: true
+        - label: If I have posted the same issue elsewhere on other repositories, I have also mentioned it in this issue by tagging the related issues using the `CoveredCA/<REPO NAME>#<ISSUE NUMBER>` type of syntax.
+          required: true
+        - label: I understand that my issue may be closed if I don't fulfill my promises.
+          required: true
+
+  - type: markdown
+    attributes:
+      value: |
+        <br><br>
+
+        ## Resolution Post Mortem
+
+        > These fields can be left blank until after the bug is resolved
+
+        <br><br>
+
+  - type: textarea
+    id: root-cause
+    attributes:
+      label: What was the most direct process to discovery of root cause?
+      description: Please provide a clear and concise bullet point description of what exactly led you to discovery of the root cause
+      placeholder: |
+        1. I ran the application with hardcoded values to ensure it wasn't a mistake of variable replacement
+        2. I ran the application with VPN on and off with the same resolution
+        3. I tested with a minimally reproducable example and achieved the same results
+        4. ...
+    validations:
+      required: false
+
+  - type: textarea
+    id: resolution
+    attributes:
+      label: What was the resolution?
+      description: Please provide a clear and detailed explaination on what the resolution to the issue was
+      placeholder: I had to update the parent pom dependency to the latest vestion to correct the issue of an older dependency version being used that is no longer functional with our current JDK verison
+    validations:
+      required: false
+
+  - type: textarea
+    id: after-effects
+    attributes:
+      label: Were there any after lingering effects of this issue?
+      description: Please provide a clear and detailed explaination on what if any after effects from this issue are still lingering or need awareness
+      placeholder: Any other older application importing a version of parent pom older than 1.x.x will need to update to avoid the issue i faced with an outdated dependency import
+    validations:
+      required: false

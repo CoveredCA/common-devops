@@ -1,0 +1,36 @@
+name: ❓️ Question
+description: Ask a general question about how to use the project
+title: "❓️[Q]: "
+type: "question"
+# labels: ["bugquestion"]
+projects: ["CoveredCA/4"]
+# assignees:
+#   - <GH USERNAME>
+body:
+  - type: markdown
+    attributes:
+      value: |
+        > Thanks for your interest in this project!
+
+  - type: textarea
+    id: description
+    attributes:
+      label: What is your question?
+      description: Please provide a clear and concise question
+      placeholder: Why are my secrets not flowing from the Azure KeyVault into my application when i have a common configuration file for my application?
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: agreements
+    attributes:
+      label: Agreements
+      description: By submitting this issue, you agree that you have provided and performed the following
+      options:
+        - label: I have provided the necessary information about my request
+          required: true
+        - label: I understand that my issue may be closed if I don't fulfill my promises.
+          required: true
+        - label: I has added this issue to a milestone in this repository
+          required: true
+

@@ -1,0 +1,29 @@
+blank_issues_enabled: true
+contact_links:
+  - name: common-core
+    url: https://github.com/CoveredCA/common-core
+    about: The common-core repository
+
+  - name: common-devops
+    url: https://github.com/CoveredCA/common-devops
+    about: The common-devops repository
+
+  - name: common-parent-pom
+    url: https://github.com/CoveredCA/common-parent-pom
+    about: The common-parent-pom repository
+
+  - name: common-template
+    url: https://github.com/CoveredCA/common-template
+    about: The common-template repository
+
+  - name: common-configurations
+    url: https://github.com/CoveredCA/common-configurations
+    about: The common-configurations repository
+
+  - name: Mule-Admin
+    url: https://github.com/CoveredCA/Mulesoft-Admin
+    about: The general admin repository
+
+  - name: Mulesoft Project Documentation
+    url: https://reimagined-succotash-49vpeoo.pages.github.io/#/
+    about: Review the documentation site for important information
